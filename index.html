@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ホワサバ スケジュール生成</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" href="favicon.svg">
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
@@ -172,8 +174,33 @@
   <!-- Top Navigation Bar -->
   <header class="bg-slate-900 border-b border-slate-800 px-3 sm:px-4 py-2 sm:py-2.5 sticky top-0 z-30 shadow-md">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-      <div class="flex items-center gap-2 min-w-0">
-        <span class="text-xl sm:text-3xl shrink-0">❄️</span>
+      <div class="flex items-center gap-2.5 min-w-0">
+        <svg class="w-8 h-8 sm:w-9 sm:h-9 shrink-0 drop-shadow" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="hdrBgGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#0f172a"/>
+              <stop offset="55%" stop-color="#083344"/>
+              <stop offset="100%" stop-color="#0284c7"/>
+            </linearGradient>
+            <linearGradient id="hdrIceGrad" x1="12" y1="10" x2="52" y2="54" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#e0f2fe"/>
+              <stop offset="50%" stop-color="#38bdf8"/>
+              <stop offset="100%" stop-color="#06b6d4"/>
+            </linearGradient>
+          </defs>
+          <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#hdrBgGrad)" stroke="#38bdf8" stroke-width="2.5" stroke-opacity="0.7"/>
+          <g stroke="#38bdf8" stroke-opacity="0.18" stroke-width="1.5">
+            <line x1="22" y1="10" x2="22" y2="54"/><line x1="42" y1="10" x2="42" y2="54"/>
+            <line x1="10" y1="24" x2="54" y2="24"/><line x1="10" y1="40" x2="54" y2="40"/>
+          </g>
+          <g stroke="url(#hdrIceGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="32" y1="10" x2="32" y2="54"/><polyline points="27,15 32,20 37,15"/><polyline points="27,49 32,44 37,49"/>
+            <line x1="13" y1="21" x2="51" y2="43"/><polyline points="15,27 21,25.5 19.5,19.5"/><polyline points="49,37 43,38.5 44.5,44.5"/>
+            <line x1="51" y1="21" x2="13" y2="43"/><polyline points="44.5,19.5 43,25.5 49,27"/><polyline points="19.5,44.5 21,38.5 15,37"/>
+          </g>
+          <polygon points="32,24 39,32 32,40 25,32" fill="#083344" stroke="#7dd3fc" stroke-width="2.2"/>
+          <circle cx="32" cy="32" r="2.8" fill="#e0f2fe"/>
+        </svg>
         <div class="min-w-0">
           <h1 class="text-sm sm:text-xl font-bold text-white flex items-baseline gap-1.5 flex-wrap leading-tight">
             <span>ホワサバ スケジュール生成</span>
@@ -183,17 +210,17 @@
         </div>
       </div>
 
-      <!-- Right Controls: Compact Login Status + Save + Logout + Help -->
+      <!-- Right Controls: Compact Login Status + Auto Sync Text + Export + Logout + Help -->
       <div class="flex items-center gap-1.5 sm:gap-2 ml-auto flex-wrap justify-end">
         <div id="allianceStatusBar" class="hidden flex items-center gap-1.5 sm:gap-2 mr-0.5">
           <span id="statusBarAllianceTitle" class="text-[11px] sm:text-xs font-bold text-cyan-300 whitespace-nowrap">🏰
-            #888 [ABC]</span>
+            ejy</span>
           <span id="statusBarSyncStatus"
-            class="text-[10px] text-slate-400 hidden lg:inline whitespace-nowrap">✓同期済</span>
-          <button id="btnCloudSaveManual" type="button"
-            class="px-2 py-1 rounded-md bg-cyan-700 hover:bg-cyan-600 text-white font-semibold text-[11px] flex items-center gap-1 transition whitespace-nowrap"
-            title="クラウドへ手動保存">
-            <span>💾 保存</span>
+            class="text-[10px] sm:text-[11px] font-semibold text-emerald-400 whitespace-nowrap">🟢 自動同期中</span>
+          <button id="btnOpenExportModal" type="button"
+            class="px-2.5 py-1 rounded-md bg-amber-600 hover:bg-amber-500 text-white font-bold text-[11px] flex items-center gap-1 shadow-sm transition whitespace-nowrap"
+            title="現在のスケジュールをJSONバックアップとしてエクスポート">
+            <span>📤 エクスポート</span>
           </button>
           <button id="btnLogoutAlliance" type="button"
             class="px-2 py-1 rounded-md text-slate-400 hover:text-rose-300 bg-slate-800/80 hover:bg-rose-950/50 border border-slate-700/70 text-[11px] transition whitespace-nowrap">
@@ -327,22 +354,22 @@
           </p>
         </div>
         <div class="grid grid-cols-2 sm:flex items-center gap-2 flex-wrap">
-          <button id="btnOpenNewEventModal"
-            class="justify-center px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white flex items-center gap-1 shadow transition">
-            <span>＋ イベント新規作成</span>
+          <button id="btnManageActionsModal"
+            class="justify-center px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-1">
+            <span>⚙️ 項目編集</span>
           </button>
           <button id="btnManageEventsModal"
             class="justify-center px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-800/60 transition flex items-center gap-1">
             <span>⚙️ イベント管理</span>
           </button>
-          <button id="btnManageActionsModal"
-            class="justify-center px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-1">
-            <span>⚙️ 項目編集</span>
+          <button id="btnOpenNewEventModal"
+            class="justify-center px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white flex items-center gap-1 shadow transition">
+            <span>＋ イベント追加</span>
           </button>
           <button id="btnOpenBackupModal"
             class="justify-center px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1 transition"
-            title="JSONデータのインポート・エクスポート・初期テンプレート展開">
-            <span>📦 入出力 / テンプレ</span>
+            title="初期テンプレート展開・JSONバックアップからのインポート">
+            <span>📥 インポート</span>
           </button>
         </div>
       </div>
@@ -795,14 +822,54 @@
     </div>
   </div>
 
-  <!-- Modal 3: Import / Export & Preset Management Modal -->
+  <!-- Modal 3A: Export (Backup) Modal -->
+  <div id="modalExport"
+    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div
+      class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <span>📤</span> データのエクスポート (バックアップ保存)
+        </h3>
+        <button id="btnCloseExportModal" class="text-slate-400 hover:text-white p-1 rounded-lg text-lg">✕</button>
+      </div>
+
+      <div class="p-4 sm:p-5 space-y-4 text-xs">
+        <div class="p-3.5 rounded-xl bg-slate-950 border border-amber-500/30 space-y-3">
+          <p class="text-slate-300 leading-relaxed">
+            現在設定されているすべてのイベント・アクション項目・出力設定をバックアップデータ（JSON）として手元に保存します。<br>
+            <span class="text-amber-300 text-[11px]">※大幅な編集を行う前や、定期的なバックアップとしてご活用ください。</span>
+          </p>
+          <div class="flex flex-col gap-2.5 pt-1">
+            <button id="btnDownloadJsonFile" type="button"
+              class="w-full py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-amber-600/20">
+              <span>📄 JSONファイルをダウンロード</span>
+            </button>
+            <button id="btnCopyJsonText" type="button"
+              class="w-full py-2 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 font-semibold transition flex items-center justify-center gap-2">
+              <span>📋 JSONテキストをクリップボードにコピー</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3.5 border-t border-slate-800 bg-slate-900/80 flex justify-end">
+        <button id="btnCloseExportModalBtn"
+          class="px-4 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white transition">
+          閉じる
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3B: Import & Preset Management Modal -->
   <div id="modalBackup"
     class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div
       class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
       <div class="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
         <h3 class="text-base font-bold text-white flex items-center gap-2">
-          <span>📦</span> データ管理 (インポート / エクスポート)
+          <span>📥</span> データのインポート ＆ 初期テンプレート
         </h3>
         <button id="btnCloseBackupModal" class="text-slate-400 hover:text-white p-1 rounded-lg text-lg">✕</button>
       </div>
@@ -825,33 +892,13 @@
           </button>
         </div>
 
-        <!-- Section B: Export -->
+        <!-- Section B: Import (File Only with Explicit Button) -->
         <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2.5">
           <h4 class="font-bold text-slate-200 flex items-center gap-1.5">
-            <span>📤</span> データのエクスポート (バックアップ)
+            <span>📥</span> バックアップファイルからのインポート (復元)
           </h4>
           <p class="text-slate-400 text-[11px]">
-            現在編集中のすべてのイベント・アクション項目・表示設定をJSONデータとして保存します。
-          </p>
-          <div class="flex gap-2 flex-wrap">
-            <button id="btnDownloadJsonFile" type="button"
-              class="flex-1 min-w-[140px] py-2 px-3 rounded-lg bg-cyan-700 hover:bg-cyan-600 text-white font-bold transition flex items-center justify-center gap-1.5">
-              <span>📄 JSONファイルをダウンロード</span>
-            </button>
-            <button id="btnCopyJsonText" type="button"
-              class="py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 font-semibold transition">
-              <span>📋 JSONをコピー</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Section C: Import (File Only with Explicit Button) -->
-        <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2.5">
-          <h4 class="font-bold text-slate-200 flex items-center gap-1.5">
-            <span>📥</span> データのインポート (復元・読み込み)
-          </h4>
-          <p class="text-slate-400 text-[11px]">
-            バックアップJSONファイルを選択し、実行ボタンを押してスケジュールを復元します。
+            エクスポートしたバックアップJSONファイルを選択し、実行ボタンを押してスケジュールを復元します。
           </p>
           <div class="space-y-2">
             <input type="file" id="jsonFileInput" accept=".json"
@@ -872,7 +919,7 @@
           </div>
         </div>
 
-        <!-- Section D: Clear to blank -->
+        <!-- Section C: Clear to blank -->
         <div class="pt-2 border-t border-slate-800 flex items-center justify-between">
           <span class="text-slate-500 text-[11px]">登録されているすべての項目とイベントを削除する</span>
           <button id="btnClearAllToBlank" type="button"
@@ -979,7 +1026,7 @@
         <!-- Guide 2: Alliance Account Sync -->
         <div class="space-y-2">
           <h4 class="font-bold text-cyan-400 text-sm flex items-center gap-1.5">
-            <span>🏰</span> 2. 同盟アカウント同期（複数幹部での共同管理）
+            <span>🏰</span> 2. 同盟アカウント同期（リアルタイム自動同期）
           </h4>
           <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-slate-300 leading-relaxed">
             <p>
@@ -988,7 +1035,7 @@
             <ul class="list-disc list-inside space-y-1 text-slate-400 pl-1">
               <li>同盟名称の変更やサーバー移動があっても、同じ「同盟アカウントID」のまま継続利用できます。</li>
               <li>盟主1人での管理はもちろん、他のR4幹部メンバーも同じID・パスワードでログインすることでスケジュール編集内容を共有できます。</li>
-              <li>ログイン中の変更内容は自動的に保存・同期されます（ヘッダー右上の「💾 保存」で手動保存も可能です）。</li>
+              <li>ログイン中の変更内容はリアルタイムでクラウドへ自動保存され、同時に開いている他の端末にも自動反映されます。</li>
               <li>※パスワードを幹部間で共有する場合は、個人の重要なパスワードの使い回しは避けてください。</li>
             </ul>
           </div>
@@ -1012,18 +1059,16 @@
         <!-- Guide 4: Data Management & Template Guide -->
         <div class="space-y-2">
           <h4 class="font-bold text-amber-300 text-sm flex items-center gap-1.5">
-            <span>📦</span> 4. 初期テンプレート展開・インポート・初期化について
+            <span>📦</span> 4. エクスポート（バックアップ）とインポート・初期テンプレート
           </h4>
           <div
             class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-slate-300 leading-relaxed text-xs">
             <p>
-              データの展開や初期化は、誤操作防止のためすべてイベント選択バーの「<strong class="text-white">📦 入出力 / テンプレ</strong>」画面に集約されています：
+              誤操作による上書き事故を防ぐため、「バックアップ保存（エクスポート）」と「読み込み（インポート）」のボタンを分けて配置しています：
             </p>
             <ul class="list-disc list-inside space-y-1 text-slate-400 pl-1">
-              <li><strong class="text-slate-200">初期テンプレート展開:</strong> 定番20項目および主要12イベントを一括展開してベースを作成できます。</li>
-              <li><strong class="text-slate-200">JSONエクスポート:</strong> 現在の編集内容をバックアップファイルとしてダウンロードできます。</li>
-              <li><strong class="text-slate-200">JSONインポート:</strong> バックアップファイルを選択し、実行ボタンでスケジュールを復元できます。</li>
-              <li><strong class="text-slate-200">全クリア:</strong> 全イベント・全項目を消去して初期状態に戻せます。</li>
+              <li><strong class="text-amber-300">📤 エクスポート（ヘッダー右上）:</strong> 現在の編集内容をJSONバックアップとしてファイル保存・コピーできます。大きな編集の前に保存しておくと安心です。</li>
+              <li><strong class="text-slate-200">📥 インポート（イベント選択バー）:</strong> 初期テンプレート（定番20項目・主要12イベント）の展開、バックアップファイルからの復元、全クリアを行えます。</li>
             </ul>
           </div>
         </div>
@@ -1515,26 +1560,87 @@
       renderMonospaceText();
     }
 
-    // Pull latest schedule from Cloud DB on startup if session is active
+    let realtimeUnsubscribe = null;
+    let lastClientSaveId = null;
+    let pendingRemotePayload = null;
+
+    function isAnyEditModalOpen() {
+      const modalIds = ['modalEvent', 'modalActions', 'modalManageEvents', 'modalBackup'];
+      return modalIds.some(id => {
+        const el = document.getElementById(id);
+        return el && !el.classList.contains('hidden');
+      });
+    }
+
+    function applyPendingRemotePayloadIfIdle() {
+      if (!pendingRemotePayload || isAnyEditModalOpen()) return;
+      const payload = pendingRemotePayload;
+      pendingRemotePayload = null;
+      applySchedulePayload(payload, true);
+      const statusEl = document.getElementById('statusBarSyncStatus');
+      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      if (statusEl) statusEl.textContent = `🟢 自動同期(${timeStr})`;
+      showToast('🔄 他の端末での変更を反映しました');
+    }
+
+    function stopRealtimeAllianceSync() {
+      if (realtimeUnsubscribe) {
+        try { realtimeUnsubscribe(); } catch (e) { }
+        realtimeUnsubscribe = null;
+      }
+      pendingRemotePayload = null;
+    }
+
+    // Start real-time Firestore listener (onSnapshot) for active alliance
+    function startRealtimeAllianceSync() {
+      stopRealtimeAllianceSync();
+      if (!currentAlliance || !firestoreDb) return;
+
+      const statusEl = document.getElementById('statusBarSyncStatus');
+      const docId = encodeURIComponent(currentAlliance.accountId);
+      let isInitialSnapshot = true;
+
+      realtimeUnsubscribe = firestoreDb.collection('alliances').doc(docId).onSnapshot((snap) => {
+        if (!snap.exists) return;
+        // Ignore our own local pending writes
+        if (snap.metadata && snap.metadata.hasPendingWrites) return;
+
+        const data = snap.data();
+        if (!data || data.password_hash !== currentAlliance.passwordHash || !data.schedule_data) return;
+
+        // Ignore echo of our own save
+        if (lastClientSaveId && data.schedule_data.clientSaveId === lastClientSaveId) {
+          isInitialSnapshot = false;
+          return;
+        }
+
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        if (isInitialSnapshot) {
+          isInitialSnapshot = false;
+          applySchedulePayload(data.schedule_data, true);
+          if (statusEl) statusEl.textContent = `🟢 自動同期(${timeStr})`;
+          return;
+        }
+
+        // Remote update from another user/device
+        if (isAnyEditModalOpen()) {
+          pendingRemotePayload = data.schedule_data;
+          if (statusEl) statusEl.textContent = `🔄 更新待機中`;
+        } else {
+          applySchedulePayload(data.schedule_data, true);
+          if (statusEl) statusEl.textContent = `🟢 自動同期(${timeStr})`;
+          showToast('🔄 他のメンバー/端末の変更を自動反映しました');
+        }
+      }, (err) => {
+        console.warn('Realtime sync listener error:', err);
+        if (statusEl) statusEl.textContent = '⚠️ オフライン';
+      });
+    }
+
+    // Pull latest schedule & start real-time listener on startup if session is active
     async function syncFromCloudOnStartup() {
       if (!currentAlliance || !firestoreDb) return;
-      const statusEl = document.getElementById('statusBarSyncStatus');
-      if (statusEl) statusEl.textContent = '⏳ 同期確認中...';
-      try {
-        const docId = encodeURIComponent(currentAlliance.accountId);
-        const snap = await firestoreDb.collection('alliances').doc(docId).get();
-        if (snap.exists) {
-          const data = snap.data();
-          if (data.password_hash === currentAlliance.passwordHash && data.schedule_data) {
-            applySchedulePayload(data.schedule_data, true);
-            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            if (statusEl) statusEl.textContent = `✓同期(${timeStr})`;
-          }
-        }
-      } catch (e) {
-        console.warn('Startup cloud sync failed:', e);
-        if (statusEl) statusEl.textContent = '⚠️ オフライン';
-      }
+      startRealtimeAllianceSync();
     }
 
     // Cloud / DB Save for current alliance
@@ -1542,6 +1648,10 @@
       if (!currentAlliance) return;
 
       const payload = getCurrentSchedulePayload();
+      const clientSaveId = Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+      lastClientSaveId = clientSaveId;
+      payload.clientSaveId = clientSaveId;
+
       const statusEl = document.getElementById('statusBarSyncStatus');
       if (statusEl) statusEl.textContent = '⏳ 同期中...';
 
@@ -1577,7 +1687,7 @@
         }
 
         const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        if (statusEl) statusEl.textContent = `✓同期(${timeStr})`;
+        if (statusEl) statusEl.textContent = `🟢 自動同期(${timeStr})`;
         if (!isSilent) showToast(`アカウント [${accountId}] のデータを保存しました`);
       } catch (err) {
         console.error('Save failed:', err);
@@ -1674,8 +1784,9 @@
 
       // Set session & apply
       persistLoginSessionAndCredentials(accountId, password, pwHash, rememberLogin);
-      applySchedulePayload(initialSchedule);
+      applySchedulePayload(initialSchedule, true);
       updateAllianceUI();
+      startRealtimeAllianceSync();
     }
 
     // Login Alliance Account
@@ -1739,12 +1850,14 @@
       }
 
       persistLoginSessionAndCredentials(accountId, password, pwHash, rememberLogin);
-      applySchedulePayload(record.schedule_data);
+      applySchedulePayload(record.schedule_data, true);
       updateAllianceUI();
+      startRealtimeAllianceSync();
     }
 
     // Logout Alliance
     function logoutAlliance() {
+      stopRealtimeAllianceSync();
       currentAlliance = null;
       localStorage.removeItem('wos_current_alliance');
       sessionStorage.removeItem('wos_current_alliance_session');
@@ -1766,7 +1879,7 @@
         if (mainScreen) mainScreen.classList.remove('hidden');
         if (statusBar) statusBar.classList.remove('hidden');
         if (statusTitle) statusTitle.textContent = `🏰 ${currentAlliance.accountId}`;
-        if (statusSync) statusSync.textContent = '✓同期済';
+        if (statusSync) statusSync.textContent = '🟢 自動同期中';
       } else {
         if (loginScreen) loginScreen.classList.remove('hidden');
         if (mainScreen) mainScreen.classList.add('hidden');
@@ -2052,6 +2165,15 @@
     // ==========================================
     let selectedImportFile = null;
 
+    function openExportModal() {
+      document.getElementById('modalExport').classList.remove('hidden');
+    }
+
+    function closeExportModal() {
+      document.getElementById('modalExport').classList.add('hidden');
+      applyPendingRemotePayloadIfIdle();
+    }
+
     function openBackupModal() {
       const fileInput = document.getElementById('jsonFileInput');
       const fileInfo = document.getElementById('selectedFileInfo');
@@ -2068,11 +2190,12 @@
 
     function closeBackupModal() {
       document.getElementById('modalBackup').classList.add('hidden');
+      applyPendingRemotePayloadIfIdle();
     }
 
     async function applyStandardPreset() {
       if (actions.length > 0 || events.length > 0) {
-        if (!confirm('現在の編集内容を上書きして、初期テンプレート（定番20項目・主要イベント）を展開しますか？')) {
+        if (!confirm('現在の編集内容を上書きして、初期テンプレート（定番20項目・主要12イベント）を展開しますか？')) {
           return;
         }
       }
@@ -2081,12 +2204,12 @@
         const res = await fetch('howasaba_schedule_preset.json');
         if (!res.ok) throw new Error('Fetch failed');
         const data = await res.json();
-        applySchedulePayload(data);
+        applySchedulePayload(data, false);
         showToast('📦 初期テンプレートを展開しました！');
       } catch (err) {
         // Fallback to built-in standard preset data (for local file:// or offline)
         try {
-          applySchedulePayload(STANDARD_PRESET_DATA);
+          applySchedulePayload(STANDARD_PRESET_DATA, false);
           showToast('📦 初期テンプレートを展開しました！');
         } catch (e2) {
           console.error('Template loading error:', e2);
@@ -2331,7 +2454,7 @@
       container.innerHTML = '';
 
       if (events.length === 0) {
-        container.innerHTML = '<span class="text-xs text-slate-500 py-1">登録されているイベントはありません。「⚙️ イベント管理」または「＋ イベント新規作成」から追加してください。</span>';
+        container.innerHTML = '<span class="text-xs text-slate-500 py-1">登録されているイベントはありません。「⚙️ イベント管理」または「＋ イベント追加」から追加してください。</span>';
         return;
       }
 
@@ -2370,6 +2493,7 @@
 
     function closeManageEventsModal() {
       document.getElementById('modalManageEvents').classList.add('hidden');
+      applyPendingRemotePayloadIfIdle();
     }
 
     function moveEvent(fromIdx, toIdx) {
@@ -2645,7 +2769,7 @@
           tbody.innerHTML = `<tr><td colspan="${activeDays.length + 1}" class="py-10 text-center text-slate-400 text-xs">
             <span class="text-xl">📝</span><br>
             <span class="font-bold text-slate-300">登録されているアクション項目がありません</span><br>
-            <span class="text-slate-500 mt-1 inline-block">「＋ イベント新規作成」から項目を追加するか、「📦 入出力 / テンプレ」から初期テンプレートを展開してください。</span>
+            <span class="text-slate-500 mt-1 inline-block">「⚙️ 項目編集」から項目を追加するか、「📥 インポート」から初期テンプレートを展開してください。</span>
           </td></tr>`;
         } else {
           tbody.innerHTML = `<tr><td colspan="${activeDays.length + 1}" class="py-6 text-center text-slate-500 text-xs">選択中のイベントに対応するアクション項目はありません（イベントを選択してください）</td></tr>`;
@@ -2924,7 +3048,7 @@
         title.textContent = 'イベントの編集';
         deleteBtn.classList.remove('hidden');
       } else {
-        title.textContent = 'イベントの新規作成';
+        title.textContent = 'イベントの追加';
         deleteBtn.classList.add('hidden');
       }
 
@@ -2964,6 +3088,8 @@
       if (returnToManageEventsModal) {
         returnToManageEventsModal = false;
         openManageEventsModal();
+      } else {
+        applyPendingRemotePayloadIfIdle();
       }
     }
 
@@ -3034,6 +3160,7 @@
 
     function closeActionsModal() {
       document.getElementById('modalActions').classList.add('hidden');
+      applyPendingRemotePayloadIfIdle();
     }
 
     function moveAction(fromIdx, toIdx) {
@@ -3526,15 +3653,20 @@
         }
       });
 
-      // Backup & Preset Modal
+      // Export Modal (Header Backup)
+      document.getElementById('btnOpenExportModal').addEventListener('click', openExportModal);
+      document.getElementById('btnCloseExportModal').addEventListener('click', closeExportModal);
+      document.getElementById('btnCloseExportModalBtn').addEventListener('click', closeExportModal);
+      document.getElementById('btnDownloadJsonFile').addEventListener('click', downloadJsonFile);
+      document.getElementById('btnCopyJsonText').addEventListener('click', copyExportJson);
+
+      // Import & Preset Modal
       document.getElementById('btnCloseBackupModal').addEventListener('click', closeBackupModal);
       document.getElementById('btnCloseBackupModalBtn').addEventListener('click', closeBackupModal);
       document.getElementById('btnApplyPresetFromModal').addEventListener('click', () => {
         applyStandardPreset();
         closeBackupModal();
       });
-      document.getElementById('btnDownloadJsonFile').addEventListener('click', downloadJsonFile);
-      document.getElementById('btnCopyJsonText').addEventListener('click', copyExportJson);
 
       // JSON File Selection & Explicit Import Execution
       const jsonFileInput = document.getElementById('jsonFileInput');
@@ -3674,10 +3806,7 @@
         }
       });
 
-      // Manual Save & Logout
-      document.getElementById('btnCloudSaveManual').addEventListener('click', () => {
-        saveCurrentAllianceData(false);
-      });
+      // Logout
       document.getElementById('btnLogoutAlliance').addEventListener('click', logoutAlliance);
     }
 

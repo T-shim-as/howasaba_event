@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="55%" stop-color="#083344"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="iceGrad" x1="12" y1="10" x2="52" y2="54" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#e0f2fe"/>
+      <stop offset="50%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded App Icon Base -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#bgGrad)" stroke="#38bdf8" stroke-width="2.5" stroke-opacity="0.7"/>
+  <!-- Subtle Matrix Grid Lines in Background -->
+  <g stroke="#38bdf8" stroke-opacity="0.16" stroke-width="1.5">
+    <line x1="22" y1="10" x2="22" y2="54"/>
+    <line x1="42" y1="10" x2="42" y2="54"/>
+    <line x1="10" y1="24" x2="54" y2="24"/>
+    <line x1="10" y1="40" x2="54" y2="40"/>
+  </g>
+  <!-- Ice Crystal / Snowflake Emblem -->
+  <g stroke="url(#iceGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Vertical Axis -->
+    <line x1="32" y1="10" x2="32" y2="54"/>
+    <polyline points="27,15 32,20 37,15"/>
+    <polyline points="27,49 32,44 37,49"/>
+    <!-- Diagonal Axis 1 (60 deg) -->
+    <line x1="13" y1="21" x2="51" y2="43"/>
+    <polyline points="15,27 21,25.5 19.5,19.5"/>
+    <polyline points="49,37 43,38.5 44.5,44.5"/>
+    <!-- Diagonal Axis 2 (-60 deg) -->
+    <line x1="51" y1="21" x2="13" y2="43"/>
+    <polyline points="44.5,19.5 43,25.5 49,27"/>
+    <polyline points="19.5,44.5 21,38.5 15,37"/>
+  </g>
+  <!-- Center Diamond Core -->
+  <polygon points="32,24 39,32 32,40 25,32" fill="#083344" stroke="#7dd3fc" stroke-width="2.2"/>
+  <circle cx="32" cy="32" r="2.8" fill="#e0f2fe"/>
+</svg>
