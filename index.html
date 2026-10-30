@@ -1,0 +1,3700 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ホワサバ スケジュール生成</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic:wght@400;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700;900&family=Source+Code+Pro:wght@400;600;700&display=swap"
+    rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
+            mono: ['Source Code Pro', 'BIZ UDGothic', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+
+    .font-matrix {
+      font-family: 'BIZ UDGothic', 'MS Gothic', 'Source Code Pro', monospace;
+      letter-spacing: 0;
+      font-variant-east-asian: full-width;
+    }
+
+    /* Visual Editor Whitespace & Emoji Styling */
+    .visual-editor-box {
+      font-family: 'BIZ UDGothic', 'MS Gothic', 'Source Code Pro', monospace;
+      font-size: 13px;
+      line-height: 1.65;
+      letter-spacing: 0;
+      white-space: pre-wrap;
+      word-break: break-all;
+      overflow-wrap: anywhere;
+      box-sizing: content-box;
+    }
+
+    /* Fixed 1em cell for emojis/symbols so columns never misalign */
+    .visual-editor-box .char-full {
+      display: inline-block;
+      width: 1em;
+      text-align: center;
+      vertical-align: baseline;
+    }
+
+    .visual-editor-box .char-half {
+      display: inline-block;
+      width: 0.5em;
+      text-align: center;
+      vertical-align: baseline;
+    }
+
+    /* Halfwidth space visualization */
+    .visual-editor-box .ws-half {
+      display: inline-block;
+      width: 0.5em;
+      position: relative;
+      vertical-align: baseline;
+    }
+
+    .show-ws .ws-half {
+      background-color: rgba(6, 182, 212, 0.22);
+      border-bottom: 1.5px solid rgba(34, 211, 238, 0.75);
+      border-radius: 2px;
+    }
+
+    .show-ws .ws-half::after {
+      content: '␣';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #22d3ee;
+      font-size: 9px;
+      font-weight: 700;
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* Fullwidth space visualization */
+    .visual-editor-box .ws-full {
+      display: inline-block;
+      width: 1em;
+      position: relative;
+      vertical-align: baseline;
+    }
+
+    .show-ws .ws-full {
+      background-color: rgba(148, 163, 184, 0.1);
+      outline: 1px dashed rgba(148, 163, 184, 0.4);
+      outline-offset: -1.5px;
+      border-radius: 2px;
+    }
+
+    .show-ws .ws-full::after {
+      content: '□';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(148, 163, 184, 0.45);
+      font-size: 9px;
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* Newline symbol visualization (0-width so it never affects line wrap) */
+    .visual-editor-box .nl-mark {
+      display: none;
+    }
+
+    .show-ws .nl-mark {
+      display: inline-block;
+      width: 0;
+      overflow: visible;
+      color: #fbbf24;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1;
+      padding-left: 2px;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .dragging {
+      opacity: 0.4;
+      transform: scale(0.98);
+    }
+
+    .drag-over {
+      border-color: #38bdf8 !important;
+      background-color: #0f2744 !important;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans">
+
+  <!-- Top Navigation Bar -->
+  <header class="bg-slate-900 border-b border-slate-800 px-3 sm:px-4 py-2 sm:py-2.5 sticky top-0 z-30 shadow-md">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="text-xl sm:text-3xl shrink-0">❄️</span>
+        <div class="min-w-0">
+          <h1 class="text-sm sm:text-xl font-bold text-white flex items-baseline gap-1.5 flex-wrap leading-tight">
+            <span>ホワサバ スケジュール生成</span>
+            <span class="text-[10px] sm:text-xs font-normal text-cyan-400">For R5/R4</span>
+          </h1>
+          <p class="text-[10px] text-slate-400 truncate hidden sm:block">ウィークリーマトリクス ＆ チャットテキスト出力</p>
+        </div>
+      </div>
+
+      <!-- Right Controls: Compact Login Status + Save + Logout + Help -->
+      <div class="flex items-center gap-1.5 sm:gap-2 ml-auto flex-wrap justify-end">
+        <div id="allianceStatusBar" class="hidden flex items-center gap-1.5 sm:gap-2 mr-0.5">
+          <span id="statusBarAllianceTitle" class="text-[11px] sm:text-xs font-bold text-cyan-300 whitespace-nowrap">🏰
+            #888 [ABC]</span>
+          <span id="statusBarSyncStatus"
+            class="text-[10px] text-slate-400 hidden lg:inline whitespace-nowrap">✓同期済</span>
+          <button id="btnCloudSaveManual" type="button"
+            class="px-2 py-1 rounded-md bg-cyan-700 hover:bg-cyan-600 text-white font-semibold text-[11px] flex items-center gap-1 transition whitespace-nowrap"
+            title="クラウドへ手動保存">
+            <span>💾 保存</span>
+          </button>
+          <button id="btnLogoutAlliance" type="button"
+            class="px-2 py-1 rounded-md text-slate-400 hover:text-rose-300 bg-slate-800/80 hover:bg-rose-950/50 border border-slate-700/70 text-[11px] transition whitespace-nowrap">
+            ログアウト
+          </button>
+        </div>
+
+        <button id="btnOpenHelpModal" type="button"
+          class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-800/80 flex items-center gap-1 transition whitespace-nowrap"
+          title="使い方ガイド">
+          <span>❓ ヘルプ</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Top Page Login Screen (Shown when not logged in) -->
+  <div id="loginLandingScreen" class="flex-1 flex items-center justify-center p-4 sm:p-6">
+    <div
+      class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full flex flex-col shadow-2xl overflow-hidden">
+      <!-- Card Header -->
+      <div class="p-5 sm:p-6 border-b border-slate-800 bg-slate-900/90 text-center space-y-1.5">
+        <div
+          class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-cyan-950/80 border border-cyan-700/60 text-2xl mb-1 shadow-inner">
+          🏰
+        </div>
+        <h2 class="text-lg sm:text-xl font-bold text-white">
+          同盟アカウント ログイン
+        </h2>
+        <p class="text-xs text-slate-400">
+          同盟アカウントIDとパスワードでログインし、専用のスケジュール管理画面を開きます
+        </p>
+      </div>
+
+      <!-- Tab Switcher -->
+      <div class="flex border-b border-slate-800 bg-slate-950/60 text-xs">
+        <button id="tabBtnAuthLogin"
+          class="flex-1 py-3 px-3 text-center font-bold text-cyan-400 border-b-2 border-cyan-400 bg-slate-900/50 transition">
+          🔑 ログイン
+        </button>
+        <button id="tabBtnAuthRegister"
+          class="flex-1 py-3 px-3 text-center text-slate-400 hover:text-slate-200 transition">
+          ✨ 新規アカウント作成
+        </button>
+      </div>
+
+      <!-- Card Body -->
+      <div class="p-5 sm:p-6 space-y-4 text-xs">
+        <!-- Panel 1: Login -->
+        <div id="authPanelLogin" class="space-y-3.5">
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">同盟アカウントID *</label>
+            <input type="text" id="authLoginAccountId" autocomplete="username" placeholder="例: ejy_schedule"
+              class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-white text-xs focus:outline-none focus:border-cyan-500">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">パスワード *</label>
+            <input type="password" id="authLoginPassword" autocomplete="current-password" placeholder="パスワードを入力"
+              class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-white text-xs focus:outline-none focus:border-cyan-500">
+          </div>
+          <div class="pt-0.5">
+            <label class="flex items-center gap-2 cursor-pointer text-slate-300 select-none">
+              <input type="checkbox" id="checkRememberLogin" checked
+                class="rounded bg-slate-900 border-slate-700 text-cyan-500 focus:ring-0 h-4 w-4 cursor-pointer">
+              <span>ログイン情報を保存する（次回から自動ログイン・自動入力）</span>
+            </label>
+          </div>
+          <p class="text-[11px] text-slate-400 pt-0.5">
+            ※初めて利用する場合は上の「✨ 新規アカウント作成」タブからアカウントを作成してください。
+          </p>
+          <div class="pt-1">
+            <button id="btnDoLogin" type="button"
+              class="w-full py-3 px-4 rounded-xl font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg shadow-cyan-600/20 transition">
+              ログインして管理画面を開く
+            </button>
+          </div>
+        </div>
+
+        <!-- Panel 2: Register -->
+        <div id="authPanelRegister" class="space-y-3.5 hidden">
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">同盟アカウントID (任意のID) *</label>
+            <input type="text" id="authRegAccountId" autocomplete="username" placeholder="例: ejy_schedule（半角英数字や日本語など自由）"
+              class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-white text-xs focus:outline-none focus:border-cyan-500">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">パスワード (4文字以上) *</label>
+            <input type="password" id="authRegPassword" autocomplete="new-password" placeholder="幹部間で共有する場合も考慮し、個人の重要PWは避けてください"
+              class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-white text-xs focus:outline-none focus:border-cyan-500">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">パスワード (確認) *</label>
+            <input type="password" id="authRegPasswordConfirm" autocomplete="new-password" placeholder="もう一度パスワードを入力"
+              class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-white text-xs focus:outline-none focus:border-cyan-500">
+          </div>
+          <div class="pt-1 space-y-2">
+            <label class="flex items-center gap-2 cursor-pointer text-slate-300 select-none">
+              <input type="checkbox" id="checkRegKeepCurrentData" checked
+                class="rounded bg-slate-900 border-slate-700 text-cyan-500 focus:ring-0 h-4 w-4 cursor-pointer">
+              <span>初期テンプレート（定番20項目・主要12イベント）を展開して開始する</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-300 select-none">
+              <input type="checkbox" id="checkRegRememberLogin" checked
+                class="rounded bg-slate-900 border-slate-700 text-cyan-500 focus:ring-0 h-4 w-4 cursor-pointer">
+              <span>ログイン情報を保存する（次回から自動ログイン・自動入力）</span>
+            </label>
+          </div>
+          <div class="pt-1">
+            <button id="btnDoRegister" type="button"
+              class="w-full py-3 px-4 rounded-xl font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg shadow-cyan-600/20 transition">
+              同盟アカウントを作成して開始する
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content (Shown only after login) -->
+  <main id="mainAppScreen" class="hidden max-w-7xl mx-auto w-full p-2.5 sm:p-6 flex-1 flex flex-col gap-4 sm:gap-6">
+
+    <!-- Section 1: Event Selection Bar (Simple click-to-toggle) -->
+    <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 sm:p-5 shadow-lg">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+        <div>
+          <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+            <span class="text-cyan-400">●</span> イベント選択（タップで表示切替）
+          </h2>
+          <p class="text-[11px] sm:text-xs text-slate-400 mt-0.5">
+            バッジをタップして表示ON/OFF。並べ替えや編集は「⚙️ イベント管理」から行えます
+          </p>
+        </div>
+        <div class="grid grid-cols-2 sm:flex items-center gap-2 flex-wrap">
+          <button id="btnOpenNewEventModal"
+            class="justify-center px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white flex items-center gap-1 shadow transition">
+            <span>＋ イベント新規作成</span>
+          </button>
+          <button id="btnManageEventsModal"
+            class="justify-center px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-800/60 transition flex items-center gap-1">
+            <span>⚙️ イベント管理</span>
+          </button>
+          <button id="btnManageActionsModal"
+            class="justify-center px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition flex items-center gap-1">
+            <span>⚙️ 項目編集</span>
+          </button>
+          <button id="btnOpenBackupModal"
+            class="justify-center px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1 transition"
+            title="JSONデータのインポート・エクスポート・初期テンプレート展開">
+            <span>📦 入出力 / テンプレ</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Events Badges List (Clean toggle chips) -->
+      <div class="pt-3 flex flex-wrap gap-2" id="eventsCheckboxContainer">
+        <!-- Javascript dynamically renders clean event toggle chips here -->
+      </div>
+    </section>
+
+    <!-- Section 2: Visual Matrix Display (Excel-like Sheet) -->
+    <section
+      class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 sm:p-5 shadow-lg flex flex-col gap-3 sm:gap-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+        <div>
+          <h2 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+            📊 スケジュール表
+          </h2>
+        </div>
+
+        <!-- View Controls: Empty Rows Filter -->
+        <div class="flex items-center gap-3 flex-wrap">
+          <label
+            class="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer bg-slate-950 px-2.5 py-1.5 rounded-lg border border-slate-800 hover:border-slate-700 select-none">
+            <input type="checkbox" id="checkHideEmptyRows"
+              class="rounded bg-slate-900 border-slate-700 text-cyan-500 focus:ring-0 h-3.5 w-3.5 cursor-pointer">
+            <span>空白行を隠す</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Table Container with Horizontal Scroll -->
+      <div class="overflow-x-auto border border-slate-800 rounded-xl bg-slate-950 -mx-1 sm:mx-0">
+        <table class="w-full text-center border-collapse text-xs sm:text-sm" id="matrixTable">
+          <thead>
+            <tr class="bg-slate-900 border-b border-slate-800 text-slate-300 font-bold" id="matrixHeaderRow">
+              <!-- Dynamically populated based on active days span -->
+            </tr>
+          </thead>
+          <tbody id="matrixTableBody" class="divide-y divide-slate-800/80">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Legend in sheet footer -->
+      <div class="pt-2 border-t border-slate-800 flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-slate-300"
+        id="matrixLegendContainer">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- Section 3: Text Output (Checkbox Days Selection & Layout Options) -->
+    <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 sm:p-5 shadow-lg flex flex-col gap-3">
+      <div class="pb-3 border-b border-slate-800">
+        <h2 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+          📢 チャット用テキスト出力
+        </h2>
+        <p class="text-[11px] sm:text-xs text-slate-400 mt-0.5">
+          ゲーム内チャットの10回改行制限・16文字折り返しに対応したテキストを生成します
+        </p>
+      </div>
+
+      <!-- Text Controls: Days Checkboxes & Formatting Options -->
+      <div class="bg-slate-950/60 p-3 sm:p-3.5 rounded-xl border border-slate-800 text-xs space-y-3">
+        <!-- Row 1: Contiguous Days Range Selector -->
+        <div class="pb-3 border-b border-slate-800/80 space-y-2.5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-[11px] font-semibold text-slate-300">出力する曜日期間</span>
+              <!-- Start ~ End Dropdowns & Badge -->
+              <div
+                class="inline-flex items-center gap-1 bg-slate-900 px-2 py-0.5 rounded-lg border border-slate-800 text-[11px]">
+                <select id="selectStartDay"
+                  class="bg-transparent text-cyan-300 font-bold focus:outline-none cursor-pointer"></select>
+                <span class="text-slate-500">〜</span>
+                <select id="selectEndDay"
+                  class="bg-transparent text-cyan-300 font-bold focus:outline-none cursor-pointer"></select>
+                <span id="selectedDaysCountBadge"
+                  class="ml-1 px-1.5 py-0.2 rounded bg-cyan-950/90 text-cyan-300 text-[10px] font-bold border border-cyan-800/60">7日間</span>
+              </div>
+              <span id="rangeTapHint" class="text-[10px] text-slate-400">（バーをドラッグ、または開始日→終了日の順にタップ）</span>
+            </div>
+
+            <!-- Quick presets -->
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-[10px] text-slate-400">定番期間:</span>
+              <button type="button" id="btnQuickSelectMonSun"
+                class="px-2.5 py-1 sm:py-0.5 rounded-md text-[11px] sm:text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 transition">月〜日
+                (7日)</button>
+              <button type="button" id="btnQuickSelectTueMon"
+                class="px-2.5 py-1 sm:py-0.5 rounded-md text-[11px] sm:text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 transition">火〜月
+                (7日)</button>
+              <button type="button" id="btnQuickSelectMonFri"
+                class="px-2.5 py-1 sm:py-0.5 rounded-md text-[11px] sm:text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 transition">月〜金
+                (5日)</button>
+            </div>
+          </div>
+
+          <!-- Connected 8-Day Range Track -->
+          <div class="grid grid-cols-8 bg-slate-900/95 p-1 rounded-xl border border-slate-800 select-none"
+            id="textDaysCheckboxGroup">
+            <!-- Rendered dynamically by JS as a connected range bar -->
+          </div>
+        </div>
+
+        <!-- Row 2: Format Options (Overlap Mode, Empty Char, Name Mode, Separator, Title) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-1">
+          <!-- Overlap Mode (Merge 🔴 vs Multi-line Stack) -->
+          <div>
+            <div class="flex items-center h-6 mb-1">
+              <label class="block text-[11px] font-semibold text-slate-400">ダブり項目の出力</label>
+            </div>
+            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+              <button id="btnOverlapMerge"
+                class="flex-1 py-1 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition"
+                title="重なった項目を🔴等の記号で1行にまとめ、凡例に出力します">
+                記号統合 (🔴)
+              </button>
+              <button id="btnOverlapStack"
+                class="flex-1 py-1 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition"
+                title="重なった項目を縦に複数行で並べて出力します">
+                縦並び (複数行)
+              </button>
+            </div>
+          </div>
+
+          <!-- Empty Cell Character (ー vs 　) -->
+          <div>
+            <div class="flex items-center h-6 mb-1">
+              <label class="block text-[11px] font-semibold text-slate-400">空欄の表示</label>
+            </div>
+            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+              <button id="btnEmptyHyphen"
+                class="flex-1 py-1 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+                ー (ハイフン)
+              </button>
+              <button id="btnEmptySpace"
+                class="flex-1 py-1 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+                　 (空白)
+              </button>
+            </div>
+          </div>
+
+          <!-- Name Mode (Short vs Full) -->
+          <div>
+            <div class="flex items-center h-6 mb-1">
+              <label class="block text-[11px] font-semibold text-slate-400">項目名表示</label>
+            </div>
+            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+              <button id="btnNameShort"
+                class="flex-1 py-1 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+                短縮名 (推奨)
+              </button>
+              <button id="btnNameFull"
+                class="flex-1 py-1 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+                正式名
+              </button>
+            </div>
+          </div>
+
+          <!-- Pipe Separator Style -->
+          <div>
+            <div class="flex items-center h-6 mb-1">
+              <label class="block text-[11px] font-semibold text-slate-400">仕切り線スタイル</label>
+            </div>
+            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+              <button id="btnSepFullPipe"
+                class="flex-1 py-1 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+                全角 ｜
+              </button>
+              <button id="btnSepHalfPipe"
+                class="flex-1 py-1 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+                半角 |
+              </button>
+            </div>
+          </div>
+
+          <!-- Title Input with Date Button -->
+          <div class="sm:col-span-2 lg:col-span-1">
+            <div class="flex items-center justify-between h-6 mb-1">
+              <label class="block text-[11px] font-semibold text-slate-400">タイトル</label>
+              <button type="button" id="btnInsertDate"
+                class="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 transition flex items-center gap-1 shadow-sm"
+                title="選択中の曜日に合わせた日付をタイトルに挿入">
+                <span>📅 日付挿入</span>
+              </button>
+            </div>
+            <input type="text" id="textTitleInput" value="【 スケジュール 】"
+              class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-white text-xs focus:outline-none focus:border-cyan-500">
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview Width & Whitespace Inspector Toolbar -->
+      <div
+        class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-950/80 px-3 py-2 rounded-xl border border-slate-800/90 text-xs">
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <span class="text-[11px] font-semibold text-slate-400 mr-1">表示幅:</span>
+          <button type="button" id="btnWidthMobile"
+            class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-cyan-900/80 text-cyan-200 border border-cyan-700/60 transition flex items-center gap-1">
+            <span>📱 チャット幅 (16文字)</span>
+          </button>
+          <button type="button" id="btnWidthWide"
+            class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 transition flex items-center gap-1">
+            <span>↔️ 広げて確認 (全体)</span>
+          </button>
+          <span class="text-[10px] text-slate-500 hidden md:inline ml-1">※右下のつまみをドラッグして任意の幅に伸縮できます</span>
+        </div>
+
+        <div class="flex items-center gap-3 flex-wrap justify-between sm:justify-end">
+          <!-- Whitespace visibility toggle -->
+          <label class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 cursor-pointer select-none">
+            <input type="checkbox" id="checkShowWhitespace" checked
+              class="rounded bg-slate-900 border-slate-700 text-cyan-500 focus:ring-0 h-3.5 w-3.5 cursor-pointer">
+            <span>改行・空白を可視化</span>
+          </label>
+
+          <!-- Legend for invisible chars -->
+          <div class="flex items-center gap-2 text-[10px] bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+            <span title="本物の改行コード (上限10回)"><strong class="text-amber-400">↵</strong> 改行</span>
+            <span title="自動折り返し用の半角スペース"><strong class="text-cyan-400">␣</strong> 半角空白</span>
+            <span title="全角スペース"><strong class="text-slate-400">□</strong> 全角空白</span>
+          </div>
+
+          <!-- Newline count indicator -->
+          <span id="newlineCountBadge"
+            class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950/90 text-emerald-300 border border-emerald-800/70">
+            改行: 0 / 10回
+          </span>
+        </div>
+      </div>
+
+      <!-- Resizable Visual Editor Container & Copy Button -->
+      <div class="flex flex-col sm:flex-row sm:items-end flex-wrap gap-3">
+        <div id="monospaceEditorWrapper" class="overflow-x-auto pb-1 max-w-full">
+          <div id="monospaceEditorContainer" style="width: 16.6em;"
+            class="visual-editor-box show-ws bg-slate-950 text-cyan-200 p-3.5 rounded-xl border border-slate-800 shadow-inner min-h-[260px] resize-x overflow-x-auto max-w-full">
+          </div>
+          <!-- Hidden plain textarea for clipboard copy & compatibility -->
+          <textarea id="monospaceTextArea" readonly class="hidden"></textarea>
+        </div>
+
+        <button id="btnCopyTextMatrix" type="button"
+          class="w-full sm:w-auto justify-center px-5 py-2.5 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white flex items-center gap-1.5 shadow-lg shadow-cyan-600/20 transition shrink-0 sm:mb-1">
+          <span>📋 テキストをコピー</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal 1: Event Create / Edit Modal (Kept Mon to Next Mon 8 days) -->
+  <div id="modalEvent"
+    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-2 sm:p-4">
+    <div
+      class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
+      <!-- Modal Header -->
+      <div class="p-3.5 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
+        <h3 id="modalEventTitle" class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+          イベントの作成・編集
+        </h3>
+        <button id="btnCloseEventModal" class="text-slate-400 hover:text-white p-1 rounded-lg text-lg">✕</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-3.5 sm:p-5 overflow-y-auto space-y-4 flex-1 custom-scrollbar">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-semibold text-slate-300 mb-1">イベント名 *</label>
+            <input type="text" id="inputEventName" placeholder="例: 万霊の主, 軍備競技"
+              class="w-full text-xs bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">表示記号 * (1文字)</label>
+            <input type="text" id="inputEventSymbol" placeholder="◯, ◎, 🔴"
+              class="w-full text-center text-sm font-bold bg-slate-950 border border-slate-700 rounded-lg px-2 py-2 text-amber-300 focus:outline-none focus:border-cyan-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-400 mb-1.5">記号パレット</label>
+          <div class="flex flex-wrap gap-1">
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">◯</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">●</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">◎</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">◆</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">軍</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">士</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">準</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">季</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">👑</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">💠</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🏆</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🚩</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🎃</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🌸</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🐹</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🎄</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🎁</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🔴</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🔵</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🟢</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🟡</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">補足メモ (任意)</label>
+          <input type="text" id="inputEventNote" placeholder="例: 月火開催 など"
+            class="w-full text-xs bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500">
+        </div>
+
+        <!-- 8 Days Schedule Checkboxes (Unchanged as requested) -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label class="block text-xs font-semibold text-slate-300">
+              各曜日に発生するアクションを選択 (月〜翌月)
+            </label>
+            <span class="text-[11px] text-slate-400">該当する曜日のマスをクリック</span>
+          </div>
+
+          <div class="border border-slate-800 rounded-xl overflow-x-auto bg-slate-950">
+            <table class="w-full text-center text-xs">
+              <thead class="bg-slate-900 border-b border-slate-800 text-slate-300 font-bold">
+                <tr>
+                  <th class="py-2 px-3 text-center w-36">アクション項目</th>
+                  <th class="py-2 px-1">I(月)</th>
+                  <th class="py-2 px-1">II(火)</th>
+                  <th class="py-2 px-1">III(水)</th>
+                  <th class="py-2 px-1">IV(木)</th>
+                  <th class="py-2 px-1">V(金)</th>
+                  <th class="py-2 px-1 bg-sky-950/40 text-sky-200">VI(土)</th>
+                  <th class="py-2 px-1 bg-rose-950/40 text-rose-200">VII(日)</th>
+                  <th class="py-2 px-1 bg-purple-950/40 text-purple-200">Ⅷ(月)</th>
+                </tr>
+              </thead>
+              <tbody id="modalMatrixTbody" class="divide-y divide-slate-800/60">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 border-t border-slate-800 bg-slate-900/80 flex items-center justify-between">
+        <button id="btnDeleteCurrentEvent" type="button"
+          class="text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 px-3 py-1.5 rounded-lg border border-transparent hover:border-rose-800 transition hidden">
+          このイベントを削除
+        </button>
+        <div class="flex items-center gap-2 ml-auto">
+          <button id="btnCancelEventModal" type="button"
+            class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+            キャンセル
+          </button>
+          <button id="btnSaveEventModal" type="button"
+            class="px-5 py-2 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow transition">
+            保存する
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Manage Actions Modal (Both Full Name & Short Name) -->
+  <div id="modalActions"
+    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div
+      class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            ⚙️ アクション項目編集・並べ替え
+          </h3>
+          <p class="text-[11px] text-slate-400 mt-0.5">並び順の変更や文字修正はすべて自動保存されます</p>
+        </div>
+        <button id="btnCloseActionsModal" class="text-slate-400 hover:text-white p-1 rounded-lg text-lg">✕</button>
+      </div>
+
+      <div class="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1 custom-scrollbar">
+        <p class="text-xs text-slate-400">
+          マトリクス表用の「正式名」と、チャット出力用の「短縮名（全角2文字推奨）」を管理できます。<span
+            class="text-cyan-400 font-semibold">※入力・変更内容は即座に自動保存されます。</span>
+        </p>
+
+        <!-- Add new action -->
+        <div class="flex gap-2">
+          <input type="text" id="inputNewActionFullName" placeholder="正式名 (例: ミスリル消費)"
+            class="flex-1 text-xs bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500">
+          <input type="text" id="inputNewActionShortName" placeholder="短縮名 (例: ﾐｽﾘﾙ)"
+            class="w-24 text-xs bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-white focus:outline-none focus:border-cyan-500">
+          <button id="btnAddNewAction"
+            class="px-3.5 py-2 text-xs font-bold rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white shrink-0">
+            追加
+          </button>
+        </div>
+
+        <!-- Header of list -->
+        <div class="flex items-center text-[11px] text-slate-400 px-2 pt-2">
+          <span class="w-16">並び順</span>
+          <span class="flex-1">正式名</span>
+          <span class="w-20 text-center">短縮名</span>
+          <span class="w-12 text-right">削除</span>
+        </div>
+
+        <!-- Action Items List -->
+        <div class="space-y-1.5" id="actionsListContainer">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <div class="p-4 border-t border-slate-800 bg-slate-900/80 flex flex-wrap gap-2 justify-between items-center">
+        <div class="flex items-center gap-3">
+          <button id="btnLoadPresetActions" type="button"
+            class="text-xs text-amber-300 hover:text-amber-200 hover:underline">
+            📦 定番20項目を読み込む
+          </button>
+          <button id="btnResetActionsDefault" type="button"
+            class="text-xs text-rose-400 hover:text-rose-300 hover:underline">
+            全項目クリア
+          </button>
+        </div>
+        <button id="btnCloseActionsModalBtn"
+          class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white transition">
+          閉じる
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Import / Export & Preset Management Modal -->
+  <div id="modalBackup"
+    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div
+      class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <span>📦</span> データ管理 (インポート / エクスポート)
+        </h3>
+        <button id="btnCloseBackupModal" class="text-slate-400 hover:text-white p-1 rounded-lg text-lg">✕</button>
+      </div>
+
+      <div class="p-4 sm:p-5 overflow-y-auto space-y-5 flex-1 custom-scrollbar text-xs">
+        <!-- Section A: Presets -->
+        <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+          <div class="flex items-center justify-between">
+            <h4 class="font-bold text-amber-300 flex items-center gap-1.5">
+              <span>📦</span> 初期テンプレート
+            </h4>
+            <span class="text-[10px] text-slate-400">20項目 ＆ 12イベント</span>
+          </div>
+          <p class="text-slate-400 text-[11px]">
+            ホワサバの主要な項目とイベントを一括展開します。ベースを作りたい時に便利です。
+          </p>
+          <button id="btnApplyPresetFromModal" type="button"
+            class="w-full py-2 px-3 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-bold transition flex items-center justify-center gap-1.5">
+            <span>📦 初期テンプレートを展開する (上書き)</span>
+          </button>
+        </div>
+
+        <!-- Section B: Export -->
+        <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2.5">
+          <h4 class="font-bold text-slate-200 flex items-center gap-1.5">
+            <span>📤</span> データのエクスポート (バックアップ)
+          </h4>
+          <p class="text-slate-400 text-[11px]">
+            現在編集中のすべてのイベント・アクション項目・表示設定をJSONデータとして保存します。
+          </p>
+          <div class="flex gap-2 flex-wrap">
+            <button id="btnDownloadJsonFile" type="button"
+              class="flex-1 min-w-[140px] py-2 px-3 rounded-lg bg-cyan-700 hover:bg-cyan-600 text-white font-bold transition flex items-center justify-center gap-1.5">
+              <span>📄 JSONファイルをダウンロード</span>
+            </button>
+            <button id="btnCopyJsonText" type="button"
+              class="py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 font-semibold transition">
+              <span>📋 JSONをコピー</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section C: Import (File Only with Explicit Button) -->
+        <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2.5">
+          <h4 class="font-bold text-slate-200 flex items-center gap-1.5">
+            <span>📥</span> データのインポート (復元・読み込み)
+          </h4>
+          <p class="text-slate-400 text-[11px]">
+            バックアップJSONファイルを選択し、実行ボタンを押してスケジュールを復元します。
+          </p>
+          <div class="space-y-2">
+            <input type="file" id="jsonFileInput" accept=".json"
+              class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-cyan-300 hover:file:bg-slate-700 cursor-pointer">
+
+            <!-- Selected File Info (hidden until file chosen) -->
+            <div id="selectedFileInfo"
+              class="hidden p-2.5 rounded-lg bg-slate-900 border border-slate-700/60 text-slate-300 flex items-center justify-between">
+              <span class="truncate font-mono text-[11px]" id="selectedFileName">選択中: sample.json</span>
+              <span class="text-cyan-400 shrink-0 text-[10px] font-semibold">✓ 読込準備完了</span>
+            </div>
+
+            <!-- Explicit Import Execution Button -->
+            <button id="btnExecuteFileImport" type="button" disabled
+              class="w-full py-2 px-3 rounded-lg bg-slate-800 text-slate-500 font-bold transition flex items-center justify-center gap-1.5 cursor-not-allowed">
+              <span>📥 このファイルをインポートする (上書き)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section D: Clear to blank -->
+        <div class="pt-2 border-t border-slate-800 flex items-center justify-between">
+          <span class="text-slate-500 text-[11px]">登録されているすべての項目とイベントを削除する</span>
+          <button id="btnClearAllToBlank" type="button"
+            class="text-xs text-rose-400 hover:text-rose-300 hover:underline">
+            🗑️ 全イベント&項目をクリア
+          </button>
+        </div>
+      </div>
+
+      <div class="p-3.5 border-t border-slate-800 bg-slate-900/80 flex justify-end">
+        <button id="btnCloseBackupModalBtn"
+          class="px-4 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white transition">
+          閉じる
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4: Manage Events Modal (Reorder & Edit) -->
+  <div id="modalManageEvents"
+    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div
+      class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            ⚙️ イベント管理・並べ替え
+          </h3>
+          <p class="text-[11px] text-slate-400 mt-0.5">▲▼ボタンまたはドラッグ＆ドロップで優先度・並び順を変更できます</p>
+        </div>
+        <button id="btnCloseManageEventsModal" class="text-slate-400 hover:text-white p-1 rounded-lg text-lg">✕</button>
+      </div>
+
+      <div class="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1 custom-scrollbar">
+        <div class="flex items-center justify-between">
+          <p class="text-xs text-slate-400">
+            登録済みイベントの一覧です。チェックで有効化、鉛筆アイコンでスケジュール編集が可能です。
+          </p>
+          <button id="btnCreateNewEventFromManage"
+            class="px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white flex items-center gap-1 shrink-0 transition">
+            <span>＋ 新規イベント</span>
+          </button>
+        </div>
+
+        <!-- Header of list -->
+        <div class="flex items-center text-[11px] text-slate-400 px-2 pt-1 border-b border-slate-800 pb-1.5">
+          <span class="w-16">並び順</span>
+          <span class="w-10 text-center">有効</span>
+          <span class="w-10 text-center">記号</span>
+          <span class="flex-1">イベント名 (補足)</span>
+          <span class="w-24 text-right">操作</span>
+        </div>
+
+        <!-- Events Items List -->
+        <div class="space-y-1.5" id="eventsManageListContainer">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <div class="p-4 border-t border-slate-800 bg-slate-900/80 flex justify-end items-center">
+        <button id="btnCloseManageEventsModalBtn"
+          class="px-5 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white transition">
+          閉じる
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 5: Help & README & Dangerous Actions Modal -->
+  <div id="modalHelp"
+    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div
+      class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <span>❓</span> ヘルプ ＆ 使い方ガイド
+          </h3>
+          <p class="text-[11px] text-slate-400 mt-0.5">ホワサバ スケジュールマトリクスツールの運用マニュアル</p>
+        </div>
+        <button id="btnCloseHelpModal" class="text-slate-400 hover:text-white p-1 rounded-lg text-lg">✕</button>
+      </div>
+
+      <div class="p-4 sm:p-5 overflow-y-auto space-y-6 flex-1 custom-scrollbar text-xs">
+
+        <!-- Guide 1: Overview -->
+        <div class="space-y-2">
+          <h4 class="font-bold text-cyan-400 text-sm flex items-center gap-1.5">
+            <span>📖</span> 1. 基本的な使い方
+          </h4>
+          <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-slate-300 leading-relaxed">
+            <p>
+              本ツールは「ホワイトアウト・サバイバル（ホワサバ）」の週間イベントスケジュールをマトリクス表で視覚的に整理し、ゲーム内同盟チャットにそのまま貼り付けられるテキストを出力するR5/R4向け支援ツールです。
+            </p>
+            <ol class="list-decimal list-inside space-y-1 text-slate-400 pl-1">
+              <li><strong class="text-white">イベントを選択:</strong> 画面上部のバッジをクリックして有効/無効を切り替えます。</li>
+              <li><strong class="text-white">マトリクス表を確認:</strong> 各曜日に重なるアクション項目（加速、火晶、欠片など）を一目で確認できます。</li>
+              <li><strong class="text-white">チャット用テキスト出力:</strong> 出力期間を選択、タイトルを入力し「📅
+                日付挿入」を押して「テキストをコピー」でゲーム内チャットに貼り付けます。</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Guide 2: Alliance Account Sync -->
+        <div class="space-y-2">
+          <h4 class="font-bold text-cyan-400 text-sm flex items-center gap-1.5">
+            <span>🏰</span> 2. 同盟アカウント同期（複数幹部での共同管理）
+          </h4>
+          <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-slate-300 leading-relaxed">
+            <p>
+              トップ画面のログインフォーム（または「✨ 新規アカウント作成」タブ）から、<strong class="text-cyan-300">同盟アカウントID・パスワード</strong> を設定してアカウントを作成できます。
+            </p>
+            <ul class="list-disc list-inside space-y-1 text-slate-400 pl-1">
+              <li>同盟名称の変更やサーバー移動があっても、同じ「同盟アカウントID」のまま継続利用できます。</li>
+              <li>盟主1人での管理はもちろん、他のR4幹部メンバーも同じID・パスワードでログインすることでスケジュール編集内容を共有できます。</li>
+              <li>ログイン中の変更内容は自動的に保存・同期されます（ヘッダー右上の「💾 保存」で手動保存も可能です）。</li>
+              <li>※パスワードを幹部間で共有する場合は、個人の重要なパスワードの使い回しは避けてください。</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Guide 3: Period & Formatting -->
+        <div class="space-y-2">
+          <h4 class="font-bold text-cyan-400 text-sm flex items-center gap-1.5">
+            <span>📢</span> 3. チャットテキスト出力の期間仕様
+          </h4>
+          <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5 text-slate-300 leading-relaxed">
+            <p>イベント期間に応じて出力する曜日を選択できます：</p>
+            <ul class="list-disc list-inside space-y-1 text-slate-400 pl-1">
+              <li>月曜から翌週の月曜日まで連続する任意の期間を設定可能</li>
+              <li>「📅 日付挿入」を押すと、現在の日時に応じて適切な開始日〜終了日（例: [10/26～11/1]）が自動計算されてタイトルに挿入されます。</li>
+              <li>※手動入力も可能です。</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Guide 4: Data Management & Template Guide -->
+        <div class="space-y-2">
+          <h4 class="font-bold text-amber-300 text-sm flex items-center gap-1.5">
+            <span>📦</span> 4. 初期テンプレート展開・インポート・初期化について
+          </h4>
+          <div
+            class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-slate-300 leading-relaxed text-xs">
+            <p>
+              データの展開や初期化は、誤操作防止のためすべてイベント選択バーの「<strong class="text-white">📦 入出力 / テンプレ</strong>」画面に集約されています：
+            </p>
+            <ul class="list-disc list-inside space-y-1 text-slate-400 pl-1">
+              <li><strong class="text-slate-200">初期テンプレート展開:</strong> 定番20項目および主要12イベントを一括展開してベースを作成できます。</li>
+              <li><strong class="text-slate-200">JSONエクスポート:</strong> 現在の編集内容をバックアップファイルとしてダウンロードできます。</li>
+              <li><strong class="text-slate-200">JSONインポート:</strong> バックアップファイルを選択し、実行ボタンでスケジュールを復元できます。</li>
+              <li><strong class="text-slate-200">全クリア:</strong> 全イベント・全項目を消去して初期状態に戻せます。</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="p-4 border-t border-slate-800 bg-slate-900/80 flex justify-end">
+        <button id="btnCloseHelpModalBtn"
+          class="px-5 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white transition">
+          閉じる
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast"
+    class="fixed bottom-6 right-6 z-50 transform translate-y-10 opacity-0 pointer-events-none transition-all duration-300 bg-slate-800 text-white text-xs font-semibold px-4 py-3 rounded-xl border border-cyan-500/40 shadow-2xl flex items-center gap-2">
+    <span class="text-cyan-400 text-base">✓</span>
+    <span id="toastMessage">コピーしました！</span>
+  </div>
+
+  <!-- Application Logic -->
+  <script>
+    // 8 Days Definition for Matrix Table & Modal (Mon to VIII(Mon))
+    const ALL_DAYS = [
+      { id: 'mon', label: 'I(月)', short: '月', badge: 'Day 1' },
+      { id: 'tue', label: 'II(火)', short: '火', badge: 'Day 2' },
+      { id: 'wed', label: 'III(水)', short: '水', badge: 'Day 3' },
+      { id: 'thu', label: 'IV(木)', short: '木', badge: 'Day 4' },
+      { id: 'fri', label: 'V(金)', short: '金', badge: 'Day 5' },
+      { id: 'sat', label: 'VI(土)', short: '土', badge: 'Day 6', isSat: true },
+      { id: 'sun', label: 'VII(日)', short: '日', badge: 'Day 7', isSun: true },
+      { id: 'next_mon', label: 'Ⅷ(月)', short: '月', badge: 'Day 8', isNextMon: true }
+    ];
+
+    // Blank Defaults (初期状態)
+    const DEFAULT_ACTIONS = [];
+    const DEFAULT_EVENTS = [];
+
+    // Standard Preset Definition (Fallback for local file:// & offline)
+    const STANDARD_PRESET_DATA = {
+      "version": 10,
+      "exportedAt": "2026-10-31T03:00:00.000Z",
+      "spanMode": "8days",
+      "textStartDay": "tue",
+      "textNameMode": "short",
+      "textSeparator": "｜",
+      "textTitle": "【 スケジュール 】",
+      "actions": [
+        { "id": "act_1", "name": "総力UP", "short": "総力" },
+        { "id": "act_2", "name": "英雄募集", "short": "鍵　" },
+        { "id": "act_3", "name": "領主装備", "short": "領装" },
+        { "id": "act_4", "name": "領主宝石", "short": "宝石" },
+        { "id": "act_5", "name": "英雄装備", "short": "英装" },
+        { "id": "act_1793283222386", "name": "ミスリル消費", "short": "ﾐｽﾘﾙ" },
+        { "id": "act_6", "name": "欠片使用", "short": "欠片" },
+        { "id": "act_7", "name": "ペット", "short": "ﾍﾟｯﾄ" },
+        { "id": "act_8", "name": "火晶消費", "short": "火晶" },
+        { "id": "act_9", "name": "加速消費", "short": "加速" },
+        { "id": "act_10", "name": "専門加速", "short": "専加" },
+        { "id": "act_11", "name": "専門家の印", "short": "専印" },
+        { "id": "act_1793283864194", "name": "学識の書", "short": "学識" },
+        { "id": "act_12", "name": "兵士訓練", "short": "訓練" },
+        { "id": "act_13", "name": "郊外採集", "short": "採集" },
+        { "id": "act_14", "name": "巨獣/野獣", "short": "獣狩" },
+        { "id": "act_15", "name": "ダイヤ", "short": "ﾀﾞｲﾔ" },
+        { "id": "act_16", "name": "キャラバン", "short": "行商" },
+        { "id": "act_17", "name": "ラキルレ", "short": "ルレ" },
+        { "id": "act_1793283938447", "name": "パック購入", "short": "ﾊﾟｯｸ" }
+      ],
+      "events": [
+        {
+          "id": "ev_1793283676865",
+          "name": "最強王国",
+          "symbol": "👑",
+          "note": "月〜金",
+          "color": "#38bdf8",
+          "enabled": true,
+          "schedule": {
+            "mon": ["領主宝石", "火晶消費", "加速消費", "専門加速"],
+            "tue": ["欠片使用", "火晶消費", "加速消費", "専門加速", "専門家の印", "学識の書", "郊外採集", "ラキルレ"],
+            "wed": ["領主宝石", "欠片使用", "ペット", "加速消費", "専門家の印", "学識の書", "巨獣/野獣", "ラキルレ"],
+            "thu": ["領主宝石", "英雄装備", "ミスリル消費", "兵士訓練"],
+            "fri": ["領主装備", "英雄装備", "ミスリル消費", "ペット", "火晶消費", "加速消費", "専門加速"],
+            "sat": [],
+            "sun": [],
+            "next_mon": []
+          }
+        },
+        {
+          "id": "ev_icefield_dominator",
+          "name": "氷原支配者",
+          "symbol": "💠",
+          "note": "月〜日",
+          "color": "#38bdf8",
+          "enabled": false,
+          "schedule": {
+            "mon": ["領主宝石", "火晶消費", "加速消費", "専門加速"],
+            "tue": ["英雄装備", "ミスリル消費", "欠片使用", "火晶消費", "加速消費", "専門加速", "専門家の印", "学識の書", "ラキルレ"],
+            "wed": ["領主宝石", "欠片使用", "ペット", "専門家の印", "学識の書", "ラキルレ"],
+            "thu": ["領主宝石", "英雄装備", "ミスリル消費", "兵士訓練"],
+            "fri": ["英雄装備", "ミスリル消費", "火晶消費", "加速消費", "専門加速"],
+            "sat": ["領主装備", "兵士訓練"],
+            "sun": ["領主装備", "欠片使用", "ペット", "火晶消費", "加速消費", "専門加速", "郊外採集"],
+            "next_mon": []
+          }
+        },
+        {
+          "id": "ev_strongest_lord",
+          "name": "最強領主",
+          "symbol": "🏆",
+          "note": "月〜日",
+          "color": "#38bdf8",
+          "enabled": false,
+          "schedule": {
+            "mon": ["総力UP", "兵士訓練"],
+            "tue": ["欠片使用", "郊外採集", "ラキルレ"],
+            "wed": ["兵士訓練"],
+            "thu": ["総力UP", "領主宝石", "郊外採集"],
+            "fri": ["総力UP", "英雄装備", "兵士訓練"],
+            "sat": ["領主装備"],
+            "sun": ["総力UP", "欠片使用", "加速消費", "専門加速", "兵士訓練"],
+            "next_mon": []
+          }
+        },
+        {
+          "id": "ev_arms_race_1",
+          "name": "軍備競技 1",
+          "symbol": "軍",
+          "note": "月火",
+          "color": "#fbbf24",
+          "enabled": true,
+          "schedule": {
+            "mon": ["領主装備", "欠片使用", "火晶消費", "加速消費"],
+            "tue": ["領主装備", "欠片使用", "火晶消費", "加速消費"],
+            "wed": [],
+            "thu": [],
+            "fri": [],
+            "sat": [],
+            "sun": [],
+            "next_mon": []
+          }
+        },
+        {
+          "id": "ev_officer_1",
+          "name": "士官計画 1",
+          "symbol": "士",
+          "note": "水木",
+          "color": "#34d399",
+          "enabled": true,
+          "schedule": {
+            "mon": [],
+            "tue": [],
+            "wed": ["領主宝石", "英雄装備", "ミスリル消費", "兵士訓練"],
+            "thu": ["領主宝石", "英雄装備", "ミスリル消費", "兵士訓練"],
+            "fri": [],
+            "sat": [],
+            "sun": [],
+            "next_mon": []
+          }
+        },
+        {
+          "id": "ev_arms_race_2",
+          "name": "軍備競技 2",
+          "symbol": "軍",
+          "note": "金土",
+          "color": "#fbbf24",
+          "enabled": true,
+          "schedule": {
+            "mon": [],
+            "tue": [],
+            "wed": [],
+            "thu": [],
+            "fri": ["領主装備", "英雄装備", "ミスリル消費", "火晶消費", "加速消費"],
+            "sat": ["領主装備", "英雄装備", "ミスリル消費", "火晶消費", "加速消費"],
+            "sun": [],
+            "next_mon": []
+          }
+        },
+        {
+          "id": "ev_officer_2",
+          "name": "士官計画 2",
+          "symbol": "士",
+          "note": "日月",
+          "color": "#34d399",
+          "enabled": true,
+          "schedule": {
+            "mon": [],
+            "tue": [],
+            "wed": [],
+            "thu": [],
+            "fri": [],
+            "sat": [],
+            "sun": ["領主装備", "英雄装備", "欠片使用"],
+            "next_mon": ["領主装備", "英雄装備", "欠片使用"]
+          }
+        },
+        {
+          "id": "ev_1793283848045",
+          "name": "同盟大作戦",
+          "symbol": "🚩",
+          "note": "月〜土",
+          "color": "#38bdf8",
+          "enabled": true,
+          "schedule": {
+            "mon": ["火晶消費", "加速消費", "専門家の印", "学識の書", "ダイヤ", "キャラバン", "パック購入"],
+            "tue": ["欠片使用", "火晶消費", "加速消費", "専門家の印", "学識の書", "ダイヤ", "キャラバン", "パック購入"],
+            "wed": ["領主宝石", "ペット", "ダイヤ", "キャラバン", "パック購入"],
+            "thu": ["領主宝石", "英雄装備", "ミスリル消費", "兵士訓練", "ダイヤ", "キャラバン", "パック購入"],
+            "fri": ["領主装備", "火晶消費", "加速消費", "ダイヤ", "キャラバン", "パック購入"],
+            "sat": ["領主装備", "領主宝石", "英雄装備", "ミスリル消費", "欠片使用", "ペット", "火晶消費", "加速消費", "専門家の印", "ダイヤ", "キャラバン", "パック購入"],
+            "sun": [],
+            "next_mon": []
+          }
+        },
+        {
+          "id": "ev_spirit_master",
+          "name": "万霊の主",
+          "symbol": "🎃",
+          "note": "火〜月",
+          "color": "#38bdf8",
+          "enabled": true,
+          "schedule": {
+            "mon": [],
+            "tue": ["総力UP", "英雄募集", "欠片使用"],
+            "wed": ["巨獣/野獣"],
+            "thu": ["英雄募集", "加速消費", "専門加速"],
+            "fri": ["兵士訓練"],
+            "sat": ["英雄装備", "ダイヤ"],
+            "sun": ["総力UP", "郊外採集"],
+            "next_mon": ["領主装備", "加速消費", "専門加速"]
+          }
+        },
+        {
+          "id": "ev_childhood_feast",
+          "name": "童心の宴",
+          "symbol": "🌸",
+          "note": "月〜日",
+          "color": "#38bdf8",
+          "enabled": false,
+          "schedule": {
+            "mon": ["総力UP", "英雄募集", "欠片使用", "兵士訓練"],
+            "tue": ["巨獣/野獣"],
+            "wed": ["英雄募集", "欠片使用", "加速消費", "専門加速"],
+            "thu": ["兵士訓練"],
+            "fri": ["英雄装備", "ダイヤ"],
+            "sat": ["総力UP", "兵士訓練", "郊外採集"],
+            "sun": ["領主装備", "加速消費", "専門加速"],
+            "next_mon": []
+          }
+        },
+        {
+          "id": "ev_snowfield_games",
+          "name": "雪原競技会",
+          "symbol": "🐹",
+          "note": "月〜日",
+          "color": "#38bdf8",
+          "enabled": false,
+          "schedule": {
+            "mon": ["総力UP", "英雄募集", "欠片使用", "兵士訓練"],
+            "tue": ["巨獣/野獣"],
+            "wed": ["英雄募集", "欠片使用", "加速消費", "専門加速"],
+            "thu": ["兵士訓練"],
+            "fri": ["英雄装備", "ダイヤ"],
+            "sat": ["総力UP", "兵士訓練", "郊外採集"],
+            "sun": ["領主装備", "加速消費", "専門加速"],
+            "next_mon": []
+          }
+        },
+        {
+          "id": "ev_christmas",
+          "name": "クリスマス",
+          "symbol": "🎁",
+          "note": "火〜月",
+          "color": "#38bdf8",
+          "enabled": false,
+          "schedule": {
+            "mon": [],
+            "tue": ["総力UP", "英雄募集", "欠片使用"],
+            "wed": ["巨獣/野獣"],
+            "thu": ["英雄募集", "欠片使用", "加速消費", "専門加速"],
+            "fri": ["兵士訓練"],
+            "sat": ["英雄装備", "ダイヤ"],
+            "sun": ["総力UP", "郊外採集"],
+            "next_mon": ["領主装備", "加速消費", "専門加速"]
+          }
+        }
+      ]
+    };
+
+    // State
+    let actions = [];
+    let events = [];
+    let editingEventId = null;
+    let spanMode = '8days'; // fixed 8 days
+    let hideEmptyRows = false;
+
+    // Text output state (Checkbox Days & Layout Options)
+    let textSelectedDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+    let textOutputPeriod = 'mon_sun'; // legacy fallback
+    let textOverlapMode = 'merge'; // 'merge' (記号統合 🔴) or 'stack' (縦並び複数行)
+    let textNameMode = 'short'; // 'short' (短縮名) or 'full' (正式名)
+    let textSeparator = '｜'; // '｜' or '|'
+    let textTitle = '【 スケジュール 】';
+    let textEmptyChar = 'ー'; // 'ー' or '　'
+    let previewWidthMode = 'mobile'; // 'mobile' (16.6em) or 'wide' (100%)
+    let showWhitespaceMarks = true; // 改行・空白記号の可視化
+
+    // Auto-assigned overlap symbols (excluding ★ which is unsupported in WOS)
+    const OVERLAP_SYMBOL_POOL = ['🔴', '🔵', '🟢', '🟡', '🟣', '🟠', '🟤', '⚪', '◎', '◆'];
+
+    let draggedIndex = null;
+    let draggedActionIdx = null;
+    let draggedManageEventIdx = null;
+    let returnToManageEventsModal = false;
+    let rangeTapStartIdx = null;
+    let rangeDragOriginIdx = null;
+    let rangeDragMoved = false;
+
+    // Alliance Account & Cloud Sync State
+    // Firebase (Cloud Firestore) 接続設定
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyAIdCo_beCW87AU-ry-ae5cBnygj8pvF40",
+      authDomain: "howasaba-schedule.firebaseapp.com",
+      projectId: "howasaba-schedule",
+      storageBucket: "howasaba-schedule.firebasestorage.app",
+      messagingSenderId: "460119498921",
+      appId: "1:460119498921:web:e3b05a82aa6fd8e36dc9b8"
+    };
+
+    // ※Supabaseを使用する場合の予備設定
+    const DEFAULT_SUPABASE_URL = '';
+    const DEFAULT_SUPABASE_ANON_KEY = '';
+
+    let currentAlliance = null; // { accountId, passwordHash, rememberLogin }
+    let firestoreDb = null;
+    let supabaseClient = null;
+    let supabaseConfig = { url: DEFAULT_SUPABASE_URL, anonKey: DEFAULT_SUPABASE_ANON_KEY };
+
+    // Initialize Cloud DB (Firebase Firestore or Supabase)
+    function initCloudDb() {
+      // 1. Firebase Firestore
+      if (window.firebase && FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId) {
+        try {
+          if (!firebase.apps.length) {
+            firebase.initializeApp(FIREBASE_CONFIG);
+          }
+          firestoreDb = firebase.firestore();
+        } catch (e) {
+          console.error('Failed to initialize Firebase Firestore:', e);
+          firestoreDb = null;
+        }
+      } else {
+        firestoreDb = null;
+      }
+
+      // 2. Supabase (Fallback if configured)
+      supabaseConfig = { url: DEFAULT_SUPABASE_URL, anonKey: DEFAULT_SUPABASE_ANON_KEY };
+      if (!firestoreDb && window.supabase && supabaseConfig.url && supabaseConfig.anonKey) {
+        try {
+          supabaseClient = window.supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey);
+        } catch (e) {
+          console.error('Failed to create Supabase client:', e);
+          supabaseClient = null;
+        }
+      } else {
+        supabaseClient = null;
+      }
+    }
+
+    // Password Hash Helper (SHA-256)
+    async function hashPassword(plainText) {
+      if (!window.crypto || !window.crypto.subtle) {
+        let h = 0;
+        for (let i = 0; i < plainText.length; i++) {
+          h = (Math.imul(31, h) + plainText.charCodeAt(i)) | 0;
+        }
+        return 'hash_' + Math.abs(h);
+      }
+      const enc = new TextEncoder();
+      const data = enc.encode(plainText);
+      const buf = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    // Mock DB in LocalStorage
+    function getMockDb() {
+      try {
+        const raw = localStorage.getItem('wos_mock_alliances_db');
+        return raw ? JSON.parse(raw) : {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveMockDb(db) {
+      localStorage.setItem('wos_mock_alliances_db', JSON.stringify(db));
+    }
+
+    // Save or clear remembered login credentials
+    function persistLoginSessionAndCredentials(accountId, plainPassword, pwHash, rememberLogin) {
+      currentAlliance = { accountId, passwordHash: pwHash, rememberLogin: !!rememberLogin };
+      if (rememberLogin) {
+        localStorage.setItem('wos_current_alliance', JSON.stringify(currentAlliance));
+        sessionStorage.removeItem('wos_current_alliance_session');
+        localStorage.setItem('wos_saved_credentials', JSON.stringify({
+          accountId: accountId,
+          password: plainPassword,
+          remember: true
+        }));
+      } else {
+        sessionStorage.setItem('wos_current_alliance_session', JSON.stringify(currentAlliance));
+        localStorage.removeItem('wos_current_alliance');
+        localStorage.removeItem('wos_saved_credentials');
+      }
+    }
+
+    // Populate saved credentials into login form
+    function restoreSavedLoginInputs() {
+      try {
+        const raw = localStorage.getItem('wos_saved_credentials');
+        const idInput = document.getElementById('authLoginAccountId');
+        const pwInput = document.getElementById('authLoginPassword');
+        const cbRemember = document.getElementById('checkRememberLogin');
+        if (raw) {
+          const saved = JSON.parse(raw);
+          if (idInput && saved.accountId) idInput.value = saved.accountId;
+          if (pwInput && saved.password) pwInput.value = saved.password;
+          if (cbRemember) cbRemember.checked = saved.remember !== false;
+        } else {
+          if (idInput) idInput.value = '';
+          if (pwInput) pwInput.value = '';
+        }
+      } catch (e) {
+        console.warn('Failed to restore saved login inputs:', e);
+      }
+    }
+
+    // Generate current schedule payload
+    function getCurrentSchedulePayload() {
+      return {
+        actions: actions,
+        events: events,
+        spanMode: spanMode,
+        textSelectedDays: textSelectedDays,
+        textOutputPeriod: textOutputPeriod,
+        textStartDay: (textOutputPeriod === 'tue_mon' ? 'tue' : 'mon'),
+        textOverlapMode: textOverlapMode,
+        textNameMode: textNameMode,
+        textSeparator: textSeparator,
+        textTitle: textTitle,
+        textEmptyChar: textEmptyChar,
+        savedAt: new Date().toISOString()
+      };
+    }
+
+    // Apply schedule payload
+    function applySchedulePayload(payload, skipCloudSync = true) {
+      if (!payload) return;
+      if (payload.actions && Array.isArray(payload.actions)) actions = normalizeActions(payload.actions);
+      if (payload.events && Array.isArray(payload.events)) events = payload.events;
+      if (payload.spanMode) spanMode = payload.spanMode;
+      if (payload.textSelectedDays && Array.isArray(payload.textSelectedDays)) {
+        textSelectedDays = payload.textSelectedDays;
+      } else if (payload.textOutputPeriod === 'mon_sat') {
+        textSelectedDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+      } else if (payload.textOutputPeriod === 'tue_mon' || payload.textStartDay === 'tue') {
+        textSelectedDays = ['tue', 'wed', 'thu', 'fri', 'sat', 'sun', 'next_mon'];
+      } else {
+        textSelectedDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+      }
+      if (payload.textOutputPeriod) textOutputPeriod = payload.textOutputPeriod;
+      if (payload.textOverlapMode) textOverlapMode = payload.textOverlapMode;
+      if (payload.textNameMode) textNameMode = payload.textNameMode;
+      if (payload.textSeparator) textSeparator = payload.textSeparator;
+      if (payload.textEmptyChar) textEmptyChar = payload.textEmptyChar;
+      if (payload.textTitle) {
+        textTitle = payload.textTitle;
+        document.getElementById('textTitleInput').value = textTitle;
+      }
+
+      saveToLocalStorage(skipCloudSync);
+      updateSpanButtons();
+      updateTextTogglesUI();
+      renderTextDaysCheckboxes();
+      renderEventCheckboxes();
+      renderMatrix();
+      renderMonospaceText();
+    }
+
+    // Pull latest schedule from Cloud DB on startup if session is active
+    async function syncFromCloudOnStartup() {
+      if (!currentAlliance || !firestoreDb) return;
+      const statusEl = document.getElementById('statusBarSyncStatus');
+      if (statusEl) statusEl.textContent = '⏳ 同期確認中...';
+      try {
+        const docId = encodeURIComponent(currentAlliance.accountId);
+        const snap = await firestoreDb.collection('alliances').doc(docId).get();
+        if (snap.exists) {
+          const data = snap.data();
+          if (data.password_hash === currentAlliance.passwordHash && data.schedule_data) {
+            applySchedulePayload(data.schedule_data, true);
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            if (statusEl) statusEl.textContent = `✓同期(${timeStr})`;
+          }
+        }
+      } catch (e) {
+        console.warn('Startup cloud sync failed:', e);
+        if (statusEl) statusEl.textContent = '⚠️ オフライン';
+      }
+    }
+
+    // Cloud / DB Save for current alliance
+    async function saveCurrentAllianceData(isSilent = false) {
+      if (!currentAlliance) return;
+
+      const payload = getCurrentSchedulePayload();
+      const statusEl = document.getElementById('statusBarSyncStatus');
+      if (statusEl) statusEl.textContent = '⏳ 同期中...';
+
+      const accountId = currentAlliance.accountId;
+      const docId = encodeURIComponent(accountId);
+
+      try {
+        if (firestoreDb) {
+          await firestoreDb.collection('alliances').doc(docId).update({
+            password_hash: currentAlliance.passwordHash,
+            schedule_data: payload,
+            updated_at: new Date().toISOString()
+          });
+        } else if (supabaseClient) {
+          const { error } = await supabaseClient
+            .from('alliances')
+            .update({
+              schedule_data: payload,
+              updated_at: new Date().toISOString()
+            })
+            .eq('server_id', accountId)
+            .eq('password_hash', currentAlliance.passwordHash);
+
+          if (error) throw error;
+        } else {
+          // Mock DB
+          const db = getMockDb();
+          if (db[accountId]) {
+            db[accountId].scheduleData = payload;
+            db[accountId].updatedAt = new Date().toISOString();
+            saveMockDb(db);
+          }
+        }
+
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        if (statusEl) statusEl.textContent = `✓同期(${timeStr})`;
+        if (!isSilent) showToast(`アカウント [${accountId}] のデータを保存しました`);
+      } catch (err) {
+        console.error('Save failed:', err);
+        if (statusEl) statusEl.textContent = '⚠️ 同期失敗';
+        if (!isSilent) showToast('保存に失敗しました: ' + (err.message || ''));
+      }
+    }
+
+    // Register Alliance Account
+    async function registerAlliance(accountId, password, usePresetData, rememberLogin = true) {
+      const docId = encodeURIComponent(accountId);
+      const pwHash = await hashPassword(password);
+      const initialSchedule = usePresetData ? {
+        actions: JSON.parse(JSON.stringify(STANDARD_PRESET_DATA.actions)),
+        events: JSON.parse(JSON.stringify(STANDARD_PRESET_DATA.events)),
+        spanMode: '8days',
+        textSelectedDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+        textOutputPeriod: 'mon_sun',
+        textStartDay: 'mon',
+        textOverlapMode: 'merge',
+        textNameMode: 'short',
+        textSeparator: '｜',
+        textTitle: '【 スケジュール 】',
+        textEmptyChar: 'ー',
+        savedAt: new Date().toISOString()
+      } : {
+        actions: [],
+        events: [],
+        spanMode: '8days',
+        textSelectedDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+        textOutputPeriod: 'mon_sun',
+        textStartDay: 'mon',
+        textOverlapMode: 'merge',
+        textNameMode: 'short',
+        textSeparator: '｜',
+        textTitle: '【 スケジュール 】',
+        textEmptyChar: 'ー',
+        savedAt: new Date().toISOString()
+      };
+
+      if (firestoreDb) {
+        // Check duplicate in Firestore
+        const docRef = firestoreDb.collection('alliances').doc(docId);
+        const snap = await docRef.get();
+        if (snap.exists) {
+          throw new Error(`同盟アカウントID「${accountId}」は既に登録されています。別のIDを指定するか、ログイン画面からログインしてください。`);
+        }
+
+        await docRef.set({
+          account_id: accountId,
+          password_hash: pwHash,
+          schedule_data: initialSchedule,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+      } else if (supabaseClient) {
+        // Check duplicate in Supabase
+        const { data: existing } = await supabaseClient
+          .from('alliances')
+          .select('id')
+          .eq('server_id', accountId)
+          .maybeSingle();
+
+        if (existing) {
+          throw new Error(`同盟アカウントID「${accountId}」は既に登録されています。別のIDを指定するか、ログイン画面からログインしてください。`);
+        }
+
+        const { error: insertErr } = await supabaseClient
+          .from('alliances')
+          .insert({
+            server_id: accountId,
+            alliance_name: accountId,
+            password_hash: pwHash,
+            schedule_data: initialSchedule,
+            updated_at: new Date().toISOString()
+          });
+
+        if (insertErr) throw insertErr;
+      } else {
+        // Mock DB
+        const db = getMockDb();
+        if (db[accountId]) {
+          throw new Error(`同盟アカウントID「${accountId}」は既に登録されています。別のIDを指定するか、ログイン画面からログインしてください。`);
+        }
+        db[accountId] = {
+          accountId: accountId,
+          passwordHash: pwHash,
+          scheduleData: initialSchedule,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        saveMockDb(db);
+      }
+
+      // Set session & apply
+      persistLoginSessionAndCredentials(accountId, password, pwHash, rememberLogin);
+      applySchedulePayload(initialSchedule);
+      updateAllianceUI();
+    }
+
+    // Login Alliance Account
+    async function loginAlliance(accountId, password, rememberLogin = true) {
+      const docId = encodeURIComponent(accountId);
+      const pwHash = await hashPassword(password);
+
+      let record = null;
+      if (firestoreDb) {
+        const docRef = firestoreDb.collection('alliances').doc(docId);
+        const snap = await docRef.get();
+        if (!snap.exists) {
+          throw new Error(`同盟アカウントID「${accountId}」が見つかりません。`);
+        }
+        const data = snap.data();
+        if (data.password_hash !== pwHash) {
+          throw new Error('パスワードが正しくありません。');
+        }
+        record = {
+          account_id: data.account_id || accountId,
+          schedule_data: data.schedule_data
+        };
+      } else if (supabaseClient) {
+        // Step 1: Check existence
+        const { data: existsData, error: existsErr } = await supabaseClient
+          .from('alliances')
+          .select('id')
+          .eq('server_id', accountId)
+          .maybeSingle();
+
+        if (existsErr) throw existsErr;
+        if (!existsData) {
+          throw new Error(`同盟アカウントID「${accountId}」が見つかりません。`);
+        }
+
+        // Step 2: Verify password_hash server-side
+        const { data, error } = await supabaseClient
+          .from('alliances')
+          .select('server_id, schedule_data')
+          .eq('server_id', accountId)
+          .eq('password_hash', pwHash)
+          .maybeSingle();
+
+        if (error) throw error;
+        if (!data) {
+          throw new Error('パスワードが正しくありません。');
+        }
+        record = data;
+      } else {
+        const db = getMockDb();
+        if (!db[accountId]) {
+          throw new Error(`同盟アカウントID「${accountId}」が見つかりません。`);
+        }
+        if (db[accountId].passwordHash !== pwHash) {
+          throw new Error('パスワードが正しくありません。');
+        }
+        record = {
+          account_id: accountId,
+          schedule_data: db[accountId].scheduleData
+        };
+      }
+
+      persistLoginSessionAndCredentials(accountId, password, pwHash, rememberLogin);
+      applySchedulePayload(record.schedule_data);
+      updateAllianceUI();
+    }
+
+    // Logout Alliance
+    function logoutAlliance() {
+      currentAlliance = null;
+      localStorage.removeItem('wos_current_alliance');
+      sessionStorage.removeItem('wos_current_alliance_session');
+      restoreSavedLoginInputs();
+      updateAllianceUI();
+      showToast('ログアウトしました');
+    }
+
+    // Update Top Login Screen, Main Screen & Status Bar based on Alliance Session
+    function updateAllianceUI() {
+      const loginScreen = document.getElementById('loginLandingScreen');
+      const mainScreen = document.getElementById('mainAppScreen');
+      const statusBar = document.getElementById('allianceStatusBar');
+      const statusTitle = document.getElementById('statusBarAllianceTitle');
+      const statusSync = document.getElementById('statusBarSyncStatus');
+
+      if (currentAlliance) {
+        if (loginScreen) loginScreen.classList.add('hidden');
+        if (mainScreen) mainScreen.classList.remove('hidden');
+        if (statusBar) statusBar.classList.remove('hidden');
+        if (statusTitle) statusTitle.textContent = `🏰 ${currentAlliance.accountId}`;
+        if (statusSync) statusSync.textContent = '✓同期済';
+      } else {
+        if (loginScreen) loginScreen.classList.remove('hidden');
+        if (mainScreen) mainScreen.classList.add('hidden');
+        if (statusBar) statusBar.classList.add('hidden');
+      }
+    }
+
+    function openAllianceAuthModal(defaultTab = 'login') {
+      switchAuthTab(defaultTab);
+    }
+
+    function closeAllianceAuthModal() {
+      // No-op: Auth is now a top-level landing screen
+    }
+
+    function switchAuthTab(tab) {
+      const tabLogin = document.getElementById('tabBtnAuthLogin');
+      const tabReg = document.getElementById('tabBtnAuthRegister');
+      const pLogin = document.getElementById('authPanelLogin');
+      const pReg = document.getElementById('authPanelRegister');
+
+      const activeClass = 'flex-1 py-3 px-3 text-center font-bold text-cyan-400 border-b-2 border-cyan-400 bg-slate-900/50 transition';
+      const inactiveClass = 'flex-1 py-3 px-3 text-center text-slate-400 hover:text-slate-200 transition';
+
+      tabLogin.className = (tab === 'login') ? activeClass : inactiveClass;
+      tabReg.className = (tab === 'register') ? activeClass : inactiveClass;
+
+      pLogin.classList.toggle('hidden', tab !== 'login');
+      pReg.classList.toggle('hidden', tab !== 'register');
+    }
+
+    // Day offset map from Monday (mon = 0, ..., next_mon = 7)
+    const DAY_OFFSETS = {
+      mon: 0,
+      tue: 1,
+      wed: 2,
+      thu: 3,
+      fri: 4,
+      sat: 5,
+      sun: 6,
+      next_mon: 7
+    };
+
+    // Helper: Calculate date range string [M/D～M/D] based on system date and selected checkbox days
+    function getDateRangeString() {
+      const now = new Date();
+      const day = now.getDay(); // 0: Sun, 1: Mon, 2: Tue, ..., 6: Sat
+      // Calculate target Monday (e.g. current week Monday)
+      const daysUntilMon = (1 - day + 7) % 7;
+      const targetMon = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilMon);
+
+      const days = getTextDays();
+      if (days.length === 0) return '';
+
+      const offsets = days.map(d => DAY_OFFSETS[d.id] ?? 0);
+      const minOffset = Math.min(...offsets);
+      const maxOffset = Math.max(...offsets);
+
+      const startDate = new Date(targetMon.getFullYear(), targetMon.getMonth(), targetMon.getDate() + minOffset);
+      const endDate = new Date(targetMon.getFullYear(), targetMon.getMonth(), targetMon.getDate() + maxOffset);
+
+      const startStr = `${startDate.getMonth() + 1}/${startDate.getDate()}`;
+      const endStr = `${endDate.getMonth() + 1}/${endDate.getDate()}`;
+      return `[${startStr}～${endStr}]`;
+    }
+
+    function insertDateToTitle() {
+      const input = document.getElementById('textTitleInput');
+      const dateStr = getDateRangeString();
+      if (!dateStr) {
+        showToast('出力する曜日が選択されていません');
+        return;
+      }
+      const currentVal = input.value;
+      const datePattern = /\[\d{1,2}\/\d{1,2}[～~]\d{1,2}\/\d{1,2}\]/;
+
+      if (datePattern.test(currentVal)) {
+        input.value = currentVal.replace(datePattern, dateStr);
+      } else {
+        if (!currentVal.trim()) {
+          input.value = dateStr;
+        } else {
+          input.value = currentVal + (currentVal.endsWith(' ') ? '' : ' ') + dateStr;
+        }
+      }
+
+      textTitle = input.value;
+      saveToLocalStorage();
+      renderMonospaceText();
+      showToast(`タイトルに日付「${dateStr}」を反映しました`);
+    }
+
+    // Helper: Get contiguous [startIdx, endIdx] from textSelectedDays
+    function getSelectedDayRangeIndices() {
+      const indices = [];
+      if (Array.isArray(textSelectedDays)) {
+        ALL_DAYS.forEach((d, idx) => {
+          if (textSelectedDays.includes(d.id)) indices.push(idx);
+        });
+      }
+      if (indices.length === 0) {
+        return [0, 6]; // Default Mon-Sun
+      }
+      const startIdx = Math.min(...indices);
+      const endIdx = Math.max(...indices);
+      return [startIdx, endIdx];
+    }
+
+    function setSelectedDayRange(startIdx, endIdx, shouldSaveAndRender = true) {
+      const s = Math.max(0, Math.min(startIdx, endIdx));
+      const e = Math.min(ALL_DAYS.length - 1, Math.max(startIdx, endIdx));
+      textSelectedDays = ALL_DAYS.slice(s, e + 1).map(d => d.id);
+      if (shouldSaveAndRender) {
+        saveToLocalStorage();
+        renderTextDaysCheckboxes();
+        renderMonospaceText();
+      }
+    }
+
+    // Sequence for Text Output based on contiguous day range
+    function getTextDays() {
+      const [startIdx, endIdx] = getSelectedDayRangeIndices();
+      return ALL_DAYS.slice(startIdx, endIdx + 1);
+    }
+
+    // Render Contiguous Days Range Track & Controls
+    function renderTextDaysCheckboxes() {
+      const container = document.getElementById('textDaysCheckboxGroup');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const [startIdx, endIdx] = getSelectedDayRangeIndices();
+      // Ensure textSelectedDays is strictly contiguous
+      textSelectedDays = ALL_DAYS.slice(startIdx, endIdx + 1).map(d => d.id);
+
+      // Update Start & End Select Dropdowns
+      const selectStart = document.getElementById('selectStartDay');
+      const selectEnd = document.getElementById('selectEndDay');
+      const countBadge = document.getElementById('selectedDaysCountBadge');
+      const hintEl = document.getElementById('rangeTapHint');
+
+      if (selectStart && selectEnd) {
+        selectStart.innerHTML = ALL_DAYS.map((d, i) => `<option value="${i}" class="bg-slate-900 text-slate-200">${d.label}</option>`).join('');
+        selectEnd.innerHTML = ALL_DAYS.map((d, i) => `<option value="${i}" class="bg-slate-900 text-slate-200">${d.label}</option>`).join('');
+        selectStart.value = String(startIdx);
+        selectEnd.value = String(endIdx);
+      }
+
+      if (countBadge) {
+        countBadge.textContent = `${endIdx - startIdx + 1}日間`;
+      }
+
+      if (hintEl) {
+        if (rangeTapStartIdx !== null) {
+          hintEl.className = 'text-[10px] text-amber-300 font-bold animate-pulse';
+          hintEl.textContent = `📍 開始日「${ALL_DAYS[rangeTapStartIdx].label}」を選択中 — 終了日をタップしてください`;
+        } else {
+          hintEl.className = 'text-[10px] text-slate-400';
+          hintEl.textContent = '（バーをドラッグ、または開始日→終了日の順にタップ）';
+        }
+      }
+
+      // Update Preset Buttons Active State
+      const presetActiveClass = 'px-2.5 py-1 sm:py-0.5 rounded-md text-[11px] sm:text-[10px] font-bold bg-cyan-900/90 text-cyan-200 border border-cyan-500/80 shadow-sm transition';
+      const presetInactiveClass = 'px-2.5 py-1 sm:py-0.5 rounded-md text-[11px] sm:text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition';
+
+      const btnMonSun = document.getElementById('btnQuickSelectMonSun');
+      const btnTueMon = document.getElementById('btnQuickSelectTueMon');
+      const btnMonFri = document.getElementById('btnQuickSelectMonFri');
+
+      if (btnMonSun) btnMonSun.className = (startIdx === 0 && endIdx === 6) ? presetActiveClass : presetInactiveClass;
+      if (btnTueMon) btnTueMon.className = (startIdx === 1 && endIdx === 7) ? presetActiveClass : presetInactiveClass;
+      if (btnMonFri) btnMonFri.className = (startIdx === 0 && endIdx === 4) ? presetActiveClass : presetInactiveClass;
+
+      // Render 8-Day Connected Range Bar
+      ALL_DAYS.forEach((day, idx) => {
+        const inRange = idx >= startIdx && idx <= endIdx;
+        const isStart = idx === startIdx;
+        const isEnd = idx === endIdx;
+        const isPendingTapStart = rangeTapStartIdx === idx;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+
+        let cellClass = 'relative flex flex-col items-center justify-center py-1.5 sm:py-2 px-0.5 text-[11px] sm:text-xs transition select-none cursor-pointer ';
+        if (isPendingTapStart) {
+          cellClass += 'bg-amber-500/30 border-2 border-amber-400 text-amber-200 font-bold rounded-lg z-10 shadow-md';
+        } else if (inRange) {
+          cellClass += 'bg-cyan-600/30 border-y border-cyan-400/80 text-white font-bold ';
+          if (isStart && isEnd) {
+            cellClass += 'rounded-lg border-x bg-cyan-600/45 shadow-sm';
+          } else if (isStart) {
+            cellClass += 'rounded-l-lg border-l bg-cyan-600/45';
+          } else if (isEnd) {
+            cellClass += 'rounded-r-lg border-r bg-cyan-600/45';
+          } else {
+            cellClass += 'border-r border-r-cyan-500/20';
+          }
+        } else {
+          cellClass += 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/60 rounded-lg';
+        }
+
+        let roleBadge = '';
+        if (isPendingTapStart) {
+          roleBadge = '<span class="text-[9px] leading-none text-amber-300 mt-0.5">開始日</span>';
+        } else if (inRange) {
+          if (isStart && isEnd) {
+            roleBadge = '<span class="text-[9px] leading-none text-cyan-200 mt-0.5">1日のみ</span>';
+          } else if (isStart) {
+            roleBadge = '<span class="text-[9px] leading-none text-cyan-200 mt-0.5">開始 ▶</span>';
+          } else if (isEnd) {
+            roleBadge = '<span class="text-[9px] leading-none text-cyan-200 mt-0.5">◀ 終了</span>';
+          } else {
+            roleBadge = '<span class="text-[9px] leading-none text-cyan-400/80 mt-0.5">━━</span>';
+          }
+        } else {
+          roleBadge = '<span class="text-[9px] leading-none text-transparent mt-0.5">・</span>';
+        }
+
+        btn.className = cellClass;
+        btn.innerHTML = `
+          <span class="whitespace-nowrap">${day.label}</span>
+          ${roleBadge}
+        `;
+
+        // Drag selection (PC mouse)
+        btn.addEventListener('mousedown', () => {
+          rangeDragOriginIdx = idx;
+          rangeDragMoved = false;
+        });
+
+        btn.addEventListener('mouseenter', () => {
+          if (rangeDragOriginIdx !== null && rangeDragOriginIdx !== idx) {
+            rangeDragMoved = true;
+            rangeTapStartIdx = null;
+            setSelectedDayRange(rangeDragOriginIdx, idx, true);
+          }
+        });
+
+        // Click / 2-Tap selection (Mobile & PC)
+        btn.addEventListener('click', () => {
+          if (rangeDragMoved) {
+            rangeDragMoved = false;
+            rangeDragOriginIdx = null;
+            return;
+          }
+          rangeDragOriginIdx = null;
+          if (rangeTapStartIdx === null) {
+            rangeTapStartIdx = idx;
+            renderTextDaysCheckboxes();
+          } else {
+            const firstIdx = rangeTapStartIdx;
+            rangeTapStartIdx = null;
+            setSelectedDayRange(firstIdx, idx, true);
+          }
+        });
+
+        container.appendChild(btn);
+      });
+    }
+
+    function getActiveDaysForTable() {
+      return ALL_DAYS; // 8 days fixed
+    }
+
+    // Helper: Normalize actions array
+    function normalizeActions(loaded) {
+      if (!Array.isArray(loaded)) return [];
+      return loaded.map((item, idx) => {
+        if (typeof item === 'string') {
+          return {
+            id: 'act_' + idx,
+            name: item,
+            short: item.slice(0, 2)
+          };
+        }
+        return item;
+      });
+    }
+
+    // ==========================================
+    // Backup & Preset Management Functions
+    // ==========================================
+    let selectedImportFile = null;
+
+    function openBackupModal() {
+      const fileInput = document.getElementById('jsonFileInput');
+      const fileInfo = document.getElementById('selectedFileInfo');
+      const executeBtn = document.getElementById('btnExecuteFileImport');
+      if (fileInput) fileInput.value = '';
+      if (fileInfo) fileInfo.classList.add('hidden');
+      if (executeBtn) {
+        executeBtn.disabled = true;
+        executeBtn.className = 'w-full py-2 px-3 rounded-lg bg-slate-800 text-slate-500 font-bold transition flex items-center justify-center gap-1.5 cursor-not-allowed';
+      }
+      selectedImportFile = null;
+      document.getElementById('modalBackup').classList.remove('hidden');
+    }
+
+    function closeBackupModal() {
+      document.getElementById('modalBackup').classList.add('hidden');
+    }
+
+    async function applyStandardPreset() {
+      if (actions.length > 0 || events.length > 0) {
+        if (!confirm('現在の編集内容を上書きして、初期テンプレート（定番20項目・主要イベント）を展開しますか？')) {
+          return;
+        }
+      }
+      try {
+        // Try fetching external JSON first
+        const res = await fetch('howasaba_schedule_preset.json');
+        if (!res.ok) throw new Error('Fetch failed');
+        const data = await res.json();
+        applySchedulePayload(data);
+        showToast('📦 初期テンプレートを展開しました！');
+      } catch (err) {
+        // Fallback to built-in standard preset data (for local file:// or offline)
+        try {
+          applySchedulePayload(STANDARD_PRESET_DATA);
+          showToast('📦 初期テンプレートを展開しました！');
+        } catch (e2) {
+          console.error('Template loading error:', e2);
+          showToast('初期テンプレートの展開に失敗しました。');
+        }
+      }
+    }
+
+    function resetAllToBlank() {
+      if (!confirm('すべてのイベントとアクション項目を消去して、何も登録されていない初期状態に戻しますか？')) {
+        return;
+      }
+      actions = [];
+      events = [];
+      spanMode = '8days';
+      textSelectedDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+      textOutputPeriod = 'mon_sun';
+      textOverlapMode = 'merge';
+      textNameMode = 'short';
+      textSeparator = '｜';
+      textEmptyChar = 'ー';
+      textTitle = '【 スケジュール 】';
+      document.getElementById('textTitleInput').value = textTitle;
+      saveToLocalStorage();
+      updateSpanButtons();
+      updateTextTogglesUI();
+      renderTextDaysCheckboxes();
+      renderEventCheckboxes();
+      renderMatrix();
+      renderMonospaceText();
+      showToast('🗑️ 初期状態にクリアしました');
+    }
+
+    function getExportDataObject() {
+      return {
+        version: 10,
+        exportedAt: new Date().toISOString(),
+        spanMode: spanMode,
+        textSelectedDays: textSelectedDays,
+        textOutputPeriod: textOutputPeriod,
+        textStartDay: (textOutputPeriod === 'tue_mon' ? 'tue' : 'mon'),
+        textOverlapMode: textOverlapMode,
+        textNameMode: textNameMode,
+        textSeparator: textSeparator,
+        textTitle: textTitle,
+        textEmptyChar: textEmptyChar,
+        actions: actions,
+        events: events
+      };
+    }
+
+    function exportJsonText() {
+      const obj = getExportDataObject();
+      const area = document.getElementById('jsonArea');
+      if (area) area.value = JSON.stringify(obj, null, 2);
+    }
+
+    function downloadJsonFile() {
+      const obj = getExportDataObject();
+      const jsonStr = JSON.stringify(obj, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const datePart = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `howasaba_schedule_${datePart}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('JSONファイルをダウンロードしました！');
+    }
+
+    function copyExportJson() {
+      const obj = getExportDataObject();
+      copyToClipboard(JSON.stringify(obj, null, 2), 'JSONテキストをコピーしました！');
+    }
+
+    function importFromJsonString(text) {
+      if (!text || !text.trim()) {
+        showToast('JSONテキストを入力してください');
+        return;
+      }
+      try {
+        const obj = JSON.parse(text.trim());
+        if (obj.actions && Array.isArray(obj.actions)) actions = normalizeActions(obj.actions);
+        if (obj.events && Array.isArray(obj.events)) events = obj.events;
+        if (obj.spanMode) spanMode = obj.spanMode;
+        if (obj.textSelectedDays && Array.isArray(obj.textSelectedDays)) {
+          textSelectedDays = obj.textSelectedDays;
+        } else if (obj.textOutputPeriod === 'mon_sat') {
+          textSelectedDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+        } else if (obj.textOutputPeriod === 'tue_mon' || obj.textStartDay === 'tue') {
+          textSelectedDays = ['tue', 'wed', 'thu', 'fri', 'sat', 'sun', 'next_mon'];
+        } else {
+          textSelectedDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+        }
+        if (obj.textOutputPeriod) textOutputPeriod = obj.textOutputPeriod;
+        if (obj.textOverlapMode) textOverlapMode = obj.textOverlapMode;
+        if (obj.textNameMode) textNameMode = obj.textNameMode;
+        if (obj.textSeparator) textSeparator = obj.textSeparator;
+        if (obj.textEmptyChar) textEmptyChar = obj.textEmptyChar;
+        if (obj.textTitle) {
+          textTitle = obj.textTitle;
+          document.getElementById('textTitleInput').value = textTitle;
+        }
+        saveToLocalStorage();
+        updateSpanButtons();
+        updateTextTogglesUI();
+        renderTextDaysCheckboxes();
+        renderEventCheckboxes();
+        renderMatrix();
+        renderMonospaceText();
+        closeBackupModal();
+        showToast('データを正常に読み込み・復元しました！');
+      } catch (err) {
+        showToast('JSONの解析に失敗しました。データ形式をご確認ください。');
+      }
+    }
+
+    function loadInitialState() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const shareData = params.get('data');
+        if (shareData) {
+          const decoded = JSON.parse(decodeURIComponent(escape(atob(shareData))));
+          if (decoded.actions) actions = normalizeActions(decoded.actions);
+          if (decoded.events) events = decoded.events;
+          if (decoded.spanMode) spanMode = decoded.spanMode;
+          if (decoded.textSelectedDays && Array.isArray(decoded.textSelectedDays)) {
+            textSelectedDays = decoded.textSelectedDays;
+          } else if (decoded.textOutputPeriod === 'mon_sat') {
+            textSelectedDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+          } else if (decoded.textOutputPeriod === 'tue_mon' || decoded.textStartDay === 'tue') {
+            textSelectedDays = ['tue', 'wed', 'thu', 'fri', 'sat', 'sun', 'next_mon'];
+          } else {
+            textSelectedDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+          }
+          if (decoded.textOutputPeriod) textOutputPeriod = decoded.textOutputPeriod;
+          if (decoded.textOverlapMode) textOverlapMode = decoded.textOverlapMode;
+          if (decoded.textNameMode) textNameMode = decoded.textNameMode;
+          if (decoded.textSeparator) textSeparator = decoded.textSeparator;
+          if (decoded.textEmptyChar) textEmptyChar = decoded.textEmptyChar;
+          if (decoded.textTitle) textTitle = decoded.textTitle;
+          showToast('共有URLからスケジュールを読み込みました！');
+          saveToLocalStorage();
+          return;
+        }
+      } catch (err) {
+        console.warn('Failed to parse URL data:', err);
+      }
+
+      try {
+        const savedActions = localStorage.getItem('wos_custom_actions_v3');
+        if (savedActions) actions = normalizeActions(JSON.parse(savedActions));
+
+        const savedEvents = localStorage.getItem('wos_custom_events');
+        if (savedEvents) events = JSON.parse(savedEvents);
+
+        const savedSpan = localStorage.getItem('wos_span_mode');
+        if (savedSpan) spanMode = savedSpan;
+
+        const savedHideEmpty = localStorage.getItem('wos_hide_empty');
+        if (savedHideEmpty) hideEmptyRows = (savedHideEmpty === 'true');
+        document.getElementById('checkHideEmptyRows').checked = hideEmptyRows;
+
+        const savedTitle = localStorage.getItem('wos_text_title');
+        if (savedTitle) {
+          textTitle = savedTitle;
+          document.getElementById('textTitleInput').value = textTitle;
+        }
+
+        const savedDays = localStorage.getItem('wos_text_selected_days');
+        if (savedDays) {
+          try { textSelectedDays = JSON.parse(savedDays); } catch (e) { }
+        } else {
+          const savedPeriod = localStorage.getItem('wos_text_output_period');
+          if (savedPeriod === 'mon_sat') textSelectedDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+          else if (savedPeriod === 'tue_mon') textSelectedDays = ['tue', 'wed', 'thu', 'fri', 'sat', 'sun', 'next_mon'];
+        }
+
+        const savedOverlapMode = localStorage.getItem('wos_text_overlap_mode');
+        if (savedOverlapMode) textOverlapMode = savedOverlapMode;
+
+        const savedEmptyChar = localStorage.getItem('wos_text_empty_char');
+        if (savedEmptyChar) textEmptyChar = savedEmptyChar;
+
+        const savedPeriod = localStorage.getItem('wos_text_output_period');
+        if (savedPeriod) textOutputPeriod = savedPeriod;
+
+        const savedNameMode = localStorage.getItem('wos_text_name_mode');
+        if (savedNameMode) textNameMode = savedNameMode;
+
+        const savedSep = localStorage.getItem('wos_text_sep');
+        if (savedSep) textSeparator = savedSep;
+
+        // Restore Alliance Session (localStorage or sessionStorage)
+        const savedAlliance = localStorage.getItem('wos_current_alliance') || sessionStorage.getItem('wos_current_alliance_session');
+        if (savedAlliance) {
+          const parsed = JSON.parse(savedAlliance);
+          // Migrate legacy { serverId, allianceName } session if present
+          if (!parsed.accountId && parsed.serverId) {
+            parsed.accountId = `${parsed.serverId}_${parsed.allianceName || ''}`;
+          }
+          if (parsed.accountId) {
+            currentAlliance = parsed;
+          }
+        }
+        restoreSavedLoginInputs();
+      } catch (e) {
+        console.warn('Failed to load localStorage:', e);
+      }
+    }
+
+    function saveToLocalStorage(skipCloudSync = false) {
+      try {
+        localStorage.setItem('wos_custom_actions_v3', JSON.stringify(actions));
+        localStorage.setItem('wos_custom_events', JSON.stringify(events));
+        localStorage.setItem('wos_span_mode', spanMode);
+        localStorage.setItem('wos_hide_empty', hideEmptyRows ? 'true' : 'false');
+        localStorage.setItem('wos_text_title', textTitle);
+        localStorage.setItem('wos_text_selected_days', JSON.stringify(textSelectedDays));
+        localStorage.setItem('wos_text_overlap_mode', textOverlapMode);
+        localStorage.setItem('wos_text_empty_char', textEmptyChar);
+        localStorage.setItem('wos_text_output_period', textOutputPeriod);
+        localStorage.setItem('wos_text_start_day', textOutputPeriod === 'tue_mon' ? 'tue' : 'mon');
+        localStorage.setItem('wos_text_name_mode', textNameMode);
+        localStorage.setItem('wos_text_sep', textSeparator);
+      } catch (e) {
+        console.warn('Failed to save localStorage:', e);
+      }
+
+      // If alliance logged in, auto-sync to cloud / DB
+      if (currentAlliance && !skipCloudSync) {
+        saveCurrentAllianceData(true);
+      }
+    }
+
+    // Render Event Checkboxes (Clean toggle chips on main screen, no drag handles)
+    function renderEventCheckboxes() {
+      const container = document.getElementById('eventsCheckboxContainer');
+      container.innerHTML = '';
+
+      if (events.length === 0) {
+        container.innerHTML = '<span class="text-xs text-slate-500 py-1">登録されているイベントはありません。「⚙️ イベント管理」または「＋ イベント新規作成」から追加してください。</span>';
+        return;
+      }
+
+      events.forEach((ev) => {
+        const label = document.createElement('label');
+        label.className = `flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all cursor-pointer select-none ${ev.enabled
+          ? 'bg-slate-800/90 border-cyan-500/60 shadow-md text-white'
+          : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700'
+          }`;
+
+        label.innerHTML = `
+          <input type="checkbox" id="check_${escapeHtml(ev.id)}" class="rounded bg-slate-900 border-slate-700 text-cyan-500 focus:ring-0 h-4 w-4 cursor-pointer" ${ev.enabled ? 'checked' : ''}>
+          <span class="text-sm font-black text-amber-300 min-w-[20px] text-center">${escapeHtml(ev.symbol)}</span>
+          <span class="text-xs font-bold">${escapeHtml(ev.name)}</span>
+          ${ev.note ? `<span class="text-[10px] text-slate-400">(${escapeHtml(ev.note)})</span>` : ''}
+        `;
+
+        const cb = label.querySelector('input[type="checkbox"]');
+        cb.addEventListener('change', (e) => {
+          ev.enabled = e.target.checked;
+          saveToLocalStorage();
+          renderEventCheckboxes();
+          renderMatrix();
+          renderMonospaceText();
+        });
+
+        container.appendChild(label);
+      });
+    }
+
+    // Modal: Manage Events (Reorder & Edit)
+    function openManageEventsModal() {
+      renderManageEventsList();
+      document.getElementById('modalManageEvents').classList.remove('hidden');
+    }
+
+    function closeManageEventsModal() {
+      document.getElementById('modalManageEvents').classList.add('hidden');
+    }
+
+    function moveEvent(fromIdx, toIdx) {
+      if (toIdx < 0 || toIdx >= events.length) return;
+      const moved = events.splice(fromIdx, 1)[0];
+      events.splice(toIdx, 0, moved);
+      saveToLocalStorage();
+      renderManageEventsList();
+      renderEventCheckboxes();
+      renderMatrix();
+      renderMonospaceText();
+      showToast(`「${moved.name}」の順序を変更しました`);
+    }
+
+    function renderManageEventsList() {
+      const container = document.getElementById('eventsManageListContainer');
+      container.innerHTML = '';
+
+      if (events.length === 0) {
+        container.innerHTML = '<div class="py-6 text-center text-slate-500 text-xs">登録されているイベントはありません。<br>「＋ 新規イベント」から追加してください。</div>';
+        return;
+      }
+
+      events.forEach((ev, idx) => {
+        const row = document.createElement('div');
+        row.className = 'flex items-center gap-2 p-2 bg-slate-950 rounded-lg border border-slate-800 text-xs transition cursor-grab active:cursor-grabbing select-none';
+        row.setAttribute('draggable', 'true');
+        row.dataset.index = idx;
+
+        const isFirst = idx === 0;
+        const isLast = idx === events.length - 1;
+
+        row.innerHTML = `
+          <!-- Drag handle & Up/Down -->
+          <div class="flex items-center gap-1 text-slate-400 shrink-0">
+            <span class="text-slate-500 hover:text-slate-300 font-mono text-xs px-0.5 cursor-grab" title="ドラッグして並べ替え">⠿</span>
+            <div class="flex flex-col">
+              <button type="button" data-event-up="${idx}" class="text-[10px] leading-3 hover:text-cyan-400 p-0.5 ${isFirst ? 'opacity-20 cursor-not-allowed' : ''}" title="上へ移動" ${isFirst ? 'disabled' : ''}>▲</button>
+              <button type="button" data-event-down="${idx}" class="text-[10px] leading-3 hover:text-cyan-400 p-0.5 ${isLast ? 'opacity-20 cursor-not-allowed' : ''}" title="下へ移動" ${isLast ? 'disabled' : ''}>▼</button>
+            </div>
+            <span class="text-[10px] text-slate-500 font-mono w-4 text-center">${idx + 1}</span>
+          </div>
+
+          <!-- Enabled checkbox -->
+          <div class="w-10 text-center shrink-0">
+            <input type="checkbox" data-event-enable-idx="${idx}" class="rounded bg-slate-900 border-slate-700 text-cyan-500 focus:ring-0 h-4 w-4 cursor-pointer" ${ev.enabled ? 'checked' : ''} title="有効/無効切替">
+          </div>
+
+          <!-- Symbol Badge -->
+          <div class="w-10 text-center shrink-0">
+            <span class="text-sm font-black text-amber-300 min-w-[20px] text-center inline-block">${escapeHtml(ev.symbol)}</span>
+          </div>
+
+          <!-- Name & Note -->
+          <div class="flex-1 min-w-0">
+            <span class="font-bold text-slate-200">${escapeHtml(ev.name)}</span>
+            ${ev.note ? `<span class="text-[10px] text-slate-400 ml-1">(${escapeHtml(ev.note)})</span>` : ''}
+          </div>
+
+          <!-- Edit & Delete Buttons -->
+          <div class="flex items-center gap-1 shrink-0">
+            <button type="button" data-event-edit-id="${escapeHtml(ev.id)}" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-cyan-300 rounded font-semibold transition" title="スケジュール編集">✏️ 編集</button>
+            <button type="button" data-event-del-idx="${idx}" class="px-2 py-1 bg-rose-950/40 hover:bg-rose-900 text-rose-300 rounded transition" title="削除">🗑️</button>
+          </div>
+        `;
+
+        // Up & Down buttons
+        const upBtn = row.querySelector(`[data-event-up="${idx}"]`);
+        if (upBtn && !isFirst) {
+          upBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            moveEvent(idx, idx - 1);
+          });
+        }
+        const downBtn = row.querySelector(`[data-event-down="${idx}"]`);
+        if (downBtn && !isLast) {
+          downBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            moveEvent(idx, idx + 1);
+          });
+        }
+
+        // Enable toggle
+        row.querySelector(`[data-event-enable-idx="${idx}"]`).addEventListener('change', (e) => {
+          ev.enabled = e.target.checked;
+          saveToLocalStorage();
+          renderEventCheckboxes();
+          renderMatrix();
+          renderMonospaceText();
+        });
+
+        // Edit
+        row.querySelector(`[data-event-edit-id="${ev.id}"]`).addEventListener('click', () => {
+          closeManageEventsModal();
+          openEventModal(ev.id, true);
+        });
+
+        // Delete
+        row.querySelector(`[data-event-del-idx="${idx}"]`).addEventListener('click', () => {
+          if (confirm(`イベント「${ev.name}」を削除しますか？`)) {
+            const removed = events.splice(idx, 1)[0];
+            saveToLocalStorage();
+            renderManageEventsList();
+            renderEventCheckboxes();
+            renderMatrix();
+            renderMonospaceText();
+            showToast(`「${removed.name}」を削除しました`);
+          }
+        });
+
+        // Drag & Drop
+        row.addEventListener('dragstart', (e) => {
+          draggedManageEventIdx = idx;
+          row.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', idx);
+        });
+
+        row.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          row.classList.add('drag-over');
+        });
+
+        row.addEventListener('dragleave', () => {
+          row.classList.remove('drag-over');
+        });
+
+        row.addEventListener('drop', (e) => {
+          e.preventDefault();
+          row.classList.remove('drag-over');
+          const targetIndex = idx;
+          if (draggedManageEventIdx !== null && draggedManageEventIdx !== targetIndex) {
+            const movedItem = events.splice(draggedManageEventIdx, 1)[0];
+            events.splice(targetIndex, 0, movedItem);
+            saveToLocalStorage();
+            renderManageEventsList();
+            renderEventCheckboxes();
+            renderMatrix();
+            renderMonospaceText();
+            showToast(`「${movedItem.name}」の順序を変更しました`);
+          }
+        });
+
+        row.addEventListener('dragend', () => {
+          row.classList.remove('dragging', 'drag-over');
+          draggedManageEventIdx = null;
+        });
+
+        container.appendChild(row);
+      });
+    }
+
+    // Modal: Help Modal
+    function openHelpModal() {
+      document.getElementById('modalHelp').classList.remove('hidden');
+    }
+
+    function closeHelpModal() {
+      document.getElementById('modalHelp').classList.add('hidden');
+    }
+
+    // Render Matrix Header
+    function renderMatrixHeader() {
+      const tr = document.getElementById('matrixHeaderRow');
+      const activeDays = getActiveDaysForTable();
+
+      let html = `<th class="py-2 sm:py-2.5 px-2 sm:px-3 text-center w-28 sm:w-44 border-r border-slate-800 font-bold text-slate-200 sticky left-0 z-10 bg-slate-900 whitespace-nowrap">アクション項目</th>`;
+
+      activeDays.forEach(d => {
+        let thClass = 'py-2 sm:py-2.5 px-1 sm:px-2 min-w-[44px] w-12 sm:w-16 border-r border-slate-800 whitespace-nowrap';
+        if (d.isSat) thClass += ' bg-sky-950/50 text-sky-200';
+        else if (d.isSun) thClass += ' bg-rose-950/50 text-rose-200';
+        else if (d.isNextMon) thClass += ' bg-purple-950/50 text-purple-200 border-purple-800/60 font-extrabold';
+        html += `<th class="${thClass}">${d.label}</th>`;
+      });
+
+      tr.innerHTML = html;
+    }
+
+    // Helper: Collect matching symbols for an action on a specific day
+    function getMatchedSymbolsForDay(actionFullName, dayId, activeEvents) {
+      const matched = [];
+      activeEvents.forEach(ev => {
+        const list = ev.schedule[dayId] || [];
+        if (list.includes(actionFullName)) {
+          matched.push(ev.symbol);
+        }
+      });
+      return matched;
+    }
+
+    // Helper: Collect matching event objects for an action on a specific day
+    function getMatchedEventsForDay(actionFullName, dayId, activeEvents) {
+      const matched = [];
+      activeEvents.forEach(ev => {
+        const list = ev.schedule[dayId] || [];
+        if (list.includes(actionFullName)) {
+          matched.push(ev);
+        }
+      });
+      return matched;
+    }
+
+    // Render Matrix Table (Excel style)
+    function renderMatrix() {
+      renderMatrixHeader();
+      const tbody = document.getElementById('matrixTableBody');
+      const legendContainer = document.getElementById('matrixLegendContainer');
+      tbody.innerHTML = '';
+
+      const activeEvents = events.filter(e => e.enabled);
+      const activeDays = getActiveDaysForTable();
+
+      let visibleRowCount = 0;
+
+      actions.forEach(actionObj => {
+        let hasAnyAction = false;
+        let cellsHtml = '';
+
+        activeDays.forEach((d) => {
+          const matched = getMatchedSymbolsForDay(actionObj.name, d.id, activeEvents);
+          const isOverlap = matched.length >= 2;
+          if (matched.length > 0) hasAnyAction = true;
+
+          let bgClass = '';
+          if (isOverlap) {
+            bgClass = 'bg-amber-950/40 font-bold';
+          } else if (d.isSat) {
+            bgClass = 'bg-sky-950/20';
+          } else if (d.isSun) {
+            bgClass = 'bg-rose-950/20';
+          } else if (d.isNextMon) {
+            bgClass = 'bg-purple-950/20';
+          }
+
+          let symbolsText = '';
+          if (matched.length > 0) {
+            symbolsText = matched.map(sym => `<span class="inline-block px-0.5 text-sm sm:text-base font-bold text-amber-300 drop-shadow">${escapeHtml(sym)}</span>`).join('');
+          }
+
+          cellsHtml += `
+            <td class="py-1.5 px-1 border-r border-slate-800 ${bgClass} transition">
+              <div class="flex items-center justify-center gap-0.5 sm:gap-1 min-h-[24px]">
+                ${symbolsText}
+              </div>
+            </td>
+          `;
+        });
+
+        if (hideEmptyRows && !hasAnyAction) {
+          return;
+        }
+
+        visibleRowCount++;
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-900/50 transition border-b border-slate-800/80';
+
+        let rowHtml = `
+          <td class="py-1.5 sm:py-2 px-2 sm:px-3 text-center font-semibold text-slate-200 border-r border-slate-800 bg-slate-950 sticky left-0 z-10 whitespace-nowrap">
+            <span class="text-xs sm:text-sm">${escapeHtml(actionObj.name)}</span>
+            <span class="text-[10px] text-cyan-400/80 ml-1 font-normal hidden sm:inline">(${escapeHtml(actionObj.short)})</span>
+          </td>
+        `;
+        rowHtml += cellsHtml;
+
+        tr.innerHTML = rowHtml;
+        tbody.appendChild(tr);
+      });
+
+      if (visibleRowCount === 0) {
+        if (actions.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="${activeDays.length + 1}" class="py-10 text-center text-slate-400 text-xs">
+            <span class="text-xl">📝</span><br>
+            <span class="font-bold text-slate-300">登録されているアクション項目がありません</span><br>
+            <span class="text-slate-500 mt-1 inline-block">「＋ イベント新規作成」から項目を追加するか、「📦 入出力 / テンプレ」から初期テンプレートを展開してください。</span>
+          </td></tr>`;
+        } else {
+          tbody.innerHTML = `<tr><td colspan="${activeDays.length + 1}" class="py-6 text-center text-slate-500 text-xs">選択中のイベントに対応するアクション項目はありません（イベントを選択してください）</td></tr>`;
+        }
+      }
+
+      legendContainer.innerHTML = '<span class="font-bold text-slate-400">表示中の凡例:</span>';
+      if (activeEvents.length === 0) {
+        legendContainer.innerHTML += '<span class="text-slate-500 italic">選択中のイベントはありません</span>';
+      } else {
+        activeEvents.forEach(ev => {
+          legendContainer.innerHTML += `
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/80 border border-slate-700">
+              <span class="font-black text-amber-300">${escapeHtml(ev.symbol)}</span>
+              <span class="text-slate-200 font-medium">${escapeHtml(ev.name)}</span>
+            </span>
+          `;
+        });
+      }
+    }
+
+    // Helper: Tokenize string into grapheme-like units (combining variation selectors)
+    function tokenizeChars(str) {
+      const tokens = [];
+      for (const ch of str) {
+        const code = ch.codePointAt(0);
+        if ((code === 0xfe0e || code === 0xfe0f || code === 0x200d) && tokens.length > 0) {
+          tokens[tokens.length - 1] += ch;
+        } else {
+          tokens.push(ch);
+        }
+      }
+      return tokens;
+    }
+
+    // Helper: Calculate halfwidth character length (ASCII/halfwidth kana = 1, others = 2)
+    function getHalfwidthLength(str) {
+      let len = 0;
+      const tokens = tokenizeChars(str);
+      for (const tok of tokens) {
+        const code = tok.codePointAt(0);
+        if ((code >= 0x0020 && code <= 0x007e) || (code >= 0xff61 && code <= 0xff9f)) len += 1;
+        else len += 2;
+      }
+      return len;
+    }
+
+    // Helper: Precision padding for label
+    function padStringToFullwidth(str, targetWidth) {
+      const len = getHalfwidthLength(str);
+      if (len >= targetWidth) return str;
+      return str + ' '.repeat(targetWidth - len);
+    }
+
+    // Helper: Pad matrix line to 16 fullwidth chars (32 halfwidth) + 1 trailing halfwidth space for in-game auto-wrap
+    function formatLineForGameWrap(lineStr) {
+      const targetWidth = 32;
+      const currentWidth = getHalfwidthLength(lineStr);
+      let padded = lineStr;
+      if (currentWidth < targetWidth) {
+        const diff = targetWidth - currentWidth;
+        const fullSpaces = Math.floor(diff / 2);
+        const halfSpaces = diff % 2;
+        padded += '　'.repeat(fullSpaces) + ' '.repeat(halfSpaces);
+      }
+      return padded + ' ';
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // Render Visual Editor with visible newline (↵) and whitespace (␣, □) markers
+    function renderVisualEditor(rawText) {
+      const container = document.getElementById('monospaceEditorContainer');
+      const nlBadge = document.getElementById('newlineCountBadge');
+      if (!container) return;
+
+      const tokens = tokenizeChars(rawText);
+      let html = '';
+      let nlCount = 0;
+
+      for (const tok of tokens) {
+        if (tok === '\n') {
+          nlCount++;
+          html += '<span class="nl-mark" aria-hidden="true">↵</span>\n';
+        } else if (tok === ' ') {
+          html += '<span class="ws-half"> </span>';
+        } else if (tok === '　') {
+          html += '<span class="ws-full">　</span>';
+        } else {
+          const code = tok.codePointAt(0);
+          const isHalf = (code >= 0x0020 && code <= 0x007e) || (code >= 0xff61 && code <= 0xff9f);
+          if (isHalf) {
+            html += `<span class="char-half">${escapeHtml(tok)}</span>`;
+          } else {
+            html += `<span class="char-full">${escapeHtml(tok)}</span>`;
+          }
+        }
+      }
+
+      container.innerHTML = html;
+
+      if (nlBadge) {
+        if (nlCount <= 10) {
+          nlBadge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950/90 text-emerald-300 border border-emerald-800/70';
+          nlBadge.textContent = `改行: ${nlCount} / 10回`;
+        } else {
+          nlBadge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950/90 text-rose-300 border border-rose-700';
+          nlBadge.textContent = `⚠️ 改行: ${nlCount} / 10回 (上限超過)`;
+        }
+      }
+    }
+
+    // Render Text Output (Supports both Merge overlap mode 🔴 and Multi-line stack mode)
+    function renderMonospaceText() {
+      const activeEvents = events.filter(e => e.enabled);
+      const textDays = getTextDays();
+
+      const rowsToRender = [];
+
+      actions.forEach(actionObj => {
+        const dayEvents = {};
+        let maxLines = 0;
+        let hasAction = false;
+
+        textDays.forEach(d => {
+          const matchedEvs = getMatchedEventsForDay(actionObj.name, d.id, activeEvents);
+          dayEvents[d.id] = matchedEvs;
+          if (matchedEvs.length > 0) hasAction = true;
+          if (matchedEvs.length > maxLines) maxLines = matchedEvs.length;
+        });
+
+        if (hasAction) {
+          rowsToRender.push({
+            action: actionObj,
+            dayEvents: dayEvents,
+            maxLines: maxLines
+          });
+        }
+      });
+
+      let out = '';
+      if (textTitle) {
+        out += `${textTitle}\n`;
+      }
+
+      const sep = textSeparator; // '｜' or '|'
+
+      // Determine label width
+      let labelWidth = 4; // default 2 fullwidth chars
+      if (textNameMode === 'full') {
+        let maxW = 4;
+        rowsToRender.forEach(r => {
+          const w = getHalfwidthLength(r.action.name);
+          if (w > maxW) maxW = w;
+        });
+        labelWidth = maxW;
+      }
+
+      // Header row
+      const indentSpace = (textNameMode === 'short') ? '　　' : ' '.repeat(labelWidth);
+      const headerLine = indentSpace + sep + textDays.map(d => d.short).join(sep);
+
+      // Prepare overlap symbol assignment for 'merge' mode
+      const usedSymbols = new Set(activeEvents.map(e => e.symbol));
+      const availableOverlapPool = OVERLAP_SYMBOL_POOL.filter(s => !usedSymbols.has(s));
+      const overlapComboMap = new Map();
+      const overlapComboList = [];
+
+      // Rows (Matrix body uses trailing spaces instead of newlines to preserve the 10-newline limit)
+      if (rowsToRender.length === 0) {
+        out += headerLine + '\n';
+        out += '（選択されたイベントのアクションはありません）\n';
+      } else {
+        const matrixLines = [headerLine];
+
+        rowsToRender.forEach(item => {
+          const displayName = (textNameMode === 'short') ? item.action.short : item.action.name;
+          const paddedName = (textNameMode === 'short') ? padStringToFullwidth(displayName, 4) : padStringToFullwidth(displayName, labelWidth);
+          const blankPrefix = (textNameMode === 'short') ? '　　' : ' '.repeat(labelWidth);
+
+          if (textOverlapMode === 'merge') {
+            // 1行統合モード: 重複箇所は自動で 🔴, 🔵 等を割り当てて1行にまとめる
+            const cells = textDays.map(d => {
+              const evs = item.dayEvents[d.id];
+              if (!evs || evs.length === 0) {
+                return textEmptyChar;
+              }
+              if (evs.length === 1) {
+                return evs[0].symbol;
+              }
+              // 2つ以上のイベントが重複している場合
+              const comboKey = evs.map(e => e.id).join('+');
+              if (!overlapComboMap.has(comboKey)) {
+                const assignedSym = availableOverlapPool[overlapComboList.length] || '🔴';
+                const comboObj = {
+                  key: comboKey,
+                  symbol: assignedSym,
+                  label: evs.map(e => e.name).join('&')
+                };
+                overlapComboMap.set(comboKey, comboObj);
+                overlapComboList.push(comboObj);
+              }
+              return overlapComboMap.get(comboKey).symbol;
+            });
+
+            matrixLines.push(`${paddedName}${sep}${cells.join(sep)}`);
+          } else {
+            // 縦並び（複数行）モード
+            for (let line = 0; line < item.maxLines; line++) {
+              const prefix = (line === 0) ? paddedName : blankPrefix;
+              const cells = textDays.map(d => {
+                const ev = item.dayEvents[d.id][line];
+                if (ev) {
+                  return ev.symbol;
+                }
+                return textEmptyChar;
+              });
+
+              matrixLines.push(`${prefix}${sep}${cells.join(sep)}`);
+            }
+          }
+        });
+
+        const hasLegend = activeEvents.length > 0;
+        const wrappedLines = matrixLines.map((line, idx) => {
+          if (idx === matrixLines.length - 1 && !hasLegend) {
+            return line; // No legend below: no trailing space needed on final line
+          }
+          return formatLineForGameWrap(line);
+        });
+
+        out += wrappedLines.join('');
+      }
+
+      // Legend at bottom (first legend line or blank line wraps naturally via the last matrix line's trailing space)
+      if (activeEvents.length > 0) {
+        const legendLines = activeEvents.map(ev => `${ev.symbol} : ${ev.name}`);
+        overlapComboList.forEach(c => {
+          legendLines.push(`${c.symbol} : ${c.label}`);
+        });
+
+        // Calculate used newlines without blank line (Title + Legend newlines)
+        const baseNewlines = (textTitle ? 1 : 0) + Math.max(0, legendLines.length - 1);
+        // If we have room within the 10-newline limit, insert 1 fullwidth space + \n to create a blank line using only 1 newline
+        if (baseNewlines + 1 <= 10) {
+          out += '　\n';
+        }
+        out += legendLines.join('\n');
+      }
+
+      document.getElementById('monospaceTextArea').value = out;
+      renderVisualEditor(out);
+    }
+
+    // Modal: Event Create/Edit
+    function openEventModal(eventId = null, fromManageModal = false) {
+      editingEventId = eventId;
+      returnToManageEventsModal = fromManageModal;
+      const modal = document.getElementById('modalEvent');
+      const title = document.getElementById('modalEventTitle');
+      const deleteBtn = document.getElementById('btnDeleteCurrentEvent');
+
+      const tbody = document.getElementById('modalMatrixTbody');
+      tbody.innerHTML = '';
+
+      let targetEvent = null;
+      if (eventId) {
+        targetEvent = events.find(e => e.id === eventId);
+        title.textContent = 'イベントの編集';
+        deleteBtn.classList.remove('hidden');
+      } else {
+        title.textContent = 'イベントの新規作成';
+        deleteBtn.classList.add('hidden');
+      }
+
+      document.getElementById('inputEventName').value = targetEvent ? targetEvent.name : '';
+      document.getElementById('inputEventSymbol').value = targetEvent ? targetEvent.symbol : '◯';
+      document.getElementById('inputEventNote').value = targetEvent ? (targetEvent.note || '') : '';
+
+      actions.forEach(actionObj => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-slate-800/60 hover:bg-slate-900/40';
+
+        let trHtml = `
+          <td class="py-1.5 px-3 text-center font-medium text-slate-300">
+            ${escapeHtml(actionObj.name)} <span class="text-xs text-cyan-400/80 font-normal">(${escapeHtml(actionObj.short)})</span>
+          </td>
+        `;
+
+        ALL_DAYS.forEach(d => {
+          const isChecked = targetEvent && targetEvent.schedule[d.id] && targetEvent.schedule[d.id].includes(actionObj.name);
+          trHtml += `
+            <td class="py-1.5 px-1">
+              <input type="checkbox" data-day="${escapeHtml(d.id)}" data-action="${escapeHtml(actionObj.name)}" class="modal-schedule-cb rounded bg-slate-900 border-slate-700 text-cyan-500 focus:ring-0 h-3.5 w-3.5 cursor-pointer" ${isChecked ? 'checked' : ''}>
+            </td>
+          `;
+        });
+
+        tr.innerHTML = trHtml;
+        tbody.appendChild(tr);
+      });
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeEventModal() {
+      document.getElementById('modalEvent').classList.add('hidden');
+      editingEventId = null;
+      if (returnToManageEventsModal) {
+        returnToManageEventsModal = false;
+        openManageEventsModal();
+      }
+    }
+
+    function saveEventModal() {
+      const name = document.getElementById('inputEventName').value.trim();
+      const symbol = document.getElementById('inputEventSymbol').value.trim() || '◯';
+      const note = document.getElementById('inputEventNote').value.trim();
+
+      if (!name) {
+        showToast('イベント名を入力してください');
+        return;
+      }
+
+      const newSchedule = { mon: [], tue: [], wed: [], thu: [], fri: [], sat: [], sun: [], next_mon: [] };
+      document.querySelectorAll('.modal-schedule-cb:checked').forEach(cb => {
+        const day = cb.getAttribute('data-day');
+        const action = cb.getAttribute('data-action');
+        if (newSchedule[day]) {
+          newSchedule[day].push(action);
+        }
+      });
+
+      if (editingEventId) {
+        const ev = events.find(e => e.id === editingEventId);
+        if (ev) {
+          ev.name = name;
+          ev.symbol = symbol;
+          ev.note = note;
+          ev.schedule = newSchedule;
+        }
+      } else {
+        const newEvent = {
+          id: 'ev_' + Date.now(),
+          name: name,
+          symbol: symbol,
+          note: note,
+          color: '#38bdf8',
+          enabled: true,
+          schedule: newSchedule
+        };
+        events.push(newEvent);
+      }
+
+      saveToLocalStorage();
+      renderEventCheckboxes();
+      renderMatrix();
+      renderMonospaceText();
+      closeEventModal();
+      showToast('イベントを保存しました！');
+    }
+
+    function deleteEvent() {
+      if (!editingEventId) return;
+      events = events.filter(e => e.id !== editingEventId);
+      saveToLocalStorage();
+      renderEventCheckboxes();
+      renderMatrix();
+      renderMonospaceText();
+      closeEventModal();
+      showToast('イベントを削除しました');
+    }
+
+    // Modal: Manage Actions (Full Name & Short Name)
+    function openActionsModal() {
+      renderActionsList();
+      document.getElementById('modalActions').classList.remove('hidden');
+    }
+
+    function closeActionsModal() {
+      document.getElementById('modalActions').classList.add('hidden');
+    }
+
+    function moveAction(fromIdx, toIdx) {
+      if (toIdx < 0 || toIdx >= actions.length) return;
+      const moved = actions.splice(fromIdx, 1)[0];
+      actions.splice(toIdx, 0, moved);
+      saveToLocalStorage();
+      renderActionsList();
+      renderMatrix();
+      renderMonospaceText();
+      showToast(`「${moved.name}」の順序を変更しました`);
+    }
+
+    function renderActionsList() {
+      const container = document.getElementById('actionsListContainer');
+      container.innerHTML = '';
+
+      if (actions.length === 0) {
+        container.innerHTML = '<div class="py-6 text-center text-slate-500 text-xs">登録されているアクション項目はありません。<br>上の入力欄から追加するか、「📦 定番20項目を読み込む」を押してください。</div>';
+        return;
+      }
+
+      actions.forEach((act, idx) => {
+        const row = document.createElement('div');
+        row.className = 'flex items-center gap-2 p-2 bg-slate-950 rounded-lg border border-slate-800 text-xs transition cursor-grab active:cursor-grabbing select-none';
+        row.setAttribute('draggable', 'true');
+        row.dataset.index = idx;
+
+        const isFirst = idx === 0;
+        const isLast = idx === actions.length - 1;
+
+        row.innerHTML = `
+          <!-- Drag handle & Up/Down -->
+          <div class="flex items-center gap-1 text-slate-400 shrink-0">
+            <span class="text-slate-500 hover:text-slate-300 font-mono text-xs px-0.5 cursor-grab" title="ドラッグして並べ替え">⠿</span>
+            <div class="flex flex-col">
+              <button type="button" data-move-up="${idx}" class="text-[10px] leading-3 hover:text-cyan-400 p-0.5 ${isFirst ? 'opacity-20 cursor-not-allowed' : ''}" title="上へ移動" ${isFirst ? 'disabled' : ''}>▲</button>
+              <button type="button" data-move-down="${idx}" class="text-[10px] leading-3 hover:text-cyan-400 p-0.5 ${isLast ? 'opacity-20 cursor-not-allowed' : ''}" title="下へ移動" ${isLast ? 'disabled' : ''}>▼</button>
+            </div>
+            <span class="text-[10px] text-slate-500 font-mono w-4 text-center">${idx + 1}</span>
+          </div>
+
+          <!-- Name & Short Inputs -->
+          <input type="text" data-action-idx="${idx}" data-field="name" value="${escapeHtml(act.name)}" placeholder="正式名" class="bg-slate-900 border border-slate-700/60 focus:border-cyan-500 rounded text-slate-200 font-medium px-2 py-1 focus:outline-none flex-1">
+          <input type="text" data-action-idx="${idx}" data-field="short" value="${escapeHtml(act.short)}" placeholder="短縮名" maxlength="4" class="w-16 text-center bg-slate-900 border border-slate-700/60 focus:border-cyan-500 rounded text-cyan-300 font-bold px-1 py-1 focus:outline-none">
+
+          <!-- Actions -->
+          <div class="flex items-center justify-end shrink-0 w-12">
+            <button type="button" data-del-idx="${idx}" class="px-2 py-1 bg-rose-950/40 hover:bg-rose-900 text-rose-300 rounded transition text-xs font-semibold" title="削除">✕</button>
+          </div>
+        `;
+
+        // Up & Down listeners
+        const upBtn = row.querySelector(`[data-move-up="${idx}"]`);
+        if (upBtn && !isFirst) {
+          upBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            moveAction(idx, idx - 1);
+          });
+        }
+        const downBtn = row.querySelector(`[data-move-down="${idx}"]`);
+        if (downBtn && !isLast) {
+          downBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            moveAction(idx, idx + 1);
+          });
+        }
+
+        // Auto Save Inputs
+        const inputName = row.querySelector(`[data-action-idx="${idx}"][data-field="name"]`);
+        const inputShort = row.querySelector(`[data-action-idx="${idx}"][data-field="short"]`);
+
+        const handleAutoSave = () => {
+          const newName = inputName.value.trim();
+          const newShort = inputShort.value.trim();
+          if (newName && newShort) {
+            const oldName = actions[idx].name;
+            if (oldName !== newName) {
+              events.forEach(ev => {
+                Object.keys(ev.schedule).forEach(day => {
+                  ev.schedule[day] = ev.schedule[day].map(n => (n === oldName ? newName : n));
+                });
+              });
+            }
+
+            actions[idx].name = newName;
+            actions[idx].short = newShort;
+            saveToLocalStorage();
+            renderMatrix();
+            renderMonospaceText();
+          }
+        };
+
+        inputName.addEventListener('input', handleAutoSave);
+        inputShort.addEventListener('input', handleAutoSave);
+
+        // Delete
+        row.querySelector(`[data-del-idx="${idx}"]`).addEventListener('click', () => {
+          const removed = actions.splice(idx, 1)[0];
+          saveToLocalStorage();
+          renderActionsList();
+          renderMatrix();
+          renderMonospaceText();
+          showToast(`「${removed.name}」を削除しました`);
+        });
+
+        // Drag & Drop for Action Row
+        row.addEventListener('dragstart', (e) => {
+          draggedActionIdx = idx;
+          row.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', idx);
+        });
+
+        row.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          row.classList.add('drag-over');
+        });
+
+        row.addEventListener('dragleave', () => {
+          row.classList.remove('drag-over');
+        });
+
+        row.addEventListener('drop', (e) => {
+          e.preventDefault();
+          row.classList.remove('drag-over');
+          const targetIndex = idx;
+          if (draggedActionIdx !== null && draggedActionIdx !== targetIndex) {
+            const movedItem = actions.splice(draggedActionIdx, 1)[0];
+            actions.splice(targetIndex, 0, movedItem);
+            saveToLocalStorage();
+            renderActionsList();
+            renderMatrix();
+            renderMonospaceText();
+            showToast(`「${movedItem.name}」の順序を変更しました`);
+          }
+        });
+
+        row.addEventListener('dragend', () => {
+          row.classList.remove('dragging', 'drag-over');
+          draggedActionIdx = null;
+        });
+
+        container.appendChild(row);
+      });
+    }
+
+    function addNewAction() {
+      const inputFull = document.getElementById('inputNewActionFullName');
+      const inputShort = document.getElementById('inputNewActionShortName');
+      const valFull = inputFull.value.trim();
+      let valShort = inputShort.value.trim();
+      if (!valFull) return;
+      if (!valShort) valShort = valFull.slice(0, 2);
+
+      if (actions.some(a => a.name === valFull)) {
+        showToast('同名のアクション項目が既に存在します');
+        return;
+      }
+
+      actions.push({
+        id: 'act_' + Date.now(),
+        name: valFull,
+        short: valShort
+      });
+      inputFull.value = '';
+      inputShort.value = '';
+      saveToLocalStorage();
+      renderActionsList();
+      renderMatrix();
+      renderMonospaceText();
+      showToast(`「${valFull} (${valShort})」を追加しました`);
+    }
+
+    // Toast & Clipboard Helper
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMessage');
+      toastMsg.textContent = msg;
+      toast.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
+      }, 2500);
+    }
+
+    function copyToClipboard(text, successMsg = 'コピーしました！') {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(successMsg);
+        }).catch(() => {
+          fallbackCopy(text, successMsg);
+        });
+      } else {
+        fallbackCopy(text, successMsg);
+      }
+    }
+
+    function fallbackCopy(text, successMsg) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast(successMsg);
+      } catch (e) {
+        showToast('コピーに失敗しました');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function updateSpanButtons() {
+      // 8-days fixed layout
+    }
+
+    function updateTextTogglesUI() {
+      const activeClass = 'flex-1 py-1 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition';
+      const inactiveClass = 'flex-1 py-1 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition';
+
+      // Overlap mode toggle (merge 🔴 vs stack)
+      const btnOverlapMerge = document.getElementById('btnOverlapMerge');
+      const btnOverlapStack = document.getElementById('btnOverlapStack');
+      if (btnOverlapMerge && btnOverlapStack) {
+        if (textOverlapMode === 'merge') {
+          btnOverlapMerge.className = activeClass;
+          btnOverlapStack.className = inactiveClass;
+        } else {
+          btnOverlapStack.className = activeClass;
+          btnOverlapMerge.className = inactiveClass;
+        }
+      }
+
+      // Empty cell character toggle (ー vs 　)
+      const btnEmptyHyphen = document.getElementById('btnEmptyHyphen');
+      const btnEmptySpace = document.getElementById('btnEmptySpace');
+
+      if (btnEmptyHyphen && btnEmptySpace) {
+        if (textEmptyChar === 'ー') {
+          btnEmptyHyphen.className = activeClass;
+          btnEmptySpace.className = inactiveClass;
+        } else {
+          btnEmptySpace.className = activeClass;
+          btnEmptyHyphen.className = inactiveClass;
+        }
+      }
+
+      // Name mode toggle
+      const btnShort = document.getElementById('btnNameShort');
+      const btnFull = document.getElementById('btnNameFull');
+      if (textNameMode === 'short') {
+        btnShort.className = activeClass;
+        btnFull.className = inactiveClass;
+      } else {
+        btnFull.className = activeClass;
+        btnShort.className = inactiveClass;
+      }
+
+      // Separator toggle
+      const btnFullPipe = document.getElementById('btnSepFullPipe');
+      const btnHalfPipe = document.getElementById('btnSepHalfPipe');
+      if (textSeparator === '｜') {
+        btnFullPipe.className = activeClass;
+        btnHalfPipe.className = inactiveClass;
+      } else {
+        btnHalfPipe.className = activeClass;
+        btnFullPipe.className = inactiveClass;
+      }
+
+      // Preview width mode buttons & container style
+      const btnWidthMobile = document.getElementById('btnWidthMobile');
+      const btnWidthWide = document.getElementById('btnWidthWide');
+      const editorContainer = document.getElementById('monospaceEditorContainer');
+      const editorWrapper = document.getElementById('monospaceEditorWrapper');
+      const widthActiveClass = 'px-2.5 py-1 rounded-lg text-[11px] font-bold bg-cyan-900/80 text-cyan-200 border border-cyan-700/60 transition flex items-center gap-1';
+      const widthInactiveClass = 'px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 transition flex items-center gap-1';
+
+      if (btnWidthMobile && btnWidthWide && editorContainer) {
+        if (previewWidthMode === 'mobile') {
+          btnWidthMobile.className = widthActiveClass;
+          btnWidthWide.className = widthInactiveClass;
+          if (editorWrapper) editorWrapper.className = 'overflow-x-auto pb-1 max-w-full';
+          editorContainer.style.boxSizing = 'content-box';
+          editorContainer.style.width = '16.6em';
+        } else {
+          btnWidthWide.className = widthActiveClass;
+          btnWidthMobile.className = widthInactiveClass;
+          if (editorWrapper) editorWrapper.className = 'overflow-x-auto pb-1 w-full';
+          editorContainer.style.boxSizing = 'border-box';
+          editorContainer.style.width = '100%';
+        }
+      }
+    }
+
+    // Attach Event Listeners
+    function setupListeners() {
+      document.getElementById('btnOpenBackupModal').addEventListener('click', openBackupModal);
+      document.getElementById('btnOpenHelpModal').addEventListener('click', openHelpModal);
+      document.getElementById('btnCopyTextMatrix').addEventListener('click', () => {
+        copyToClipboard(document.getElementById('monospaceTextArea').value, 'テキストをコピーしました！');
+      });
+
+      // Empty rows filter
+      document.getElementById('checkHideEmptyRows').addEventListener('change', (e) => {
+        hideEmptyRows = e.target.checked;
+        saveToLocalStorage();
+        renderMatrix();
+      });
+
+      // Days Quick Select Presets & Range Dropdowns
+      document.getElementById('btnQuickSelectMonFri').addEventListener('click', () => {
+        rangeTapStartIdx = null;
+        setSelectedDayRange(0, 4, true);
+      });
+      document.getElementById('btnQuickSelectMonSun').addEventListener('click', () => {
+        rangeTapStartIdx = null;
+        setSelectedDayRange(0, 6, true);
+      });
+      document.getElementById('btnQuickSelectTueMon').addEventListener('click', () => {
+        rangeTapStartIdx = null;
+        setSelectedDayRange(1, 7, true);
+      });
+
+      document.getElementById('selectStartDay').addEventListener('change', (e) => {
+        rangeTapStartIdx = null;
+        const newStart = parseInt(e.target.value, 10);
+        const [, curEnd] = getSelectedDayRangeIndices();
+        setSelectedDayRange(newStart, Math.max(newStart, curEnd), true);
+      });
+
+      document.getElementById('selectEndDay').addEventListener('change', (e) => {
+        rangeTapStartIdx = null;
+        const newEnd = parseInt(e.target.value, 10);
+        const [curStart] = getSelectedDayRangeIndices();
+        setSelectedDayRange(Math.min(curStart, newEnd), newEnd, true);
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (rangeDragOriginIdx !== null) {
+          rangeDragOriginIdx = null;
+          setTimeout(() => { rangeDragMoved = false; }, 0);
+        }
+      });
+
+      // Overlap mode toggle (merge 🔴 vs stack)
+      document.getElementById('btnOverlapMerge').addEventListener('click', () => {
+        textOverlapMode = 'merge';
+        saveToLocalStorage();
+        updateTextTogglesUI();
+        renderMonospaceText();
+      });
+      document.getElementById('btnOverlapStack').addEventListener('click', () => {
+        textOverlapMode = 'stack';
+        saveToLocalStorage();
+        updateTextTogglesUI();
+        renderMonospaceText();
+      });
+
+      // Preview width & whitespace visibility toggles
+      document.getElementById('btnWidthMobile').addEventListener('click', () => {
+        previewWidthMode = 'mobile';
+        updateTextTogglesUI();
+      });
+      document.getElementById('btnWidthWide').addEventListener('click', () => {
+        previewWidthMode = 'wide';
+        updateTextTogglesUI();
+      });
+      document.getElementById('checkShowWhitespace').addEventListener('change', (e) => {
+        showWhitespaceMarks = e.target.checked;
+        const editorContainer = document.getElementById('monospaceEditorContainer');
+        if (editorContainer) {
+          editorContainer.classList.toggle('show-ws', showWhitespaceMarks);
+        }
+      });
+
+      // Empty character toggle (ー vs 　)
+      document.getElementById('btnEmptyHyphen').addEventListener('click', () => {
+        textEmptyChar = 'ー';
+        saveToLocalStorage();
+        updateTextTogglesUI();
+        renderMonospaceText();
+      });
+      document.getElementById('btnEmptySpace').addEventListener('click', () => {
+        textEmptyChar = '　';
+        saveToLocalStorage();
+        updateTextTogglesUI();
+        renderMonospaceText();
+      });
+
+      // Name mode toggle
+      document.getElementById('btnNameShort').addEventListener('click', () => {
+        textNameMode = 'short';
+        saveToLocalStorage();
+        updateTextTogglesUI();
+        renderMonospaceText();
+      });
+      document.getElementById('btnNameFull').addEventListener('click', () => {
+        textNameMode = 'full';
+        saveToLocalStorage();
+        updateTextTogglesUI();
+        renderMonospaceText();
+      });
+
+      // Separator toggle
+      document.getElementById('btnSepFullPipe').addEventListener('click', () => {
+        textSeparator = '｜';
+        saveToLocalStorage();
+        updateTextTogglesUI();
+        renderMonospaceText();
+      });
+      document.getElementById('btnSepHalfPipe').addEventListener('click', () => {
+        textSeparator = '|';
+        saveToLocalStorage();
+        updateTextTogglesUI();
+        renderMonospaceText();
+      });
+
+      // Title input & Insert Date
+      document.getElementById('textTitleInput').addEventListener('input', (e) => {
+        textTitle = e.target.value;
+        saveToLocalStorage();
+        renderMonospaceText();
+      });
+      document.getElementById('btnInsertDate').addEventListener('click', insertDateToTitle);
+
+      // Event Manage Modal
+      document.getElementById('btnManageEventsModal').addEventListener('click', openManageEventsModal);
+      document.getElementById('btnCloseManageEventsModal').addEventListener('click', closeManageEventsModal);
+      document.getElementById('btnCloseManageEventsModalBtn').addEventListener('click', closeManageEventsModal);
+      document.getElementById('btnCreateNewEventFromManage').addEventListener('click', () => {
+        closeManageEventsModal();
+        openEventModal(null, true);
+      });
+
+      // Event Modal
+      document.getElementById('btnOpenNewEventModal').addEventListener('click', () => openEventModal(null, false));
+      document.getElementById('btnCloseEventModal').addEventListener('click', closeEventModal);
+      document.getElementById('btnCancelEventModal').addEventListener('click', closeEventModal);
+      document.getElementById('btnSaveEventModal').addEventListener('click', saveEventModal);
+      document.getElementById('btnDeleteCurrentEvent').addEventListener('click', deleteEvent);
+
+      document.querySelectorAll('.btn-quick-symbol').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.getElementById('inputEventSymbol').value = btn.textContent.trim();
+        });
+      });
+
+      // Action Modal
+      document.getElementById('btnManageActionsModal').addEventListener('click', openActionsModal);
+      document.getElementById('btnCloseActionsModal').addEventListener('click', closeActionsModal);
+      document.getElementById('btnCloseActionsModalBtn').addEventListener('click', closeActionsModal);
+      document.getElementById('btnAddNewAction').addEventListener('click', addNewAction);
+      document.getElementById('btnLoadPresetActions').addEventListener('click', async () => {
+        try {
+          const res = await fetch('howasaba_schedule_preset.json');
+          if (!res.ok) throw new Error('Fetch failed');
+          const data = await res.json();
+          if (data && data.actions) {
+            actions = normalizeActions(data.actions);
+            saveToLocalStorage();
+            renderActionsList();
+            renderMatrix();
+            renderMonospaceText();
+            showToast('定番20項目を読み込みました！');
+            return;
+          }
+        } catch (err) { }
+        // Fallback to built-in standard preset data
+        if (typeof STANDARD_PRESET_DATA !== 'undefined' && STANDARD_PRESET_DATA.actions) {
+          actions = normalizeActions(STANDARD_PRESET_DATA.actions);
+          saveToLocalStorage();
+          renderActionsList();
+          renderMatrix();
+          renderMonospaceText();
+          showToast('定番20項目を読み込みました！');
+        } else {
+          showToast('項目の読み込みに失敗しました。');
+        }
+      });
+      document.getElementById('btnResetActionsDefault').addEventListener('click', () => {
+        if (confirm('登録されているすべてのアクション項目を削除しますか？')) {
+          actions = [];
+          saveToLocalStorage();
+          renderActionsList();
+          renderMatrix();
+          renderMonospaceText();
+          showToast('アクション項目をすべてクリアしました');
+        }
+      });
+
+      // Backup & Preset Modal
+      document.getElementById('btnCloseBackupModal').addEventListener('click', closeBackupModal);
+      document.getElementById('btnCloseBackupModalBtn').addEventListener('click', closeBackupModal);
+      document.getElementById('btnApplyPresetFromModal').addEventListener('click', () => {
+        applyStandardPreset();
+        closeBackupModal();
+      });
+      document.getElementById('btnDownloadJsonFile').addEventListener('click', downloadJsonFile);
+      document.getElementById('btnCopyJsonText').addEventListener('click', copyExportJson);
+
+      // JSON File Selection & Explicit Import Execution
+      const jsonFileInput = document.getElementById('jsonFileInput');
+      const selectedFileInfo = document.getElementById('selectedFileInfo');
+      const selectedFileName = document.getElementById('selectedFileName');
+      const btnExecuteFileImport = document.getElementById('btnExecuteFileImport');
+
+      jsonFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) {
+          selectedImportFile = null;
+          selectedFileInfo.classList.add('hidden');
+          btnExecuteFileImport.disabled = true;
+          btnExecuteFileImport.className = 'w-full py-2 px-3 rounded-lg bg-slate-800 text-slate-500 font-bold transition flex items-center justify-center gap-1.5 cursor-not-allowed';
+          return;
+        }
+        selectedImportFile = file;
+        const sizeKb = Math.round(file.size / 1024 * 10) / 10;
+        selectedFileName.textContent = `選択中: ${file.name} (${sizeKb} KB)`;
+        selectedFileInfo.classList.remove('hidden');
+        btnExecuteFileImport.disabled = false;
+        btnExecuteFileImport.className = 'w-full py-2.5 px-3 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-bold transition flex items-center justify-center gap-1.5 shadow-md shadow-cyan-600/20';
+      });
+
+      btnExecuteFileImport.addEventListener('click', () => {
+        if (!selectedImportFile) {
+          showToast('インポートするJSONファイルを選択してください');
+          return;
+        }
+        if (!confirm(`選択されたファイル「${selectedImportFile.name}」を読み込み、現在のスケジュールを上書きしますか？`)) {
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          importFromJsonString(evt.target.result);
+          // Reset file input state
+          jsonFileInput.value = '';
+          selectedImportFile = null;
+          selectedFileInfo.classList.add('hidden');
+          btnExecuteFileImport.disabled = true;
+          btnExecuteFileImport.className = 'w-full py-2 px-3 rounded-lg bg-slate-800 text-slate-500 font-bold transition flex items-center justify-center gap-1.5 cursor-not-allowed';
+        };
+        reader.readAsText(selectedImportFile);
+      });
+
+      document.getElementById('btnClearAllToBlank').addEventListener('click', () => {
+        resetAllToBlank();
+        closeBackupModal();
+      });
+
+      // Help Modal Listeners
+      document.getElementById('btnCloseHelpModal').addEventListener('click', closeHelpModal);
+      document.getElementById('btnCloseHelpModalBtn').addEventListener('click', closeHelpModal);
+
+      // Alliance Auth Tabs & Actions
+      document.getElementById('tabBtnAuthLogin').addEventListener('click', () => switchAuthTab('login'));
+      document.getElementById('tabBtnAuthRegister').addEventListener('click', () => switchAuthTab('register'));
+
+      // Login
+      document.getElementById('btnDoLogin').addEventListener('click', async () => {
+        const accountId = document.getElementById('authLoginAccountId').value.trim();
+        const password = document.getElementById('authLoginPassword').value;
+        const rememberLogin = document.getElementById('checkRememberLogin').checked;
+
+        if (!accountId || !password) {
+          showToast('同盟アカウントIDとパスワードを入力してください');
+          return;
+        }
+
+        const btn = document.getElementById('btnDoLogin');
+        const origText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = '認証中...';
+
+        try {
+          await loginAlliance(accountId, password, rememberLogin);
+          closeAllianceAuthModal();
+          showToast(`🏰 「${accountId}」にログインしました！`);
+        } catch (err) {
+          showToast('ログイン失敗: ' + (err.message || '認証エラー'));
+        } finally {
+          btn.disabled = false;
+          btn.textContent = origText;
+        }
+      });
+
+      // Allow Enter key to submit Login
+      ['authLoginAccountId', 'authLoginPassword'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              document.getElementById('btnDoLogin').click();
+            }
+          });
+        }
+      });
+
+      // Register
+      document.getElementById('btnDoRegister').addEventListener('click', async () => {
+        const accountId = document.getElementById('authRegAccountId').value.trim();
+        const password = document.getElementById('authRegPassword').value;
+        const confirmPw = document.getElementById('authRegPasswordConfirm').value;
+        const keepData = document.getElementById('checkRegKeepCurrentData').checked;
+        const rememberLogin = document.getElementById('checkRegRememberLogin').checked;
+
+        if (!accountId || !password) {
+          showToast('すべての項目を入力してください');
+          return;
+        }
+
+        if (password !== confirmPw) {
+          showToast('パスワードの確認入力が一致しません');
+          return;
+        }
+
+        if (password.length < 4) {
+          showToast('パスワードは4文字以上で設定してください');
+          return;
+        }
+
+        const btn = document.getElementById('btnDoRegister');
+        const origText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'アカウント作成中...';
+
+        try {
+          await registerAlliance(accountId, password, keepData, rememberLogin);
+          closeAllianceAuthModal();
+          showToast(`✨ 同盟アカウント「${accountId}」を作成しました！`);
+        } catch (err) {
+          showToast('作成失敗: ' + (err.message || '登録エラー'));
+        } finally {
+          btn.disabled = false;
+          btn.textContent = origText;
+        }
+      });
+
+      // Manual Save & Logout
+      document.getElementById('btnCloudSaveManual').addEventListener('click', () => {
+        saveCurrentAllianceData(false);
+      });
+      document.getElementById('btnLogoutAlliance').addEventListener('click', logoutAlliance);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initCloudDb();
+      loadInitialState();
+      setupListeners();
+      updateAllianceUI();
+      updateSpanButtons();
+      updateTextTogglesUI();
+      renderTextDaysCheckboxes();
+      renderEventCheckboxes();
+      renderMatrix();
+      renderMonospaceText();
+      syncFromCloudOnStartup();
+    });
+  </script>
+</body>
+
+</html>
