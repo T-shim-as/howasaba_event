@@ -175,31 +175,41 @@
   <header class="bg-slate-900 border-b border-slate-800 px-3 sm:px-4 py-2 sm:py-2.5 sticky top-0 z-30 shadow-md">
     <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
       <div class="flex items-center gap-2 sm:gap-2.5 min-w-0">
-        <svg class="w-8 h-8 sm:w-9 sm:h-9 shrink-0 drop-shadow" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <svg class="w-8 h-8 sm:w-9 sm:h-9 shrink-0 drop-shadow" viewBox="0 0 64 64" fill="none"
+          xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <defs>
             <linearGradient id="hdrBgGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#0f172a"/>
-              <stop offset="55%" stop-color="#083344"/>
-              <stop offset="100%" stop-color="#0284c7"/>
+              <stop offset="0%" stop-color="#0f172a" />
+              <stop offset="55%" stop-color="#083344" />
+              <stop offset="100%" stop-color="#0284c7" />
             </linearGradient>
             <linearGradient id="hdrIceGrad" x1="12" y1="10" x2="52" y2="54" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#e0f2fe"/>
-              <stop offset="50%" stop-color="#38bdf8"/>
-              <stop offset="100%" stop-color="#06b6d4"/>
+              <stop offset="0%" stop-color="#e0f2fe" />
+              <stop offset="50%" stop-color="#38bdf8" />
+              <stop offset="100%" stop-color="#06b6d4" />
             </linearGradient>
           </defs>
-          <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#hdrBgGrad)" stroke="#38bdf8" stroke-width="2.5" stroke-opacity="0.7"/>
+          <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#hdrBgGrad)" stroke="#38bdf8" stroke-width="2.5"
+            stroke-opacity="0.7" />
           <g stroke="#38bdf8" stroke-opacity="0.18" stroke-width="1.5">
-            <line x1="22" y1="10" x2="22" y2="54"/><line x1="42" y1="10" x2="42" y2="54"/>
-            <line x1="10" y1="24" x2="54" y2="24"/><line x1="10" y1="40" x2="54" y2="40"/>
+            <line x1="22" y1="10" x2="22" y2="54" />
+            <line x1="42" y1="10" x2="42" y2="54" />
+            <line x1="10" y1="24" x2="54" y2="24" />
+            <line x1="10" y1="40" x2="54" y2="40" />
           </g>
           <g stroke="url(#hdrIceGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="32" y1="10" x2="32" y2="54"/><polyline points="27,15 32,20 37,15"/><polyline points="27,49 32,44 37,49"/>
-            <line x1="13" y1="21" x2="51" y2="43"/><polyline points="15,27 21,25.5 19.5,19.5"/><polyline points="49,37 43,38.5 44.5,44.5"/>
-            <line x1="51" y1="21" x2="13" y2="43"/><polyline points="44.5,19.5 43,25.5 49,27"/><polyline points="19.5,44.5 21,38.5 15,37"/>
+            <line x1="32" y1="10" x2="32" y2="54" />
+            <polyline points="27,15 32,20 37,15" />
+            <polyline points="27,49 32,44 37,49" />
+            <line x1="13" y1="21" x2="51" y2="43" />
+            <polyline points="15,27 21,25.5 19.5,19.5" />
+            <polyline points="49,37 43,38.5 44.5,44.5" />
+            <line x1="51" y1="21" x2="13" y2="43" />
+            <polyline points="44.5,19.5 43,25.5 49,27" />
+            <polyline points="19.5,44.5 21,38.5 15,37" />
           </g>
-          <polygon points="32,24 39,32 32,40 25,32" fill="#083344" stroke="#7dd3fc" stroke-width="2.2"/>
-          <circle cx="32" cy="32" r="2.8" fill="#e0f2fe"/>
+          <polygon points="32,24 39,32 32,40 25,32" fill="#083344" stroke="#7dd3fc" stroke-width="2.2" />
+          <circle cx="32" cy="32" r="2.8" fill="#e0f2fe" />
         </svg>
         <div class="min-w-0 leading-tight">
           <div class="text-[9px] sm:text-[10px] font-semibold text-cyan-400 leading-none mb-0.5 tracking-wide">
@@ -213,8 +223,10 @@
 
       <!-- Right Controls: Compact Login Status + Auto Sync Text + Hamburger Icon -->
       <div class="flex items-center gap-2 sm:gap-2.5 ml-auto shrink-0">
-        <div id="allianceStatusBar" class="hidden flex flex-col items-end sm:flex-row sm:items-center gap-0.5 sm:gap-2 leading-tight">
-          <span id="statusBarAllianceTitle" class="text-[11px] sm:text-xs font-bold text-cyan-300 max-w-[110px] sm:max-w-[180px] truncate">🏰
+        <div id="allianceStatusBar"
+          class="hidden flex flex-col items-end sm:flex-row sm:items-center gap-0.5 sm:gap-2 leading-tight">
+          <span id="statusBarAllianceTitle"
+            class="text-[11px] sm:text-xs font-bold text-cyan-300 max-w-[110px] sm:max-w-[180px] truncate">🏰
             ejy</span>
           <span id="statusBarSyncStatus"
             class="text-[10px] sm:text-[11px] font-semibold text-emerald-400 whitespace-nowrap">🟢 自動同期中</span>
@@ -341,12 +353,14 @@
         <div id="authPanelRegister" class="space-y-3.5 hidden">
           <div>
             <label class="block text-[11px] font-semibold text-slate-300 mb-1">同盟アカウントID (任意のID) *</label>
-            <input type="text" id="authRegAccountId" autocomplete="username" placeholder="例: ejy_schedule（半角英数字や日本語など自由）"
+            <input type="text" id="authRegAccountId" autocomplete="username"
+              placeholder="例: ejy_schedule（半角英数字や日本語など自由）"
               class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-white text-xs focus:outline-none focus:border-cyan-500">
           </div>
           <div>
             <label class="block text-[11px] font-semibold text-slate-300 mb-1">パスワード (4文字以上) *</label>
-            <input type="password" id="authRegPassword" autocomplete="new-password" placeholder="幹部間で共有する場合も考慮し、個人の重要PWは避けてください"
+            <input type="password" id="authRegPassword" autocomplete="new-password"
+              placeholder="幹部間で共有する場合も考慮し、個人の重要PWは避けてください"
               class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-white text-xs focus:outline-none focus:border-cyan-500">
           </div>
           <div>
@@ -513,8 +527,13 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-1">
           <!-- Overlap Mode (Merge 🔴 vs Multi-line Stack) -->
           <div>
-            <div class="flex items-center h-6 mb-1">
+            <div class="flex items-center justify-between h-6 mb-1">
               <label class="block text-[11px] font-semibold text-slate-400">ダブり項目の出力</label>
+              <button type="button" id="btnOpenOverlapSettingsModal"
+                class="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 transition flex items-center gap-1 shadow-sm"
+                title="記号統合で使用するダブり記号の順番・文字を設定">
+                <span>⚙️ 設定</span>
+              </button>
             </div>
             <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
               <button id="btnOverlapMerge"
@@ -555,7 +574,7 @@
             <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
               <button id="btnNameShort"
                 class="flex-1 py-1 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
-                短縮名 (推奨)
+                短縮名
               </button>
               <button id="btnNameFull"
                 class="flex-1 py-1 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition">
@@ -646,10 +665,19 @@
           <textarea id="monospaceTextArea" readonly class="hidden"></textarea>
         </div>
 
-        <button id="btnCopyTextMatrix" type="button"
-          class="w-full sm:w-auto justify-center px-5 py-2.5 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white flex items-center gap-1.5 shadow-lg shadow-cyan-600/20 transition shrink-0 sm:mb-1">
-          <span>📋 テキストをコピー</span>
-        </button>
+        <div class="flex flex-col items-stretch sm:items-start gap-2 w-full sm:w-auto shrink-0 sm:mb-1">
+          <!-- Lightweight wrap overflow alert above Copy button -->
+          <div id="textWrapAlert"
+            class="hidden px-3 py-1.5 rounded-lg bg-amber-950/90 border border-amber-700/80 text-amber-200 text-[11px] font-semibold flex items-center gap-1.5 shadow-md">
+            <span class="shrink-0">⚠️</span>
+            <span id="textWrapAlertMsg">1行16文字を超えている行があり、折り返しが崩れています</span>
+          </div>
+
+          <button id="btnCopyTextMatrix" type="button"
+            class="w-full sm:w-auto justify-center px-5 py-2.5 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white flex items-center gap-1.5 shadow-lg shadow-cyan-600/20 transition">
+            <span>📋 テキストをコピー</span>
+          </button>
+        </div>
       </div>
     </section>
 
@@ -678,7 +706,7 @@
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1">表示記号 * (1文字)</label>
-            <input type="text" id="inputEventSymbol" placeholder="◯, ◎, 🔴"
+            <input type="text" id="inputEventSymbol" value="◯" placeholder="◯"
               class="w-full text-center text-sm font-bold bg-slate-950 border border-slate-700 rounded-lg px-2 py-2 text-amber-300 focus:outline-none focus:border-cyan-500">
           </div>
         </div>
@@ -1063,7 +1091,8 @@
           </h4>
           <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-slate-300 leading-relaxed">
             <p>
-              トップ画面のログインフォーム（または「✨ 新規アカウント作成」タブ）から、<strong class="text-cyan-300">同盟アカウントID・パスワード</strong> を設定してアカウントを作成できます。
+              トップ画面のログインフォーム（または「✨ 新規アカウント作成」タブ）から、<strong class="text-cyan-300">同盟アカウントID・パスワード</strong>
+              を設定してアカウントを作成できます。
             </p>
             <ul class="list-disc list-inside space-y-1 text-slate-400 pl-1">
               <li>同盟名称の変更やサーバー移動があっても、同じ「同盟アカウントID」のまま継続利用できます。</li>
@@ -1100,9 +1129,12 @@
               画面右上の「☰ メニュー」から以下の管理機能を利用できます：
             </p>
             <ul class="list-disc list-inside space-y-1 text-slate-400 pl-1">
-              <li><strong class="text-amber-300">📤 エクスポート:</strong> 現在の編集内容をJSONバックアップとしてファイル保存・コピーできます。大きな編集の前に保存しておくと安心です。</li>
-              <li><strong class="text-slate-200">📥 インポート:</strong> 初期テンプレート（定番20項目・主要12イベント）の展開、バックアップファイルからの復元、全クリアを行えます。</li>
-              <li><strong class="text-slate-200">🔑 パスワード変更:</strong> アカウントIDとスケジュールデータを維持したまま、ログインパスワードを変更できます（幹部メンバーの入れ替わり時などに便利です）。</li>
+              <li><strong class="text-amber-300">📤 エクスポート:</strong>
+                現在の編集内容をJSONバックアップとしてファイル保存・コピーできます。大きな編集の前に保存しておくと安心です。</li>
+              <li><strong class="text-slate-200">📥 インポート:</strong>
+                初期テンプレート（定番20項目・主要12イベント）の展開、バックアップファイルからの復元、全クリアを行えます。</li>
+              <li><strong class="text-slate-200">🔑 パスワード変更:</strong>
+                アカウントIDとスケジュールデータを維持したまま、ログインパスワードを変更できます（幹部メンバーの入れ替わり時などに便利です）。</li>
             </ul>
           </div>
         </div>
@@ -1163,6 +1195,75 @@
           class="px-5 py-2 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow transition">
           変更を保存する
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 7: Overlap Symbols Settings Modal -->
+  <div id="modalOverlapSettings"
+    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div
+      class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <span>⚙️</span> ダブり項目（記号統合）の設定
+          </h3>
+          <p class="text-[11px] text-slate-400 mt-0.5">複数イベントが重なった際に割り当てる記号（1文字）の順番を設定します</p>
+        </div>
+        <button id="btnCloseOverlapSettingsModal" class="text-slate-400 hover:text-white p-1 rounded-lg text-lg">✕</button>
+      </div>
+
+      <div class="p-4 sm:p-5 space-y-4 text-xs">
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-300 mb-2">割り当て順序（1番目〜10番目）</label>
+          <div class="grid grid-cols-5 gap-2" id="overlapSymbolsInputsGrid">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-400 mb-1.5">記号パレット（クリックで選択中の枠に入力）</label>
+          <div class="flex flex-wrap gap-1" id="overlapQuickPalette">
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🔴</button>
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🔵</button>
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🟢</button>
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🟡</button>
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🟣</button>
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🟠</button>
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🟤</button>
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">⚪</button>
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">◎</button>
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">◆</button>
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">●</button>
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">◯</button>
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">👑</button>
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">💠</button>
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🏆</button>
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🚩</button>
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">①</button>
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">②</button>
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">③</button>
+            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">④</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 border-t border-slate-800 bg-slate-900/80 flex items-center justify-between gap-2">
+        <button id="btnResetOverlapSymbolsDefault" type="button"
+          class="text-xs text-amber-300 hover:text-amber-200 hover:underline">
+          🔄 デフォルトに戻す
+        </button>
+        <div class="flex items-center gap-2">
+          <button id="btnCancelOverlapSettingsModal" type="button"
+            class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+            キャンセル
+          </button>
+          <button id="btnSaveOverlapSettingsModal" type="button"
+            class="px-5 py-2 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow transition">
+            保存する
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -1462,7 +1563,9 @@
     let showWhitespaceMarks = true; // 改行・空白記号の可視化
 
     // Auto-assigned overlap symbols (excluding ★ which is unsupported in WOS)
-    const OVERLAP_SYMBOL_POOL = ['🔴', '🔵', '🟢', '🟡', '🟣', '🟠', '🟤', '⚪', '◎', '◆'];
+    const DEFAULT_OVERLAP_SYMBOLS = ['🔴', '🔵', '🟢', '🟡', '🟣', '🟠', '🟤', '⚪', '◎', '◆'];
+    let overlapSymbols = [...DEFAULT_OVERLAP_SYMBOLS];
+    let activeOverlapInputIdx = 0;
 
     let draggedIndex = null;
     let draggedActionIdx = null;
@@ -1601,6 +1704,7 @@
         textOutputPeriod: textOutputPeriod,
         textStartDay: (textOutputPeriod === 'tue_mon' ? 'tue' : 'mon'),
         textOverlapMode: textOverlapMode,
+        overlapSymbols: overlapSymbols,
         textNameMode: textNameMode,
         textSeparator: textSeparator,
         textTitle: textTitle,
@@ -1626,6 +1730,9 @@
       }
       if (payload.textOutputPeriod) textOutputPeriod = payload.textOutputPeriod;
       if (payload.textOverlapMode) textOverlapMode = payload.textOverlapMode;
+      if (payload.overlapSymbols && Array.isArray(payload.overlapSymbols) && payload.overlapSymbols.length > 0) {
+        overlapSymbols = payload.overlapSymbols.map((s, idx) => (s && String(s).trim()) ? String(s).trim() : DEFAULT_OVERLAP_SYMBOLS[idx] || '🔴');
+      }
       if (payload.textNameMode) textNameMode = payload.textNameMode;
       if (payload.textSeparator) textSeparator = payload.textSeparator;
       if (payload.textEmptyChar) textEmptyChar = payload.textEmptyChar;
@@ -1648,7 +1755,7 @@
     let pendingRemotePayload = null;
 
     function isAnyEditModalOpen() {
-      const modalIds = ['modalEvent', 'modalActions', 'modalManageEvents', 'modalBackup', 'modalChangePassword'];
+      const modalIds = ['modalEvent', 'modalActions', 'modalManageEvents', 'modalBackup', 'modalChangePassword', 'modalOverlapSettings'];
       return modalIds.some(id => {
         const el = document.getElementById(id);
         return el && !el.classList.contains('hidden');
@@ -2438,6 +2545,7 @@
         textOutputPeriod: textOutputPeriod,
         textStartDay: (textOutputPeriod === 'tue_mon' ? 'tue' : 'mon'),
         textOverlapMode: textOverlapMode,
+        overlapSymbols: overlapSymbols,
         textNameMode: textNameMode,
         textSeparator: textSeparator,
         textTitle: textTitle,
@@ -2495,6 +2603,9 @@
         }
         if (obj.textOutputPeriod) textOutputPeriod = obj.textOutputPeriod;
         if (obj.textOverlapMode) textOverlapMode = obj.textOverlapMode;
+        if (obj.overlapSymbols && Array.isArray(obj.overlapSymbols) && obj.overlapSymbols.length > 0) {
+          overlapSymbols = obj.overlapSymbols.map((s, idx) => (s && String(s).trim()) ? String(s).trim() : DEFAULT_OVERLAP_SYMBOLS[idx] || '🔴');
+        }
         if (obj.textNameMode) textNameMode = obj.textNameMode;
         if (obj.textSeparator) textSeparator = obj.textSeparator;
         if (obj.textEmptyChar) textEmptyChar = obj.textEmptyChar;
@@ -2580,6 +2691,16 @@
         const savedOverlapMode = localStorage.getItem('wos_text_overlap_mode');
         if (savedOverlapMode) textOverlapMode = savedOverlapMode;
 
+        const savedOverlapSymbols = localStorage.getItem('wos_overlap_symbols');
+        if (savedOverlapSymbols) {
+          try {
+            const parsedSyms = JSON.parse(savedOverlapSymbols);
+            if (Array.isArray(parsedSyms) && parsedSyms.length > 0) {
+              overlapSymbols = parsedSyms.map((s, idx) => (s && String(s).trim()) ? String(s).trim() : DEFAULT_OVERLAP_SYMBOLS[idx] || '🔴');
+            }
+          } catch (e) { }
+        }
+
         const savedEmptyChar = localStorage.getItem('wos_text_empty_char');
         if (savedEmptyChar) textEmptyChar = savedEmptyChar;
 
@@ -2619,6 +2740,7 @@
         localStorage.setItem('wos_text_title', textTitle);
         localStorage.setItem('wos_text_selected_days', JSON.stringify(textSelectedDays));
         localStorage.setItem('wos_text_overlap_mode', textOverlapMode);
+        localStorage.setItem('wos_overlap_symbols', JSON.stringify(overlapSymbols));
         localStorage.setItem('wos_text_empty_char', textEmptyChar);
         localStorage.setItem('wos_text_output_period', textOutputPeriod);
         localStorage.setItem('wos_text_start_day', textOutputPeriod === 'tue_mon' ? 'tue' : 'mon');
@@ -3127,9 +3249,11 @@
 
       // Prepare overlap symbol assignment for 'merge' mode
       const usedSymbols = new Set(activeEvents.map(e => e.symbol));
-      const availableOverlapPool = OVERLAP_SYMBOL_POOL.filter(s => !usedSymbols.has(s));
+      const poolSource = (Array.isArray(overlapSymbols) && overlapSymbols.length > 0) ? overlapSymbols : DEFAULT_OVERLAP_SYMBOLS;
+      const availableOverlapPool = poolSource.filter(s => s && !usedSymbols.has(s));
       const overlapComboMap = new Map();
       const overlapComboList = [];
+      let hasMatrixOverflow = getHalfwidthLength(headerLine) > 32;
 
       // Rows (Matrix body uses trailing spaces instead of newlines to preserve the 10-newline limit)
       if (rowsToRender.length === 0) {
@@ -3156,7 +3280,8 @@
               // 2つ以上のイベントが重複している場合
               const comboKey = evs.map(e => e.id).join('+');
               if (!overlapComboMap.has(comboKey)) {
-                const assignedSym = availableOverlapPool[overlapComboList.length] || '🔴';
+                const fallbackSym = poolSource[0] || '🔴';
+                const assignedSym = availableOverlapPool[overlapComboList.length] || fallbackSym;
                 const comboObj = {
                   key: comboKey,
                   symbol: assignedSym,
@@ -3186,6 +3311,12 @@
           }
         });
 
+        matrixLines.forEach(line => {
+          if (getHalfwidthLength(line) > 32) {
+            hasMatrixOverflow = true;
+          }
+        });
+
         const hasLegend = activeEvents.length > 0;
         const wrappedLines = matrixLines.map((line, idx) => {
           if (idx === matrixLines.length - 1 && !hasLegend) {
@@ -3197,11 +3328,19 @@
         out += wrappedLines.join('');
       }
 
+      let hasLegendOrTitleOverflow = textTitle ? (getHalfwidthLength(textTitle) > 32) : false;
+
       // Legend at bottom (first legend line or blank line wraps naturally via the last matrix line's trailing space)
       if (activeEvents.length > 0) {
         const legendLines = activeEvents.map(ev => `${ev.symbol} : ${ev.name}`);
         overlapComboList.forEach(c => {
           legendLines.push(`${c.symbol} : ${c.label}`);
+        });
+
+        legendLines.forEach(line => {
+          if (getHalfwidthLength(line) > 32) {
+            hasLegendOrTitleOverflow = true;
+          }
         });
 
         // Calculate used newlines without blank line (Title + Legend newlines)
@@ -3213,8 +3352,84 @@
         out += legendLines.join('\n');
       }
 
+      // Check wrap overflow & newline alert above Copy button
+      const alertBox = document.getElementById('textWrapAlert');
+      const alertMsg = document.getElementById('textWrapAlertMsg');
+      const totalNewlines = (out.match(/\n/g) || []).length;
+      if (alertBox && alertMsg) {
+        if (hasMatrixOverflow) {
+          alertMsg.textContent = '表の1行が折り返し幅（16文字）を超えているため、出力が崩れています';
+          alertBox.classList.remove('hidden');
+        } else if (hasLegendOrTitleOverflow) {
+          alertMsg.textContent = 'タイトルまたは凡例が折り返し幅（16文字）を超えています';
+          alertBox.classList.remove('hidden');
+        } else if (totalNewlines > 10) {
+          alertMsg.textContent = `改行数が上限（10回）を超えています（現在 ${totalNewlines}回）`;
+          alertBox.classList.remove('hidden');
+        } else {
+          alertBox.classList.add('hidden');
+        }
+      }
+
       document.getElementById('monospaceTextArea').value = out;
       renderVisualEditor(out);
+    }
+
+    // Modal: Overlap Symbols Settings
+    function renderOverlapSymbolsInputs() {
+      const grid = document.getElementById('overlapSymbolsInputsGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      for (let i = 0; i < 10; i++) {
+        const val = overlapSymbols[i] || DEFAULT_OVERLAP_SYMBOLS[i] || '🔴';
+        const wrap = document.createElement('div');
+        wrap.className = 'flex flex-col items-center gap-1 bg-slate-950 p-2 rounded-lg border border-slate-800';
+        wrap.innerHTML = `
+          <span class="text-[10px] font-semibold text-slate-400">${i + 1}番目</span>
+          <input type="text" data-overlap-idx="${i}" value="${escapeHtml(val)}" placeholder="${escapeHtml(DEFAULT_OVERLAP_SYMBOLS[i] || '🔴')}"
+            class="overlap-sym-input w-full text-center text-sm font-bold bg-slate-900 border border-slate-700 rounded py-1.5 text-amber-300 focus:outline-none focus:border-cyan-500">
+        `;
+        const inp = wrap.querySelector('input');
+        inp.addEventListener('focus', () => {
+          activeOverlapInputIdx = i;
+        });
+        grid.appendChild(wrap);
+      }
+    }
+
+    function openOverlapSettingsModal() {
+      activeOverlapInputIdx = 0;
+      renderOverlapSymbolsInputs();
+      document.getElementById('modalOverlapSettings').classList.remove('hidden');
+    }
+
+    function closeOverlapSettingsModal() {
+      document.getElementById('modalOverlapSettings').classList.add('hidden');
+      applyPendingRemotePayloadIfIdle();
+    }
+
+    function saveOverlapSettingsModal() {
+      const inputs = document.querySelectorAll('.overlap-sym-input');
+      const nextSyms = [];
+      inputs.forEach((inp, idx) => {
+        const raw = inp.value.trim();
+        const tokens = tokenizeChars(raw);
+        const oneChar = tokens.length > 0 ? tokens[0] : (DEFAULT_OVERLAP_SYMBOLS[idx] || '🔴');
+        nextSyms.push(oneChar);
+      });
+      overlapSymbols = nextSyms;
+      saveToLocalStorage();
+      updateTextTogglesUI();
+      renderMonospaceText();
+      closeOverlapSettingsModal();
+      showToast('ダブり項目の記号設定を保存しました！');
+    }
+
+    function resetOverlapSymbolsDefault() {
+      overlapSymbols = [...DEFAULT_OVERLAP_SYMBOLS];
+      renderOverlapSymbolsInputs();
+      showToast('デフォルトの記号順に戻しました');
     }
 
     // Modal: Event Create/Edit
@@ -3573,6 +3788,8 @@
       const btnOverlapMerge = document.getElementById('btnOverlapMerge');
       const btnOverlapStack = document.getElementById('btnOverlapStack');
       if (btnOverlapMerge && btnOverlapStack) {
+        const firstSym = (Array.isArray(overlapSymbols) && overlapSymbols[0]) ? overlapSymbols[0] : '🔴';
+        btnOverlapMerge.textContent = `記号統合 (${firstSym})`;
         if (textOverlapMode === 'merge') {
           btnOverlapMerge.className = activeClass;
           btnOverlapStack.className = inactiveClass;
@@ -3692,7 +3909,7 @@
         }
       });
 
-      // Overlap mode toggle (merge 🔴 vs stack)
+      // Overlap mode toggle (merge 🔴 vs stack) & Overlap Symbols Settings Modal
       document.getElementById('btnOverlapMerge').addEventListener('click', () => {
         textOverlapMode = 'merge';
         saveToLocalStorage();
@@ -3704,6 +3921,24 @@
         saveToLocalStorage();
         updateTextTogglesUI();
         renderMonospaceText();
+      });
+      document.getElementById('btnOpenOverlapSettingsModal').addEventListener('click', openOverlapSettingsModal);
+      document.getElementById('btnCloseOverlapSettingsModal').addEventListener('click', closeOverlapSettingsModal);
+      document.getElementById('btnCancelOverlapSettingsModal').addEventListener('click', closeOverlapSettingsModal);
+      document.getElementById('btnSaveOverlapSettingsModal').addEventListener('click', saveOverlapSettingsModal);
+      document.getElementById('btnResetOverlapSymbolsDefault').addEventListener('click', resetOverlapSymbolsDefault);
+      document.querySelectorAll('.btn-overlap-quick').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const sym = btn.textContent.trim();
+          const inputs = document.querySelectorAll('.overlap-sym-input');
+          const target = inputs[activeOverlapInputIdx] || inputs[0];
+          if (target) {
+            target.value = sym;
+            const nextIdx = (activeOverlapInputIdx + 1) % inputs.length;
+            activeOverlapInputIdx = nextIdx;
+            if (inputs[nextIdx]) inputs[nextIdx].focus();
+          }
+        });
       });
 
       // Preview width & whitespace visibility toggles
