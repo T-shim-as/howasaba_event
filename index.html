@@ -470,165 +470,292 @@
     </section>
 
     <!-- Section 3: Text Output (Checkbox Days Selection & Layout Options) -->
-    <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 sm:p-5 shadow-lg flex flex-col gap-3">
-      <div class="pb-3 border-b border-slate-800">
-        <h2 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-          📢 チャット用テキスト出力
-        </h2>
-        <p class="text-[11px] sm:text-xs text-slate-400 mt-0.5">
-          ゲーム内チャットの10回改行制限・16文字折り返しに対応したテキストを生成します
-        </p>
-      </div>
-
-      <!-- Text Controls: Days Checkboxes & Formatting Options -->
-      <div class="bg-slate-950/60 p-3 sm:p-3.5 rounded-xl border border-slate-800 text-xs space-y-3">
-        <!-- Row 1: Contiguous Days Range Selector -->
-        <div class="pb-3 border-b border-slate-800/80 space-y-2.5">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-[11px] font-semibold text-slate-300">出力期間</span>
-              <!-- Start ~ End Dropdowns & Badge -->
-              <div
-                class="inline-flex items-center gap-1 bg-slate-900 px-2 py-0.5 rounded-lg border border-slate-800 text-[11px]">
-                <select id="selectStartDay"
-                  class="bg-transparent text-cyan-300 font-bold focus:outline-none cursor-pointer"></select>
-                <span class="text-slate-500">〜</span>
-                <select id="selectEndDay"
-                  class="bg-transparent text-cyan-300 font-bold focus:outline-none cursor-pointer"></select>
-                <span id="selectedDaysCountBadge"
-                  class="ml-1 px-1.5 py-0.2 rounded bg-cyan-950/90 text-cyan-300 text-[10px] font-bold border border-cyan-800/60">7日間</span>
-              </div>
-              <span id="rangeTapHint" class="text-[10px] text-slate-400">（バーをドラッグ、または開始日→終了日の順にタップ）</span>
-            </div>
-
-            <!-- Quick presets -->
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <span class="text-[10px] text-slate-400">定番期間:</span>
-              <button type="button" id="btnQuickSelectMonSun"
-                class="px-2.5 py-1 sm:py-0.5 rounded-md text-[11px] sm:text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 transition">月〜日
-                (7日)</button>
-              <button type="button" id="btnQuickSelectTueMon"
-                class="px-2.5 py-1 sm:py-0.5 rounded-md text-[11px] sm:text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 transition">火〜月
-                (7日)</button>
-              <button type="button" id="btnQuickSelectMonFri"
-                class="px-2.5 py-1 sm:py-0.5 rounded-md text-[11px] sm:text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 transition">月〜金
-                (5日)</button>
-            </div>
-          </div>
-
-          <!-- Connected 8-Day Range Track -->
-          <div class="grid grid-cols-8 bg-slate-900/95 p-1 rounded-xl border border-slate-800 select-none"
-            id="textDaysCheckboxGroup">
-            <!-- Rendered dynamically by JS as a connected range bar -->
-          </div>
+    <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 sm:p-5 shadow-xl flex flex-col gap-3.5">
+      <!-- Section Header with Accordion Toggle Button -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-slate-800/80">
+        <div>
+          <h2 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+            <span class="p-1 rounded-lg bg-cyan-950 border border-cyan-800/60 text-cyan-400">📋</span>
+            <span>チャット用テキスト出力</span>
+          </h2>
+          <p class="text-[11px] text-slate-400 mt-0.5">
+            同盟チャットの制限（10回改行・16文字折り返し）に最適化した等幅テキストを生成します
+          </p>
         </div>
 
-        <!-- Row 2: Title & Output Settings Button -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-          <!-- Title Input with Date Button -->
-          <div class="flex-1 max-w-xl">
-            <div class="flex items-center justify-between h-6 mb-1">
-              <label class="block text-[11px] font-semibold text-slate-400">タイトル</label>
-              <button type="button" id="btnInsertDate"
-                class="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 transition flex items-center gap-1 shadow-sm"
-                title="選択中の曜日に合わせた日付をタイトルに挿入">
-                <span>📅 日付挿入</span>
-              </button>
+        <!-- Accordion Toggle Button & Quick Summary -->
+        <div class="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+          <span id="outputSettingsSummaryBadge" class="hidden sm:inline-block text-[11px] text-slate-400 bg-slate-950/80 px-2.5 py-1 rounded-lg border border-slate-800 font-normal">
+            <!-- Populated by JS -->
+          </span>
+          <button type="button" id="btnToggleOutputAccordion"
+            class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700/80 text-cyan-300 hover:text-cyan-200 border border-slate-700 hover:border-cyan-600/50 flex items-center gap-1.5 transition shadow-sm"
+            title="出力期間・タイトル・書式設定パネルを開閉します">
+            <span id="accordionToggleIcon">⚙️</span>
+            <span id="accordionToggleText">設定・期間を収納</span>
+            <span id="accordionChevron" class="text-[10px] text-cyan-400 font-mono transition-transform duration-200">▲</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Accordion Collapsible Wrapper for Period, Title & All Output Settings -->
+      <div id="outputSettingsAccordion" class="space-y-3 transition-all duration-300">
+        <div class="bg-slate-950/70 p-3 sm:p-4 rounded-2xl border border-slate-800/90 text-xs space-y-3.5 shadow-inner">
+          
+          <!-- Block 1: 出力期間 & タイトル (2-Column Grid on lg+) -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-stretch">
+            
+            <!-- 出力期間 (lg:col-span-8) -->
+            <div class="lg:col-span-8 space-y-2 bg-slate-900/70 p-3 rounded-xl border border-slate-800/80 flex flex-col justify-between">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-[11px] font-bold text-cyan-300 flex items-center gap-1">
+                    <span>📅</span> 出力期間
+                  </span>
+                  <div class="inline-flex items-center gap-1 bg-slate-950 px-2 py-0.5 rounded-lg border border-slate-700 text-[11px]">
+                    <select id="selectStartDay" class="bg-transparent text-cyan-300 font-bold focus:outline-none cursor-pointer"></select>
+                    <span class="text-slate-500">〜</span>
+                    <select id="selectEndDay" class="bg-transparent text-cyan-300 font-bold focus:outline-none cursor-pointer"></select>
+                    <span id="selectedDaysCountBadge" class="ml-1 px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 text-[10px] font-bold border border-cyan-700">7日間</span>
+                  </div>
+                  <span id="rangeTapHint" class="text-[10px] text-slate-400 hidden xl:inline">（ドラッグまたは開始→終了タップ）</span>
+                </div>
+
+                <!-- Quick Presets -->
+                <div class="flex items-center gap-1 flex-wrap">
+                  <span class="text-[10px] text-slate-400">定番:</span>
+                  <button type="button" id="btnQuickSelectMonSun" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">月〜日 (7日)</button>
+                  <button type="button" id="btnQuickSelectTueMon" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">火〜月 (7日)</button>
+                  <button type="button" id="btnQuickSelectMonFri" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">月〜金 (5日)</button>
+                </div>
+              </div>
+
+              <!-- 8-Day Range Track -->
+              <div class="grid grid-cols-8 bg-slate-950 p-1 rounded-xl border border-slate-800 select-none mt-1" id="textDaysCheckboxGroup">
+                <!-- Rendered dynamically by JS as a connected range bar -->
+              </div>
             </div>
-            <input type="text" id="textTitleInput" value="【 スケジュール 】"
-              class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white text-xs focus:outline-none focus:border-cyan-500">
+
+            <!-- タイトル入力 (lg:col-span-4) -->
+            <div class="lg:col-span-4 space-y-2 bg-slate-900/70 p-3 rounded-xl border border-slate-800/80 flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-cyan-300 flex items-center gap-1">
+                  <span>🏷️</span> タイトル
+                </span>
+                <button type="button" id="btnInsertDate"
+                  class="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 transition flex items-center gap-1 shadow-sm"
+                  title="選択中の曜日に合わせた日付をタイトルに挿入">
+                  <span>📅 日付挿入</span>
+                </button>
+              </div>
+              <input type="text" id="textTitleInput" value="【 スケジュール 】"
+                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white text-xs focus:outline-none focus:border-cyan-500">
+              <p class="text-[10px] text-slate-400">※空欄時はタイトル行なしで出力します</p>
+            </div>
+
           </div>
 
-          <!-- Output Settings Modal Trigger Button -->
-          <div class="flex items-end">
-            <button type="button" id="btnOpenOutputSettingsModal"
-              class="w-full sm:w-auto px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-800/70 flex items-center justify-center gap-1.5 shadow-sm transition whitespace-nowrap"
-              title="ダブり、空欄、項目名、仕切り線、曜日表示などの出力詳細設定">
-              <span>⚙️ 出力設定</span>
-            </button>
+          <!-- Block 2: 出力書式・レイアウト設定 (すべてオープン化) -->
+          <div class="space-y-2.5 pt-2 border-t border-slate-800/80">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold text-slate-300 flex items-center gap-1.5">
+                <span>⚙️</span> 出力書式・レイアウト設定
+              </span>
+              <button type="button" id="btnOpenOverlapSettingsModal"
+                class="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 transition flex items-center gap-1 shadow-sm">
+                <span>🎨 重複記号順・パレット設定</span>
+              </button>
+            </div>
+
+            <!-- 7 Settings Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+              
+              <!-- ① 曜日行の文字形式 -->
+              <div class="space-y-1 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
+                <label class="block text-[11px] font-semibold text-slate-300">① 曜日行の文字形式</label>
+                <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+                  <button id="btnDayFormatDay" type="button" class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+                    曜日 (月・火...)
+                  </button>
+                  <button id="btnDayFormatNumber" type="button" class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+                    数字 (１・２...)
+                  </button>
+                </div>
+              </div>
+
+              <!-- ② 先頭の区切り -->
+              <div class="space-y-1 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
+                <label class="block text-[11px] font-semibold text-slate-300">② 先頭の区切り</label>
+                <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+                  <button id="btnLeadingPipePipe" type="button" class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition" title="項目名直後に縦線を出力（例: 加速｜◯）">
+                    縦線
+                  </button>
+                  <button id="btnLeadingPipeSpace" type="button" class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition" title="項目名直後にスペースを出力（例: 加速　◯）">
+                    スペース
+                  </button>
+                  <button id="btnLeadingPipeNone" type="button" class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition" title="区切りなし（例: 加速◯）">
+                    なし
+                  </button>
+                </div>
+              </div>
+
+              <!-- ③ 曜日行の仕切り線 -->
+              <div class="space-y-1 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
+                <label class="block text-[11px] font-semibold text-slate-300">③ 曜日行の仕切り線</label>
+                <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+                  <button id="btnHeaderSepOn" type="button" class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+                    あり (月｜火)
+                  </button>
+                  <button id="btnHeaderSepOff" type="button" class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+                    なし (月　火)
+                  </button>
+                </div>
+              </div>
+
+              <!-- ④ ダブり項目の出力 -->
+              <div class="space-y-1 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
+                <label class="block text-[11px] font-semibold text-slate-300">④ 重複(ダブり)項目</label>
+                <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+                  <button id="btnModalOverlapMerge" type="button" class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition" title="重複を記号でまとめ凡例に表示">
+                    記号統合 (🔴)
+                  </button>
+                  <button id="btnModalOverlapStack" type="button" class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition" title="重複を縦並び複数行で出力">
+                    縦並び (複数行)
+                  </button>
+                </div>
+              </div>
+
+              <!-- ⑤ 空欄の表示 -->
+              <div class="space-y-1 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
+                <label class="block text-[11px] font-semibold text-slate-300">⑤ 空欄の表示</label>
+                <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+                  <button id="btnModalEmptyHyphen" type="button" class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+                    ー (線)
+                  </button>
+                  <button id="btnModalEmptySpace" type="button" class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+                    　 (空白)
+                  </button>
+                </div>
+              </div>
+
+              <!-- ⑥ 項目名表示 -->
+              <div class="space-y-1 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
+                <label class="block text-[11px] font-semibold text-slate-300">⑥ 項目名表示</label>
+                <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+                  <button id="btnModalNameShort" type="button" class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+                    短縮名 (2文字)
+                  </button>
+                  <button id="btnModalNameFull" type="button" class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+                    正式名
+                  </button>
+                </div>
+              </div>
+
+              <!-- ⑦ 仕切り線スタイル (sm:col-span-2) -->
+              <div class="space-y-1 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80 sm:col-span-2">
+                <label class="block text-[11px] font-semibold text-slate-300">⑦ 仕切り線スタイル (全角 / 半角)</label>
+                <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+                  <button id="btnModalSepFullPipe" type="button" class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+                    全角 ｜ (推奨: ゲーム内ズレ防止)
+                  </button>
+                  <button id="btnModalSepHalfPipe" type="button" class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+                    半角 | (文字数節約)
+                  </button>
+                </div>
+              </div>
+
+            </div>
           </div>
+
         </div>
       </div>
 
       <!-- Preview Width & Whitespace Inspector Toolbar -->
       <div
-        class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-950/80 px-3 py-2 rounded-xl border border-slate-800/90 text-xs">
+        class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-slate-950 p-2.5 sm:px-3 sm:py-2 rounded-xl border border-slate-800 text-xs">
         <div class="flex items-center gap-1.5 flex-wrap">
-          <span class="text-[11px] font-semibold text-slate-400 mr-1">表示幅:</span>
+          <span class="text-[11px] font-bold text-slate-400 mr-1 flex items-center gap-1">
+            <span>👁️</span> 表示幅:
+          </span>
           <button type="button" id="btnWidthMobile"
-            class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-cyan-900/80 text-cyan-200 border border-cyan-700/60 transition flex items-center gap-1">
+            class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-cyan-900/80 text-cyan-200 border border-cyan-700/60 transition flex items-center gap-1 shadow-sm">
             <span>📱 チャット幅 (16文字)</span>
           </button>
           <button type="button" id="btnWidthWide"
             class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 transition flex items-center gap-1">
-            <span>↔️ 広げて確認 (全体)</span>
+            <span>↔️ 全体幅</span>
           </button>
-          <div class="h-4 w-px bg-slate-800 mx-0.5 hidden sm:block"></div>
+          <div class="h-4 w-px bg-slate-800 mx-1 hidden sm:block"></div>
           <button type="button" id="btnToggleEditMode"
-            class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-900 text-slate-300 hover:text-white border border-slate-700 transition flex items-center gap-1"
+            class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-900 text-slate-300 hover:text-white border border-slate-700 transition flex items-center gap-1 shadow-sm"
             title="出力されたテキストを直接書き換える編集モードに切り替えます">
-            <span>✏️ 編集モード</span>
+            <span>✏️ 直接編集</span>
           </button>
           <button type="button" id="btnResetManualEdit"
-            class="hidden px-2 py-1 rounded-lg text-[10px] font-semibold bg-slate-900 text-amber-300 hover:text-amber-200 border border-amber-800/70 transition flex items-center gap-1"
+            class="hidden px-2 py-1 rounded-lg text-[10px] font-semibold bg-slate-900 text-amber-300 hover:text-amber-200 border border-amber-800/70 transition flex items-center gap-1 shadow-sm"
             title="手動編集を破棄して自動生成テキストに戻します">
             <span>🔄 自動生成に戻す</span>
           </button>
         </div>
 
-        <div class="flex items-center gap-3 flex-wrap justify-between sm:justify-end">
+        <div class="flex items-center gap-2.5 flex-wrap justify-between sm:justify-end">
           <!-- Whitespace visibility toggle -->
           <label class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 cursor-pointer select-none">
             <input type="checkbox" id="checkShowWhitespace" checked
               class="rounded bg-slate-900 border-slate-700 text-cyan-500 focus:ring-0 h-3.5 w-3.5 cursor-pointer">
-            <span>改行・空白を可視化</span>
+            <span>改行・空白を表示</span>
           </label>
 
           <!-- Legend for invisible chars -->
-          <div class="flex items-center gap-2 text-[10px] bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+          <div class="flex items-center gap-2 text-[10px] bg-slate-900/90 px-2 py-0.5 rounded-lg border border-slate-800 text-slate-400">
             <span title="本物の改行コード (上限10回)"><strong class="text-amber-400">↵</strong> 改行</span>
-            <span title="自動折り返し用の半角スペース"><strong class="text-cyan-400">␣</strong> 半角空白</span>
-            <span title="全角スペース"><strong class="text-slate-400">□</strong> 全角空白</span>
+            <span title="自動折り返し用の半角スペース"><strong class="text-cyan-400">␣</strong> 半角</span>
+            <span title="全角スペース"><strong class="text-slate-300">□</strong> 全角</span>
           </div>
 
           <!-- Newline count indicator -->
           <span id="newlineCountBadge"
-            class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950/90 text-emerald-300 border border-emerald-800/70">
+            class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-950/90 text-emerald-300 border border-emerald-800/70">
             改行: 0 / 10回
           </span>
         </div>
       </div>
 
       <!-- Resizable Visual Editor Container & Copy Button -->
-      <div class="flex flex-col sm:flex-row sm:items-end flex-wrap gap-3">
-        <div id="monospaceEditorWrapper" class="overflow-x-auto pb-1 max-w-full">
+      <div class="flex flex-col lg:flex-row lg:items-end flex-wrap gap-3.5 pt-1">
+        <div id="monospaceEditorWrapper" class="overflow-x-auto pb-1 max-w-full flex-1">
           <div id="monospaceEditorContainer" style="width: 16.6em;"
-            class="visual-editor-box show-ws bg-slate-950 text-cyan-200 p-3.5 rounded-xl border border-slate-800 shadow-inner min-h-[260px] resize-x overflow-x-auto max-w-full">
+            class="visual-editor-box show-ws bg-slate-950 text-cyan-200 p-3.5 rounded-2xl border border-slate-800 shadow-inner min-h-[260px] resize-x overflow-x-auto max-w-full">
           </div>
-          <!-- Direct editable textarea (toggled by ✏️ 編集モード) -->
+          <!-- Direct editable textarea (toggled by ✏️ 直接編集) -->
           <textarea id="monospaceTextArea" readonly style="width: 16.6em;"
-            class="hidden visual-editor-box bg-slate-950 text-cyan-100 p-3.5 rounded-xl border-2 border-amber-500/80 focus:outline-none focus:border-amber-400 shadow-inner min-h-[260px] resize-x overflow-x-auto max-w-full"></textarea>
+            class="hidden visual-editor-box bg-slate-950 text-cyan-100 p-3.5 rounded-2xl border-2 border-amber-500/80 focus:outline-none focus:border-amber-400 shadow-inner min-h-[260px] resize-x overflow-x-auto max-w-full font-mono text-xs"></textarea>
         </div>
 
-        <div class="flex flex-col items-stretch sm:items-start gap-2 w-full sm:w-auto shrink-0 sm:mb-1">
-          <!-- Alert 1: Wrap overflow alert above Copy button -->
+        <div class="flex flex-col items-stretch lg:items-start gap-2.5 w-full lg:w-72 shrink-0 lg:mb-1">
+          <!-- Alert 1: Wrap overflow alert -->
           <div id="textWrapAlert"
-            class="hidden px-3 py-1.5 rounded-lg bg-amber-950/90 border border-amber-700/80 text-amber-200 text-[11px] font-semibold flex items-center gap-1.5 shadow-md">
-            <span class="shrink-0">⚠️</span>
-            <span id="textWrapAlertMsg">表の1行が折り返し幅（16文字）を超えているため、出力が崩れています</span>
+            class="hidden px-3 py-2 rounded-xl bg-amber-950/90 border border-amber-600/80 text-amber-200 text-[11px] font-semibold flex items-start gap-2 shadow-md">
+            <span class="shrink-0 text-base leading-none">⚠️</span>
+            <span id="textWrapAlertMsg" class="leading-tight">表の1行が折り返し幅（16文字）を超えているため、ゲーム内チャットで崩れる可能性があります</span>
           </div>
 
-          <!-- Alert 2: Newline count overflow alert above Copy button -->
+          <!-- Alert 2: Newline count overflow alert -->
           <div id="textNewlineAlert"
-            class="hidden px-3 py-1.5 rounded-lg bg-rose-950/90 border border-rose-700/80 text-rose-200 text-[11px] font-semibold flex items-center gap-1.5 shadow-md">
-            <span class="shrink-0">⚠️</span>
-            <span id="textNewlineAlertMsg">改行数が上限（10回）を超えています（現在 11回）</span>
+            class="hidden px-3 py-2 rounded-xl bg-rose-950/90 border border-rose-600/80 text-rose-200 text-[11px] font-semibold flex items-start gap-2 shadow-md">
+            <span class="shrink-0 text-base leading-none">⚠️</span>
+            <span id="textNewlineAlertMsg" class="leading-tight">改行数が上限（10回）を超えています（現在 11回）</span>
           </div>
 
+          <!-- Copy Button -->
           <button id="btnCopyTextMatrix" type="button"
-            class="w-full sm:w-auto justify-center px-5 py-2.5 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white flex items-center gap-1.5 shadow-lg shadow-cyan-600/20 transition">
-            <span>📋 テキストをコピー</span>
+            class="w-full justify-center px-6 py-3 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 active:scale-[0.98] shadow-lg shadow-cyan-600/25 flex items-center gap-2 transition cursor-pointer">
+            <span id="copyBtnIcon" class="text-base">📋</span>
+            <span id="copyBtnText">テキストをコピー</span>
           </button>
+          <p class="text-[10px] text-slate-500 text-center lg:text-left px-1">
+            ※コピーしたテキストをゲーム内チャットに直接貼り付けて使用できます
+          </p>
         </div>
       </div>
     </section>
@@ -747,14 +874,14 @@
               <thead class="bg-slate-900 border-b border-slate-800 text-slate-300 font-bold">
                 <tr>
                   <th class="py-2 px-3 text-center w-36">アクション項目</th>
-                  <th class="py-2 px-1">I(月)</th>
-                  <th class="py-2 px-1">II(火)</th>
-                  <th class="py-2 px-1">III(水)</th>
-                  <th class="py-2 px-1">IV(木)</th>
-                  <th class="py-2 px-1">V(金)</th>
-                  <th class="py-2 px-1 bg-sky-950/40 text-sky-200">VI(土)</th>
-                  <th class="py-2 px-1 bg-rose-950/40 text-rose-200">VII(日)</th>
-                  <th class="py-2 px-1 bg-purple-950/40 text-purple-200">Ⅷ(月)</th>
+                  <th class="py-2 px-1">1(月)</th>
+                  <th class="py-2 px-1">2(火)</th>
+                  <th class="py-2 px-1">3(水)</th>
+                  <th class="py-2 px-1">4(木)</th>
+                  <th class="py-2 px-1">5(金)</th>
+                  <th class="py-2 px-1 bg-sky-950/40 text-sky-200">6(土)</th>
+                  <th class="py-2 px-1 bg-rose-950/40 text-rose-200">7(日)</th>
+                  <th class="py-2 px-1 bg-purple-950/40 text-purple-200">8(月)</th>
                 </tr>
               </thead>
               <tbody id="modalMatrixTbody" class="divide-y divide-slate-800/60">
@@ -1281,161 +1408,6 @@
     </div>
   </div>
 
-  <!-- Modal 8: Output Settings Modal -->
-  <div id="modalOutputSettings"
-    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div
-      class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full flex flex-col shadow-2xl overflow-hidden">
-      <!-- Modal Header -->
-      <div class="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
-        <div>
-          <h3 class="text-base font-bold text-white flex items-center gap-2">
-            <span>⚙️</span> 出力設定
-          </h3>
-          <p class="text-[11px] text-slate-400 mt-0.5">チャット用等幅テキストのフォーマットや表示形式を設定します</p>
-        </div>
-        <button id="btnCloseOutputSettingsModal" class="text-slate-400 hover:text-white p-1 rounded-lg text-lg">✕</button>
-      </div>
-
-      <!-- Modal Body -->
-      <div class="p-4 sm:p-5 overflow-y-auto space-y-3.5 text-xs custom-scrollbar max-h-[75vh]">
-        
-        <!-- 1. 曜日行の文字形式 (曜日 vs 数字) -->
-        <div class="space-y-1.5 bg-slate-950 p-3 rounded-xl border border-slate-800">
-          <label class="block text-[11px] font-semibold text-slate-300">① 曜日行の文字形式</label>
-          <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
-            <button id="btnDayFormatDay" type="button"
-              class="flex-1 py-1.5 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
-              曜日 (月・火・水...)
-            </button>
-            <button id="btnDayFormatNumber" type="button"
-              class="flex-1 py-1.5 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition">
-              数字 (１・２・３...)
-            </button>
-          </div>
-          <p class="text-[10px] text-slate-500">※数字はゲーム内等幅チャットに合わせて全角数字（１〜８）で出力されます</p>
-        </div>
-
-        <!-- 2. 仕切り線のON/OFF (先頭の縦線 & 曜日行の仕切り線) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-950 p-3 rounded-xl border border-slate-800">
-          <div class="space-y-1.5">
-            <label class="block text-[11px] font-semibold text-slate-300">② 先頭の区切り</label>
-            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
-              <button id="btnLeadingPipePipe" type="button"
-                class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition"
-                title="項目名直後に縦線を出力（例: 加速｜◯）">
-                縦線
-              </button>
-              <button id="btnLeadingPipeSpace" type="button"
-                class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition"
-                title="項目名直後にスペースを出力（例: 加速　◯）">
-                スペース
-              </button>
-              <button id="btnLeadingPipeNone" type="button"
-                class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition"
-                title="区切りなし（例: 加速◯）">
-                なし
-              </button>
-            </div>
-            <p class="text-[10px] text-slate-500">※縦線・スペース幅は全角/半角設定に連動します</p>
-          </div>
-
-          <div class="space-y-1.5">
-            <label class="block text-[11px] font-semibold text-slate-300">③ 曜日行の仕切り線</label>
-            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
-              <button id="btnHeaderSepOn" type="button"
-                class="flex-1 py-1.5 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
-                あり (月｜火...)
-              </button>
-              <button id="btnHeaderSepOff" type="button"
-                class="flex-1 py-1.5 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition">
-                なし (月　火...)
-              </button>
-            </div>
-            <p class="text-[10px] text-slate-500">※「なし」時は列幅を保つため空白で整列します</p>
-          </div>
-        </div>
-
-        <!-- 3. ダブり項目の出力 (記号統合 vs 縦並び) & 記号順設定 -->
-        <div class="space-y-1.5 bg-slate-950 p-3 rounded-xl border border-slate-800">
-          <div class="flex items-center justify-between">
-            <label class="block text-[11px] font-semibold text-slate-300">④ ダブり項目の出力</label>
-            <button type="button" id="btnOpenOverlapSettingsFromOutputModal"
-              class="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 transition flex items-center gap-1 shadow-sm">
-              <span>🎨 記号順・パレット設定</span>
-            </button>
-          </div>
-          <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
-            <button id="btnModalOverlapMerge" type="button"
-              class="flex-1 py-1.5 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
-              記号統合 (🔴)
-            </button>
-            <button id="btnModalOverlapStack" type="button"
-              class="flex-1 py-1.5 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition">
-              縦並び (複数行)
-            </button>
-          </div>
-        </div>
-
-        <!-- 4. 空欄・項目名・仕切り線スタイル (3列) -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-950 p-3 rounded-xl border border-slate-800">
-          <!-- Empty Cell Character -->
-          <div class="space-y-1.5">
-            <label class="block text-[11px] font-semibold text-slate-300">⑤ 空欄の表示</label>
-            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
-              <button id="btnModalEmptyHyphen" type="button"
-                class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
-                ー (線)
-              </button>
-              <button id="btnModalEmptySpace" type="button"
-                class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
-                　 (空白)
-              </button>
-            </div>
-          </div>
-
-          <!-- Name Mode -->
-          <div class="space-y-1.5">
-            <label class="block text-[11px] font-semibold text-slate-300">⑥ 項目名表示</label>
-            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
-              <button id="btnModalNameShort" type="button"
-                class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
-                短縮名
-              </button>
-              <button id="btnModalNameFull" type="button"
-                class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
-                正式名
-              </button>
-            </div>
-          </div>
-
-          <!-- Pipe Separator Style -->
-          <div class="space-y-1.5">
-            <label class="block text-[11px] font-semibold text-slate-300">⑦ 仕切り線スタイル</label>
-            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
-              <button id="btnModalSepFullPipe" type="button"
-                class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
-                全角 ｜
-              </button>
-              <button id="btnModalSepHalfPipe" type="button"
-                class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
-                半角 |
-              </button>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Modal Footer -->
-      <div class="p-4 border-t border-slate-800 bg-slate-900/80 flex items-center justify-end">
-        <button id="btnCloseOutputSettingsModalBtn" type="button"
-          class="px-5 py-2 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow transition">
-          完了
-        </button>
-      </div>
-    </div>
-  </div>
 
   <!-- Toast Notification -->
   <div id="toast"
@@ -1446,16 +1418,16 @@
 
   <!-- Application Logic -->
   <script>
-    // 8 Days Definition for Matrix Table & Modal (Mon to VIII(Mon))
+    // 8 Days Definition for Matrix Table & Modal (Mon to 8(Mon))
     const ALL_DAYS = [
-      { id: 'mon', label: 'I(月)', short: '月', numShort: '１', badge: 'Day 1' },
-      { id: 'tue', label: 'II(火)', short: '火', numShort: '２', badge: 'Day 2' },
-      { id: 'wed', label: 'III(水)', short: '水', numShort: '３', badge: 'Day 3' },
-      { id: 'thu', label: 'IV(木)', short: '木', numShort: '４', badge: 'Day 4' },
-      { id: 'fri', label: 'V(金)', short: '金', numShort: '５', badge: 'Day 5' },
-      { id: 'sat', label: 'VI(土)', short: '土', numShort: '６', badge: 'Day 6', isSat: true },
-      { id: 'sun', label: 'VII(日)', short: '日', numShort: '７', badge: 'Day 7', isSun: true },
-      { id: 'next_mon', label: 'Ⅷ(月)', short: '月', numShort: '８', badge: 'Day 8', isNextMon: true }
+      { id: 'mon', label: '1(月)', short: '月', numShort: '１', badge: 'Day 1' },
+      { id: 'tue', label: '2(火)', short: '火', numShort: '２', badge: 'Day 2' },
+      { id: 'wed', label: '3(水)', short: '水', numShort: '３', badge: 'Day 3' },
+      { id: 'thu', label: '4(木)', short: '木', numShort: '４', badge: 'Day 4' },
+      { id: 'fri', label: '5(金)', short: '金', numShort: '５', badge: 'Day 5' },
+      { id: 'sat', label: '6(土)', short: '土', numShort: '６', badge: 'Day 6', isSat: true },
+      { id: 'sun', label: '7(日)', short: '日', numShort: '７', badge: 'Day 7', isSun: true },
+      { id: 'next_mon', label: '8(月)', short: '月', numShort: '８', badge: 'Day 8', isNextMon: true }
     ];
 
     // Blank Defaults (初期状態)
@@ -1738,6 +1710,7 @@
     let showWhitespaceMarks = true; // 改行・空白記号の可視化
     let isDirectEditMode = false; // 出力テキストの直接編集モード
     let hasManualTextEdit = false; // 手動でテキストが書き換えられたか
+    let isOutputSettingsAccordionOpen = true; // 出力設定アコーディオン開閉状態
 
     // Auto-assigned overlap symbols (excluding ★ which is unsupported in WOS)
     const DEFAULT_OVERLAP_SYMBOLS = ['🔴', '🔵', '🟢', '🟡', '🟣', '🟠', '🟤', '❤', '👍️', '💀'];
@@ -1748,7 +1721,6 @@
     let draggedActionIdx = null;
     let draggedManageEventIdx = null;
     let returnToManageEventsModal = false;
-    let returnToOutputSettingsModal = false;
     let rangeTapStartIdx = null;
     let rangeDragOriginIdx = null;
     let rangeDragMoved = false;
@@ -1941,7 +1913,7 @@
     let pendingRemotePayload = null;
 
     function isAnyEditModalOpen() {
-      const modalIds = ['modalEvent', 'modalActions', 'modalManageEvents', 'modalBackup', 'modalChangePassword', 'modalOverlapSettings', 'modalOutputSettings'];
+      const modalIds = ['modalEvent', 'modalActions', 'modalManageEvents', 'modalBackup', 'modalChangePassword', 'modalOverlapSettings'];
       return modalIds.some(id => {
         const el = document.getElementById(id);
         return el && !el.classList.contains('hidden');
@@ -2622,6 +2594,8 @@
 
         container.appendChild(btn);
       });
+
+      updateOutputSettingsSummaryText();
     }
 
     function getActiveDaysForTable() {
@@ -2931,6 +2905,11 @@
 
         const savedHeaderSep = localStorage.getItem('wos_text_header_sep');
         if (savedHeaderSep !== null) textHeaderSep = (savedHeaderSep === 'true');
+
+        const savedAccordion = localStorage.getItem('wos_text_settings_accordion_open');
+        if (savedAccordion !== null) {
+          isOutputSettingsAccordionOpen = (savedAccordion === 'true');
+        }
 
         // Restore Alliance Session (localStorage or sessionStorage)
         const savedAlliance = localStorage.getItem('wos_current_alliance') || sessionStorage.getItem('wos_current_alliance_session');
@@ -3685,14 +3664,54 @@
       }
     }
 
-    function openOutputSettingsModal() {
-      updateTextTogglesUI();
-      document.getElementById('modalOutputSettings').classList.remove('hidden');
+    // Output Settings Accordion Functions
+    function toggleOutputSettingsAccordion(forceState = null) {
+      if (forceState !== null) {
+        isOutputSettingsAccordionOpen = forceState;
+      } else {
+        isOutputSettingsAccordionOpen = !isOutputSettingsAccordionOpen;
+      }
+      try {
+        localStorage.setItem('wos_text_settings_accordion_open', isOutputSettingsAccordionOpen ? 'true' : 'false');
+      } catch (e) { }
+      updateOutputSettingsAccordionUI();
     }
 
-    function closeOutputSettingsModal() {
-      document.getElementById('modalOutputSettings').classList.add('hidden');
-      applyPendingRemotePayloadIfIdle();
+    function updateOutputSettingsAccordionUI() {
+      const accordion = document.getElementById('outputSettingsAccordion');
+      const toggleText = document.getElementById('accordionToggleText');
+      const chevron = document.getElementById('accordionChevron');
+
+      if (accordion) {
+        if (isOutputSettingsAccordionOpen) {
+          accordion.classList.remove('hidden');
+          if (toggleText) toggleText.textContent = '設定・期間を収納';
+          if (chevron) chevron.textContent = '▲';
+        } else {
+          accordion.classList.add('hidden');
+          if (toggleText) toggleText.textContent = '設定・期間を展開';
+          if (chevron) chevron.textContent = '▼';
+        }
+      }
+
+      updateOutputSettingsSummaryText();
+    }
+
+    function updateOutputSettingsSummaryText() {
+      const badge = document.getElementById('outputSettingsSummaryBadge');
+      if (!badge) return;
+
+      const daysCount = textSelectedDays.length;
+      const startDayObj = ALL_DAYS.find(d => d.id === textSelectedDays[0]);
+      const endDayObj = ALL_DAYS.find(d => d.id === textSelectedDays[textSelectedDays.length - 1]);
+      const rangeStr = (startDayObj && endDayObj) ? `${startDayObj.label}〜${endDayObj.label}` : `${daysCount}日間`;
+
+      const dayFmtStr = textDayFormat === 'number' ? '数字' : '曜日';
+      const nameStr = textNameMode === 'full' ? '正式名' : '短縮名';
+      const overlapStr = textOverlapMode === 'merge' ? '記号統合' : '縦並び';
+      const leadStr = textLeadingPipe === 'pipe' ? '縦線あり' : (textLeadingPipe === 'space' ? '空白' : '区切無');
+
+      badge.textContent = `📅 ${rangeStr}(${daysCount}日) ｜ ${dayFmtStr} ｜ ${nameStr} ｜ ${overlapStr} ｜ 先頭:${leadStr}`;
     }
 
     function openOverlapSettingsModal() {
@@ -3703,11 +3722,6 @@
 
     function closeOverlapSettingsModal() {
       document.getElementById('modalOverlapSettings').classList.add('hidden');
-      if (returnToOutputSettingsModal) {
-        returnToOutputSettingsModal = false;
-        openOutputSettingsModal();
-        return;
-      }
       applyPendingRemotePayloadIfIdle();
     }
 
@@ -4250,13 +4264,29 @@
           }
         }
       }
+
+      updateOutputSettingsAccordionUI();
+      updateOutputSettingsSummaryText();
     }
 
     // Attach Event Listeners
     function setupListeners() {
       document.getElementById('btnOpenBackupModal').addEventListener('click', openBackupModal);
       document.getElementById('btnCopyTextMatrix').addEventListener('click', () => {
-        copyToClipboard(document.getElementById('monospaceTextArea').value, 'テキストをコピーしました！');
+        const textVal = document.getElementById('monospaceTextArea').value;
+        copyToClipboard(textVal, 'テキストをコピーしました！');
+        const copyBtnText = document.getElementById('copyBtnText');
+        const copyBtnIcon = document.getElementById('copyBtnIcon');
+        if (copyBtnText) {
+          const originalText = copyBtnText.textContent;
+          const originalIcon = copyBtnIcon ? copyBtnIcon.textContent : '📋';
+          copyBtnText.textContent = 'コピー完了！';
+          if (copyBtnIcon) copyBtnIcon.textContent = '✓';
+          setTimeout(() => {
+            copyBtnText.textContent = originalText;
+            if (copyBtnIcon) copyBtnIcon.textContent = originalIcon;
+          }, 1800);
+        }
       });
 
       // Empty rows filter
@@ -4301,13 +4331,13 @@
         }
       });
 
-      // Output Settings Modal Trigger & Close Buttons
-      const btnOpenOutputSettings = document.getElementById('btnOpenOutputSettingsModal');
-      if (btnOpenOutputSettings) btnOpenOutputSettings.addEventListener('click', openOutputSettingsModal);
-      const btnCloseOutputSettings = document.getElementById('btnCloseOutputSettingsModal');
-      if (btnCloseOutputSettings) btnCloseOutputSettings.addEventListener('click', closeOutputSettingsModal);
-      const btnCloseOutputSettingsBtn = document.getElementById('btnCloseOutputSettingsModalBtn');
-      if (btnCloseOutputSettingsBtn) btnCloseOutputSettingsBtn.addEventListener('click', closeOutputSettingsModal);
+      // Output Settings Accordion Toggle Button
+      const btnToggleOutputAccordion = document.getElementById('btnToggleOutputAccordion');
+      if (btnToggleOutputAccordion) {
+        btnToggleOutputAccordion.addEventListener('click', () => {
+          toggleOutputSettingsAccordion();
+        });
+      }
 
       // Output Settings Modal: 1. Day format (曜日 vs 数字)
       const btnDayFormatDay = document.getElementById('btnDayFormatDay');
@@ -4395,14 +4425,6 @@
           saveToLocalStorage();
           updateTextTogglesUI();
           renderMonospaceText();
-        });
-      }
-      const btnOpenOverlapFromOutput = document.getElementById('btnOpenOverlapSettingsFromOutputModal');
-      if (btnOpenOverlapFromOutput) {
-        btnOpenOverlapFromOutput.addEventListener('click', () => {
-          closeOutputSettingsModal();
-          returnToOutputSettingsModal = true;
-          openOverlapSettingsModal();
         });
       }
 
