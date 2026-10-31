@@ -1319,18 +1319,25 @@
         <!-- 2. 仕切り線のON/OFF (先頭の縦線 & 曜日行の仕切り線) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-950 p-3 rounded-xl border border-slate-800">
           <div class="space-y-1.5">
-            <label class="block text-[11px] font-semibold text-slate-300">② 先頭の縦線 ( ｜ )</label>
+            <label class="block text-[11px] font-semibold text-slate-300">② 先頭の区切り</label>
             <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
-              <button id="btnLeadingPipeOn" type="button"
-                class="flex-1 py-1.5 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
-                出力する (あり)
+              <button id="btnLeadingPipePipe" type="button"
+                class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition"
+                title="項目名直後に縦線を出力（例: 加速｜◯）">
+                縦線
               </button>
-              <button id="btnLeadingPipeOff" type="button"
-                class="flex-1 py-1.5 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition">
-                出力しない (なし)
+              <button id="btnLeadingPipeSpace" type="button"
+                class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition"
+                title="項目名直後にスペースを出力（例: 加速　◯）">
+                スペース
+              </button>
+              <button id="btnLeadingPipeNone" type="button"
+                class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition"
+                title="区切りなし（例: 加速◯）">
+                なし
               </button>
             </div>
-            <p class="text-[10px] text-slate-500">項目名直後の縦線の有無（例: 加速｜◯ vs 加速◯）</p>
+            <p class="text-[10px] text-slate-500">※縦線・スペース幅は全角/半角設定に連動します</p>
           </div>
 
           <div class="space-y-1.5">
@@ -1464,7 +1471,7 @@
       "textNameMode": "short",
       "textSeparator": "｜",
       "textDayFormat": "day",
-      "textLeadingPipe": true,
+      "textLeadingPipe": "pipe",
       "textHeaderSep": true,
       "textTitle": "【 スケジュール 】",
       "actions": [
@@ -1725,7 +1732,7 @@
     let textTitle = '【 スケジュール 】';
     let textEmptyChar = 'ー'; // 'ー' or '　'
     let textDayFormat = 'day'; // 'day' (月, 火...) or 'number' (１, ２...)
-    let textLeadingPipe = true; // true (先頭の|あり) or false (なし)
+    let textLeadingPipe = 'pipe'; // 'pipe' (縦線), 'space' (スペース), 'none' (なし)
     let textHeaderSep = true; // true (曜日行の仕切り線あり) or false (なし: 空白)
     let previewWidthMode = 'mobile'; // 'mobile' (16.6em) or 'wide' (100%)
     let showWhitespaceMarks = true; // 改行・空白記号の可視化
@@ -1911,7 +1918,9 @@
       if (payload.textSeparator) textSeparator = payload.textSeparator;
       if (payload.textEmptyChar) textEmptyChar = payload.textEmptyChar;
       if (payload.textDayFormat) textDayFormat = payload.textDayFormat;
-      if (typeof payload.textLeadingPipe === 'boolean') textLeadingPipe = payload.textLeadingPipe;
+      if (payload.textLeadingPipe === true) textLeadingPipe = 'pipe';
+      else if (payload.textLeadingPipe === false) textLeadingPipe = 'none';
+      else if (['pipe', 'space', 'none'].includes(payload.textLeadingPipe)) textLeadingPipe = payload.textLeadingPipe;
       if (typeof payload.textHeaderSep === 'boolean') textHeaderSep = payload.textHeaderSep;
       if (payload.textTitle) {
         textTitle = payload.textTitle;
@@ -2086,7 +2095,7 @@
         textTitle: '【 スケジュール 】',
         textEmptyChar: 'ー',
         textDayFormat: 'day',
-        textLeadingPipe: true,
+        textLeadingPipe: 'pipe',
         textHeaderSep: true,
         savedAt: new Date().toISOString()
       } : {
@@ -2102,7 +2111,7 @@
         textTitle: '【 スケジュール 】',
         textEmptyChar: 'ー',
         textDayFormat: 'day',
-        textLeadingPipe: true,
+        textLeadingPipe: 'pipe',
         textHeaderSep: true,
         savedAt: new Date().toISOString()
       };
@@ -2708,7 +2717,7 @@
       textSeparator = '｜';
       textEmptyChar = 'ー';
       textDayFormat = 'day';
-      textLeadingPipe = true;
+      textLeadingPipe = 'pipe';
       textHeaderSep = true;
       textTitle = '【 スケジュール 】';
       document.getElementById('textTitleInput').value = textTitle;
@@ -2799,7 +2808,9 @@
         if (obj.textSeparator) textSeparator = obj.textSeparator;
         if (obj.textEmptyChar) textEmptyChar = obj.textEmptyChar;
         if (obj.textDayFormat) textDayFormat = obj.textDayFormat;
-        if (typeof obj.textLeadingPipe === 'boolean') textLeadingPipe = obj.textLeadingPipe;
+        if (obj.textLeadingPipe === true) textLeadingPipe = 'pipe';
+        else if (obj.textLeadingPipe === false) textLeadingPipe = 'none';
+        else if (['pipe', 'space', 'none'].includes(obj.textLeadingPipe)) textLeadingPipe = obj.textLeadingPipe;
         if (typeof obj.textHeaderSep === 'boolean') textHeaderSep = obj.textHeaderSep;
         if (obj.textTitle) {
           textTitle = obj.textTitle;
@@ -2843,7 +2854,9 @@
           if (decoded.textSeparator) textSeparator = decoded.textSeparator;
           if (decoded.textEmptyChar) textEmptyChar = decoded.textEmptyChar;
           if (decoded.textDayFormat) textDayFormat = decoded.textDayFormat;
-          if (typeof decoded.textLeadingPipe === 'boolean') textLeadingPipe = decoded.textLeadingPipe;
+          if (decoded.textLeadingPipe === true) textLeadingPipe = 'pipe';
+          else if (decoded.textLeadingPipe === false) textLeadingPipe = 'none';
+          else if (['pipe', 'space', 'none'].includes(decoded.textLeadingPipe)) textLeadingPipe = decoded.textLeadingPipe;
           if (typeof decoded.textHeaderSep === 'boolean') textHeaderSep = decoded.textHeaderSep;
           if (decoded.textTitle) textTitle = decoded.textTitle;
           showToast('共有URLからスケジュールを読み込みました！');
@@ -2912,7 +2925,9 @@
         if (savedDayFormat) textDayFormat = savedDayFormat;
 
         const savedLeadingPipe = localStorage.getItem('wos_text_leading_pipe');
-        if (savedLeadingPipe !== null) textLeadingPipe = (savedLeadingPipe === 'true');
+        if (savedLeadingPipe === 'true') textLeadingPipe = 'pipe';
+        else if (savedLeadingPipe === 'false') textLeadingPipe = 'none';
+        else if (['pipe', 'space', 'none'].includes(savedLeadingPipe)) textLeadingPipe = savedLeadingPipe;
 
         const savedHeaderSep = localStorage.getItem('wos_text_header_sep');
         if (savedHeaderSep !== null) textHeaderSep = (savedHeaderSep === 'true');
@@ -2951,7 +2966,7 @@
         localStorage.setItem('wos_text_name_mode', textNameMode);
         localStorage.setItem('wos_text_sep', textSeparator);
         localStorage.setItem('wos_text_day_format', textDayFormat);
-        localStorage.setItem('wos_text_leading_pipe', textLeadingPipe ? 'true' : 'false');
+        localStorage.setItem('wos_text_leading_pipe', textLeadingPipe);
         localStorage.setItem('wos_text_header_sep', textHeaderSep ? 'true' : 'false');
       } catch (e) {
         console.warn('Failed to save localStorage:', e);
@@ -3516,7 +3531,14 @@
       const indentSpace = (textNameMode === 'short') ? '　　' : ' '.repeat(labelWidth);
       const dayTokens = textDays.map(d => (textDayFormat === 'number' ? (d.numShort || d.short) : d.short));
       const headerSep = textHeaderSep ? sep : (sep === '｜' ? '　' : ' ');
-      const leadSep = textLeadingPipe ? sep : '';
+      let leadSep = '';
+      if (textLeadingPipe === 'pipe' || textLeadingPipe === true) {
+        leadSep = sep;
+      } else if (textLeadingPipe === 'space') {
+        leadSep = (sep === '｜' ? '　' : ' ');
+      } else {
+        leadSep = '';
+      }
       const headerLine = indentSpace + leadSep + dayTokens.join(headerSep);
 
       // Prepare overlap symbol assignment for 'merge' mode
@@ -4079,17 +4101,14 @@
         }
       }
 
-      // 2. Leading pipe (|) on/off
-      const btnLeadingPipeOn = document.getElementById('btnLeadingPipeOn');
-      const btnLeadingPipeOff = document.getElementById('btnLeadingPipeOff');
-      if (btnLeadingPipeOn && btnLeadingPipeOff) {
-        if (textLeadingPipe) {
-          btnLeadingPipeOn.className = activeClass;
-          btnLeadingPipeOff.className = inactiveClass;
-        } else {
-          btnLeadingPipeOff.className = activeClass;
-          btnLeadingPipeOn.className = inactiveClass;
-        }
+      // 2. Leading separator (縦線 vs スペース vs なし)
+      const btnLeadingPipePipe = document.getElementById('btnLeadingPipePipe');
+      const btnLeadingPipeSpace = document.getElementById('btnLeadingPipeSpace');
+      const btnLeadingPipeNone = document.getElementById('btnLeadingPipeNone');
+      if (btnLeadingPipePipe && btnLeadingPipeSpace && btnLeadingPipeNone) {
+        btnLeadingPipePipe.className = (textLeadingPipe === 'pipe' || textLeadingPipe === true) ? activeClass3 : inactiveClass3;
+        btnLeadingPipeSpace.className = (textLeadingPipe === 'space') ? activeClass3 : inactiveClass3;
+        btnLeadingPipeNone.className = (textLeadingPipe === 'none' || textLeadingPipe === false) ? activeClass3 : inactiveClass3;
       }
 
       // 3. Header separator on/off
@@ -4310,20 +4329,29 @@
         });
       }
 
-      // Output Settings Modal: 2. Leading pipe (|) on/off
-      const btnLeadingPipeOn = document.getElementById('btnLeadingPipeOn');
-      if (btnLeadingPipeOn) {
-        btnLeadingPipeOn.addEventListener('click', () => {
-          textLeadingPipe = true;
+      // Output Settings Modal: 2. Leading separator (縦線 vs スペース vs なし)
+      const btnLeadingPipePipe = document.getElementById('btnLeadingPipePipe');
+      if (btnLeadingPipePipe) {
+        btnLeadingPipePipe.addEventListener('click', () => {
+          textLeadingPipe = 'pipe';
           saveToLocalStorage();
           updateTextTogglesUI();
           renderMonospaceText();
         });
       }
-      const btnLeadingPipeOff = document.getElementById('btnLeadingPipeOff');
-      if (btnLeadingPipeOff) {
-        btnLeadingPipeOff.addEventListener('click', () => {
-          textLeadingPipe = false;
+      const btnLeadingPipeSpace = document.getElementById('btnLeadingPipeSpace');
+      if (btnLeadingPipeSpace) {
+        btnLeadingPipeSpace.addEventListener('click', () => {
+          textLeadingPipe = 'space';
+          saveToLocalStorage();
+          updateTextTogglesUI();
+          renderMonospaceText();
+        });
+      }
+      const btnLeadingPipeNone = document.getElementById('btnLeadingPipeNone');
+      if (btnLeadingPipeNone) {
+        btnLeadingPipeNone.addEventListener('click', () => {
+          textLeadingPipe = 'none';
           saveToLocalStorage();
           updateTextTogglesUI();
           renderMonospaceText();

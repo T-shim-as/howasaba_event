@@ -5,6 +5,9 @@
   "textStartDay": "tue",
   "textNameMode": "short",
   "textSeparator": "｜",
+  "textDayFormat": "day",
+  "textLeadingPipe": "pipe",
+  "textHeaderSep": true,
   "textTitle": "【 スケジュール 】",
   "actions": [
     {
