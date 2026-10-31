@@ -486,7 +486,7 @@
         <div class="pb-3 border-b border-slate-800/80 space-y-2.5">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-[11px] font-semibold text-slate-300">出力する曜日期間</span>
+              <span class="text-[11px] font-semibold text-slate-300">出力期間</span>
               <!-- Start ~ End Dropdowns & Badge -->
               <div
                 class="inline-flex items-center gap-1 bg-slate-900 px-2 py-0.5 rounded-lg border border-slate-800 text-[11px]">
@@ -523,85 +523,10 @@
           </div>
         </div>
 
-        <!-- Row 2: Format Options (Overlap Mode, Empty Char, Name Mode, Separator, Title) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-1">
-          <!-- Overlap Mode (Merge 🔴 vs Multi-line Stack) -->
-          <div>
-            <div class="flex items-center justify-between h-6 mb-1">
-              <label class="block text-[11px] font-semibold text-slate-400">ダブり項目の出力</label>
-              <button type="button" id="btnOpenOverlapSettingsModal"
-                class="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 transition flex items-center gap-1 shadow-sm"
-                title="記号統合で使用するダブり記号の順番・文字を設定">
-                <span>⚙️ 設定</span>
-              </button>
-            </div>
-            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
-              <button id="btnOverlapMerge"
-                class="flex-1 py-1 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition"
-                title="重なった項目を🔴等の記号で1行にまとめ、凡例に出力します">
-                記号統合 (🔴)
-              </button>
-              <button id="btnOverlapStack"
-                class="flex-1 py-1 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition"
-                title="重なった項目を縦に複数行で並べて出力します">
-                縦並び (複数行)
-              </button>
-            </div>
-          </div>
-
-          <!-- Empty Cell Character (ー vs 　) -->
-          <div>
-            <div class="flex items-center h-6 mb-1">
-              <label class="block text-[11px] font-semibold text-slate-400">空欄の表示</label>
-            </div>
-            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
-              <button id="btnEmptyHyphen"
-                class="flex-1 py-1 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
-                ー (ハイフン)
-              </button>
-              <button id="btnEmptySpace"
-                class="flex-1 py-1 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition">
-                　 (空白)
-              </button>
-            </div>
-          </div>
-
-          <!-- Name Mode (Short vs Full) -->
-          <div>
-            <div class="flex items-center h-6 mb-1">
-              <label class="block text-[11px] font-semibold text-slate-400">項目名表示</label>
-            </div>
-            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
-              <button id="btnNameShort"
-                class="flex-1 py-1 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
-                短縮名
-              </button>
-              <button id="btnNameFull"
-                class="flex-1 py-1 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition">
-                正式名
-              </button>
-            </div>
-          </div>
-
-          <!-- Pipe Separator Style -->
-          <div>
-            <div class="flex items-center h-6 mb-1">
-              <label class="block text-[11px] font-semibold text-slate-400">仕切り線スタイル</label>
-            </div>
-            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
-              <button id="btnSepFullPipe"
-                class="flex-1 py-1 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
-                全角 ｜
-              </button>
-              <button id="btnSepHalfPipe"
-                class="flex-1 py-1 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition">
-                半角 |
-              </button>
-            </div>
-          </div>
-
+        <!-- Row 2: Title & Output Settings Button -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
           <!-- Title Input with Date Button -->
-          <div class="sm:col-span-2 lg:col-span-1">
+          <div class="flex-1 max-w-xl">
             <div class="flex items-center justify-between h-6 mb-1">
               <label class="block text-[11px] font-semibold text-slate-400">タイトル</label>
               <button type="button" id="btnInsertDate"
@@ -611,7 +536,16 @@
               </button>
             </div>
             <input type="text" id="textTitleInput" value="【 スケジュール 】"
-              class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-white text-xs focus:outline-none focus:border-cyan-500">
+              class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white text-xs focus:outline-none focus:border-cyan-500">
+          </div>
+
+          <!-- Output Settings Modal Trigger Button -->
+          <div class="flex items-end">
+            <button type="button" id="btnOpenOutputSettingsModal"
+              class="w-full sm:w-auto px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-800/70 flex items-center justify-center gap-1.5 shadow-sm transition whitespace-nowrap"
+              title="ダブり、空欄、項目名、仕切り線、曜日表示などの出力詳細設定">
+              <span>⚙️ 出力設定</span>
+            </button>
           </div>
         </div>
       </div>
@@ -1347,6 +1281,155 @@
     </div>
   </div>
 
+  <!-- Modal 8: Output Settings Modal -->
+  <div id="modalOutputSettings"
+    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div
+      class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full flex flex-col shadow-2xl overflow-hidden">
+      <!-- Modal Header -->
+      <div class="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <span>⚙️</span> 出力設定
+          </h3>
+          <p class="text-[11px] text-slate-400 mt-0.5">チャット用等幅テキストのフォーマットや表示形式を設定します</p>
+        </div>
+        <button id="btnCloseOutputSettingsModal" class="text-slate-400 hover:text-white p-1 rounded-lg text-lg">✕</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-4 sm:p-5 overflow-y-auto space-y-3.5 text-xs custom-scrollbar max-h-[75vh]">
+        
+        <!-- 1. 曜日行の文字形式 (曜日 vs 数字) -->
+        <div class="space-y-1.5 bg-slate-950 p-3 rounded-xl border border-slate-800">
+          <label class="block text-[11px] font-semibold text-slate-300">① 曜日行の文字形式</label>
+          <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+            <button id="btnDayFormatDay" type="button"
+              class="flex-1 py-1.5 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+              曜日 (月・火・水...)
+            </button>
+            <button id="btnDayFormatNumber" type="button"
+              class="flex-1 py-1.5 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+              数字 (１・２・３...)
+            </button>
+          </div>
+          <p class="text-[10px] text-slate-500">※数字はゲーム内等幅チャットに合わせて全角数字（１〜８）で出力されます</p>
+        </div>
+
+        <!-- 2. 仕切り線のON/OFF (先頭の縦線 & 曜日行の仕切り線) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-950 p-3 rounded-xl border border-slate-800">
+          <div class="space-y-1.5">
+            <label class="block text-[11px] font-semibold text-slate-300">② 先頭の縦線 ( ｜ )</label>
+            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+              <button id="btnLeadingPipeOn" type="button"
+                class="flex-1 py-1.5 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+                出力する (あり)
+              </button>
+              <button id="btnLeadingPipeOff" type="button"
+                class="flex-1 py-1.5 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+                出力しない (なし)
+              </button>
+            </div>
+            <p class="text-[10px] text-slate-500">項目名直後の縦線の有無（例: 加速｜◯ vs 加速◯）</p>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="block text-[11px] font-semibold text-slate-300">③ 曜日行の仕切り線</label>
+            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+              <button id="btnHeaderSepOn" type="button"
+                class="flex-1 py-1.5 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+                あり (月｜火...)
+              </button>
+              <button id="btnHeaderSepOff" type="button"
+                class="flex-1 py-1.5 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+                なし (月　火...)
+              </button>
+            </div>
+            <p class="text-[10px] text-slate-500">※「なし」時は列幅を保つため空白で整列します</p>
+          </div>
+        </div>
+
+        <!-- 3. ダブり項目の出力 (記号統合 vs 縦並び) & 記号順設定 -->
+        <div class="space-y-1.5 bg-slate-950 p-3 rounded-xl border border-slate-800">
+          <div class="flex items-center justify-between">
+            <label class="block text-[11px] font-semibold text-slate-300">④ ダブり項目の出力</label>
+            <button type="button" id="btnOpenOverlapSettingsFromOutputModal"
+              class="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 transition flex items-center gap-1 shadow-sm">
+              <span>🎨 記号順・パレット設定</span>
+            </button>
+          </div>
+          <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+            <button id="btnModalOverlapMerge" type="button"
+              class="flex-1 py-1.5 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+              記号統合 (🔴)
+            </button>
+            <button id="btnModalOverlapStack" type="button"
+              class="flex-1 py-1.5 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+              縦並び (複数行)
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. 空欄・項目名・仕切り線スタイル (3列) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-950 p-3 rounded-xl border border-slate-800">
+          <!-- Empty Cell Character -->
+          <div class="space-y-1.5">
+            <label class="block text-[11px] font-semibold text-slate-300">⑤ 空欄の表示</label>
+            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+              <button id="btnModalEmptyHyphen" type="button"
+                class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+                ー (線)
+              </button>
+              <button id="btnModalEmptySpace" type="button"
+                class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+                　 (空白)
+              </button>
+            </div>
+          </div>
+
+          <!-- Name Mode -->
+          <div class="space-y-1.5">
+            <label class="block text-[11px] font-semibold text-slate-300">⑥ 項目名表示</label>
+            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+              <button id="btnModalNameShort" type="button"
+                class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+                短縮名
+              </button>
+              <button id="btnModalNameFull" type="button"
+                class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+                正式名
+              </button>
+            </div>
+          </div>
+
+          <!-- Pipe Separator Style -->
+          <div class="space-y-1.5">
+            <label class="block text-[11px] font-semibold text-slate-300">⑦ 仕切り線スタイル</label>
+            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+              <button id="btnModalSepFullPipe" type="button"
+                class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+                全角 ｜
+              </button>
+              <button id="btnModalSepHalfPipe" type="button"
+                class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+                半角 |
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 border-t border-slate-800 bg-slate-900/80 flex items-center justify-end">
+        <button id="btnCloseOutputSettingsModalBtn" type="button"
+          class="px-5 py-2 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow transition">
+          完了
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div id="toast"
     class="fixed bottom-6 right-6 z-50 transform translate-y-10 opacity-0 pointer-events-none transition-all duration-300 bg-slate-800 text-white text-xs font-semibold px-4 py-3 rounded-xl border border-cyan-500/40 shadow-2xl flex items-center gap-2">
@@ -1358,14 +1441,14 @@
   <script>
     // 8 Days Definition for Matrix Table & Modal (Mon to VIII(Mon))
     const ALL_DAYS = [
-      { id: 'mon', label: 'I(月)', short: '月', badge: 'Day 1' },
-      { id: 'tue', label: 'II(火)', short: '火', badge: 'Day 2' },
-      { id: 'wed', label: 'III(水)', short: '水', badge: 'Day 3' },
-      { id: 'thu', label: 'IV(木)', short: '木', badge: 'Day 4' },
-      { id: 'fri', label: 'V(金)', short: '金', badge: 'Day 5' },
-      { id: 'sat', label: 'VI(土)', short: '土', badge: 'Day 6', isSat: true },
-      { id: 'sun', label: 'VII(日)', short: '日', badge: 'Day 7', isSun: true },
-      { id: 'next_mon', label: 'Ⅷ(月)', short: '月', badge: 'Day 8', isNextMon: true }
+      { id: 'mon', label: 'I(月)', short: '月', numShort: '１', badge: 'Day 1' },
+      { id: 'tue', label: 'II(火)', short: '火', numShort: '２', badge: 'Day 2' },
+      { id: 'wed', label: 'III(水)', short: '水', numShort: '３', badge: 'Day 3' },
+      { id: 'thu', label: 'IV(木)', short: '木', numShort: '４', badge: 'Day 4' },
+      { id: 'fri', label: 'V(金)', short: '金', numShort: '５', badge: 'Day 5' },
+      { id: 'sat', label: 'VI(土)', short: '土', numShort: '６', badge: 'Day 6', isSat: true },
+      { id: 'sun', label: 'VII(日)', short: '日', numShort: '７', badge: 'Day 7', isSun: true },
+      { id: 'next_mon', label: 'Ⅷ(月)', short: '月', numShort: '８', badge: 'Day 8', isNextMon: true }
     ];
 
     // Blank Defaults (初期状態)
@@ -1380,6 +1463,9 @@
       "textStartDay": "tue",
       "textNameMode": "short",
       "textSeparator": "｜",
+      "textDayFormat": "day",
+      "textLeadingPipe": true,
+      "textHeaderSep": true,
       "textTitle": "【 スケジュール 】",
       "actions": [
         { "id": "act_1", "name": "総力UP", "short": "総力" },
@@ -1638,6 +1724,9 @@
     let textSeparator = '｜'; // '｜' or '|'
     let textTitle = '【 スケジュール 】';
     let textEmptyChar = 'ー'; // 'ー' or '　'
+    let textDayFormat = 'day'; // 'day' (月, 火...) or 'number' (１, ２...)
+    let textLeadingPipe = true; // true (先頭の|あり) or false (なし)
+    let textHeaderSep = true; // true (曜日行の仕切り線あり) or false (なし: 空白)
     let previewWidthMode = 'mobile'; // 'mobile' (16.6em) or 'wide' (100%)
     let showWhitespaceMarks = true; // 改行・空白記号の可視化
     let isDirectEditMode = false; // 出力テキストの直接編集モード
@@ -1652,6 +1741,7 @@
     let draggedActionIdx = null;
     let draggedManageEventIdx = null;
     let returnToManageEventsModal = false;
+    let returnToOutputSettingsModal = false;
     let rangeTapStartIdx = null;
     let rangeDragOriginIdx = null;
     let rangeDragMoved = false;
@@ -1790,6 +1880,9 @@
         textSeparator: textSeparator,
         textTitle: textTitle,
         textEmptyChar: textEmptyChar,
+        textDayFormat: textDayFormat,
+        textLeadingPipe: textLeadingPipe,
+        textHeaderSep: textHeaderSep,
         savedAt: new Date().toISOString()
       };
     }
@@ -1817,6 +1910,9 @@
       if (payload.textNameMode) textNameMode = payload.textNameMode;
       if (payload.textSeparator) textSeparator = payload.textSeparator;
       if (payload.textEmptyChar) textEmptyChar = payload.textEmptyChar;
+      if (payload.textDayFormat) textDayFormat = payload.textDayFormat;
+      if (typeof payload.textLeadingPipe === 'boolean') textLeadingPipe = payload.textLeadingPipe;
+      if (typeof payload.textHeaderSep === 'boolean') textHeaderSep = payload.textHeaderSep;
       if (payload.textTitle) {
         textTitle = payload.textTitle;
         document.getElementById('textTitleInput').value = textTitle;
@@ -1836,7 +1932,7 @@
     let pendingRemotePayload = null;
 
     function isAnyEditModalOpen() {
-      const modalIds = ['modalEvent', 'modalActions', 'modalManageEvents', 'modalBackup', 'modalChangePassword', 'modalOverlapSettings'];
+      const modalIds = ['modalEvent', 'modalActions', 'modalManageEvents', 'modalBackup', 'modalChangePassword', 'modalOverlapSettings', 'modalOutputSettings'];
       return modalIds.some(id => {
         const el = document.getElementById(id);
         return el && !el.classList.contains('hidden');
@@ -1989,6 +2085,9 @@
         textSeparator: '｜',
         textTitle: '【 スケジュール 】',
         textEmptyChar: 'ー',
+        textDayFormat: 'day',
+        textLeadingPipe: true,
+        textHeaderSep: true,
         savedAt: new Date().toISOString()
       } : {
         actions: [],
@@ -2002,6 +2101,9 @@
         textSeparator: '｜',
         textTitle: '【 スケジュール 】',
         textEmptyChar: 'ー',
+        textDayFormat: 'day',
+        textLeadingPipe: true,
+        textHeaderSep: true,
         savedAt: new Date().toISOString()
       };
 
@@ -2605,6 +2707,9 @@
       textNameMode = 'short';
       textSeparator = '｜';
       textEmptyChar = 'ー';
+      textDayFormat = 'day';
+      textLeadingPipe = true;
+      textHeaderSep = true;
       textTitle = '【 スケジュール 】';
       document.getElementById('textTitleInput').value = textTitle;
       saveToLocalStorage();
@@ -2631,6 +2736,9 @@
         textSeparator: textSeparator,
         textTitle: textTitle,
         textEmptyChar: textEmptyChar,
+        textDayFormat: textDayFormat,
+        textLeadingPipe: textLeadingPipe,
+        textHeaderSep: textHeaderSep,
         actions: actions,
         events: events
       };
@@ -2690,6 +2798,9 @@
         if (obj.textNameMode) textNameMode = obj.textNameMode;
         if (obj.textSeparator) textSeparator = obj.textSeparator;
         if (obj.textEmptyChar) textEmptyChar = obj.textEmptyChar;
+        if (obj.textDayFormat) textDayFormat = obj.textDayFormat;
+        if (typeof obj.textLeadingPipe === 'boolean') textLeadingPipe = obj.textLeadingPipe;
+        if (typeof obj.textHeaderSep === 'boolean') textHeaderSep = obj.textHeaderSep;
         if (obj.textTitle) {
           textTitle = obj.textTitle;
           document.getElementById('textTitleInput').value = textTitle;
@@ -2731,6 +2842,9 @@
           if (decoded.textNameMode) textNameMode = decoded.textNameMode;
           if (decoded.textSeparator) textSeparator = decoded.textSeparator;
           if (decoded.textEmptyChar) textEmptyChar = decoded.textEmptyChar;
+          if (decoded.textDayFormat) textDayFormat = decoded.textDayFormat;
+          if (typeof decoded.textLeadingPipe === 'boolean') textLeadingPipe = decoded.textLeadingPipe;
+          if (typeof decoded.textHeaderSep === 'boolean') textHeaderSep = decoded.textHeaderSep;
           if (decoded.textTitle) textTitle = decoded.textTitle;
           showToast('共有URLからスケジュールを読み込みました！');
           saveToLocalStorage();
@@ -2794,6 +2908,15 @@
         const savedSep = localStorage.getItem('wos_text_sep');
         if (savedSep) textSeparator = savedSep;
 
+        const savedDayFormat = localStorage.getItem('wos_text_day_format');
+        if (savedDayFormat) textDayFormat = savedDayFormat;
+
+        const savedLeadingPipe = localStorage.getItem('wos_text_leading_pipe');
+        if (savedLeadingPipe !== null) textLeadingPipe = (savedLeadingPipe === 'true');
+
+        const savedHeaderSep = localStorage.getItem('wos_text_header_sep');
+        if (savedHeaderSep !== null) textHeaderSep = (savedHeaderSep === 'true');
+
         // Restore Alliance Session (localStorage or sessionStorage)
         const savedAlliance = localStorage.getItem('wos_current_alliance') || sessionStorage.getItem('wos_current_alliance_session');
         if (savedAlliance) {
@@ -2827,6 +2950,9 @@
         localStorage.setItem('wos_text_start_day', textOutputPeriod === 'tue_mon' ? 'tue' : 'mon');
         localStorage.setItem('wos_text_name_mode', textNameMode);
         localStorage.setItem('wos_text_sep', textSeparator);
+        localStorage.setItem('wos_text_day_format', textDayFormat);
+        localStorage.setItem('wos_text_leading_pipe', textLeadingPipe ? 'true' : 'false');
+        localStorage.setItem('wos_text_header_sep', textHeaderSep ? 'true' : 'false');
       } catch (e) {
         console.warn('Failed to save localStorage:', e);
       }
@@ -3388,7 +3514,10 @@
 
       // Header row
       const indentSpace = (textNameMode === 'short') ? '　　' : ' '.repeat(labelWidth);
-      const headerLine = indentSpace + sep + textDays.map(d => d.short).join(sep);
+      const dayTokens = textDays.map(d => (textDayFormat === 'number' ? (d.numShort || d.short) : d.short));
+      const headerSep = textHeaderSep ? sep : (sep === '｜' ? '　' : ' ');
+      const leadSep = textLeadingPipe ? sep : '';
+      const headerLine = indentSpace + leadSep + dayTokens.join(headerSep);
 
       // Prepare overlap symbol assignment for 'merge' mode
       const usedSymbols = new Set(activeEvents.map(e => e.symbol));
@@ -3436,7 +3565,7 @@
               return overlapComboMap.get(comboKey).symbol;
             });
 
-            matrixLines.push(`${paddedName}${sep}${cells.join(sep)}`);
+            matrixLines.push(`${paddedName}${leadSep}${cells.join(sep)}`);
           } else {
             // 縦並び（複数行）モード
             for (let line = 0; line < item.maxLines; line++) {
@@ -3449,7 +3578,7 @@
                 return textEmptyChar;
               });
 
-              matrixLines.push(`${prefix}${sep}${cells.join(sep)}`);
+              matrixLines.push(`${prefix}${leadSep}${cells.join(sep)}`);
             }
           }
         });
@@ -3534,6 +3663,16 @@
       }
     }
 
+    function openOutputSettingsModal() {
+      updateTextTogglesUI();
+      document.getElementById('modalOutputSettings').classList.remove('hidden');
+    }
+
+    function closeOutputSettingsModal() {
+      document.getElementById('modalOutputSettings').classList.add('hidden');
+      applyPendingRemotePayloadIfIdle();
+    }
+
     function openOverlapSettingsModal() {
       activeOverlapInputIdx = 0;
       renderOverlapSymbolsInputs();
@@ -3542,6 +3681,11 @@
 
     function closeOverlapSettingsModal() {
       document.getElementById('modalOverlapSettings').classList.add('hidden');
+      if (returnToOutputSettingsModal) {
+        returnToOutputSettingsModal = false;
+        openOutputSettingsModal();
+        return;
+      }
       applyPendingRemotePayloadIfIdle();
     }
 
@@ -3917,58 +4061,127 @@
     }
 
     function updateTextTogglesUI() {
-      const activeClass = 'flex-1 py-1 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition';
-      const inactiveClass = 'flex-1 py-1 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition';
+      const activeClass = 'flex-1 py-1.5 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition';
+      const inactiveClass = 'flex-1 py-1.5 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition';
+      const activeClass3 = 'flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition';
+      const inactiveClass3 = 'flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition';
 
-      // Overlap mode toggle (merge 🔴 vs stack)
-      const btnOverlapMerge = document.getElementById('btnOverlapMerge');
-      const btnOverlapStack = document.getElementById('btnOverlapStack');
-      if (btnOverlapMerge && btnOverlapStack) {
-        const firstSym = (Array.isArray(overlapSymbols) && overlapSymbols[0]) ? overlapSymbols[0] : '🔴';
-        btnOverlapMerge.textContent = `記号統合 (${firstSym})`;
+      // 1. Day format (曜日 vs 数字)
+      const btnDayFormatDay = document.getElementById('btnDayFormatDay');
+      const btnDayFormatNumber = document.getElementById('btnDayFormatNumber');
+      if (btnDayFormatDay && btnDayFormatNumber) {
+        if (textDayFormat === 'day') {
+          btnDayFormatDay.className = activeClass;
+          btnDayFormatNumber.className = inactiveClass;
+        } else {
+          btnDayFormatNumber.className = activeClass;
+          btnDayFormatDay.className = inactiveClass;
+        }
+      }
+
+      // 2. Leading pipe (|) on/off
+      const btnLeadingPipeOn = document.getElementById('btnLeadingPipeOn');
+      const btnLeadingPipeOff = document.getElementById('btnLeadingPipeOff');
+      if (btnLeadingPipeOn && btnLeadingPipeOff) {
+        if (textLeadingPipe) {
+          btnLeadingPipeOn.className = activeClass;
+          btnLeadingPipeOff.className = inactiveClass;
+        } else {
+          btnLeadingPipeOff.className = activeClass;
+          btnLeadingPipeOn.className = inactiveClass;
+        }
+      }
+
+      // 3. Header separator on/off
+      const btnHeaderSepOn = document.getElementById('btnHeaderSepOn');
+      const btnHeaderSepOff = document.getElementById('btnHeaderSepOff');
+      if (btnHeaderSepOn && btnHeaderSepOff) {
+        if (textHeaderSep) {
+          btnHeaderSepOn.className = activeClass;
+          btnHeaderSepOff.className = inactiveClass;
+        } else {
+          btnHeaderSepOff.className = activeClass;
+          btnHeaderSepOn.className = inactiveClass;
+        }
+      }
+
+      // 4. Overlap mode toggle (merge 🔴 vs stack)
+      const firstSym = (Array.isArray(overlapSymbols) && overlapSymbols[0]) ? overlapSymbols[0] : '🔴';
+      const btnModalOverlapMerge = document.getElementById('btnModalOverlapMerge');
+      const btnModalOverlapStack = document.getElementById('btnModalOverlapStack');
+      if (btnModalOverlapMerge && btnModalOverlapStack) {
+        btnModalOverlapMerge.textContent = `記号統合 (${firstSym})`;
         if (textOverlapMode === 'merge') {
-          btnOverlapMerge.className = activeClass;
-          btnOverlapStack.className = inactiveClass;
+          btnModalOverlapMerge.className = activeClass;
+          btnModalOverlapStack.className = inactiveClass;
         } else {
-          btnOverlapStack.className = activeClass;
-          btnOverlapMerge.className = inactiveClass;
+          btnModalOverlapStack.className = activeClass;
+          btnModalOverlapMerge.className = inactiveClass;
         }
       }
+      const legacyOverlapMerge = document.getElementById('btnOverlapMerge');
+      const legacyOverlapStack = document.getElementById('btnOverlapStack');
+      if (legacyOverlapMerge && legacyOverlapStack) {
+        legacyOverlapMerge.textContent = `記号統合 (${firstSym})`;
+        legacyOverlapMerge.className = textOverlapMode === 'merge' ? activeClass : inactiveClass;
+        legacyOverlapStack.className = textOverlapMode === 'stack' ? activeClass : inactiveClass;
+      }
 
-      // Empty cell character toggle (ー vs 　)
-      const btnEmptyHyphen = document.getElementById('btnEmptyHyphen');
-      const btnEmptySpace = document.getElementById('btnEmptySpace');
-
-      if (btnEmptyHyphen && btnEmptySpace) {
+      // 5. Empty cell character toggle (ー vs 　)
+      const btnModalEmptyHyphen = document.getElementById('btnModalEmptyHyphen');
+      const btnModalEmptySpace = document.getElementById('btnModalEmptySpace');
+      if (btnModalEmptyHyphen && btnModalEmptySpace) {
         if (textEmptyChar === 'ー') {
-          btnEmptyHyphen.className = activeClass;
-          btnEmptySpace.className = inactiveClass;
+          btnModalEmptyHyphen.className = activeClass3;
+          btnModalEmptySpace.className = inactiveClass3;
         } else {
-          btnEmptySpace.className = activeClass;
-          btnEmptyHyphen.className = inactiveClass;
+          btnModalEmptySpace.className = activeClass3;
+          btnModalEmptyHyphen.className = inactiveClass3;
         }
       }
-
-      // Name mode toggle
-      const btnShort = document.getElementById('btnNameShort');
-      const btnFull = document.getElementById('btnNameFull');
-      if (textNameMode === 'short') {
-        btnShort.className = activeClass;
-        btnFull.className = inactiveClass;
-      } else {
-        btnFull.className = activeClass;
-        btnShort.className = inactiveClass;
+      const legacyEmptyHyphen = document.getElementById('btnEmptyHyphen');
+      const legacyEmptySpace = document.getElementById('btnEmptySpace');
+      if (legacyEmptyHyphen && legacyEmptySpace) {
+        legacyEmptyHyphen.className = textEmptyChar === 'ー' ? activeClass : inactiveClass;
+        legacyEmptySpace.className = textEmptyChar === '　' ? activeClass : inactiveClass;
       }
 
-      // Separator toggle
-      const btnFullPipe = document.getElementById('btnSepFullPipe');
-      const btnHalfPipe = document.getElementById('btnSepHalfPipe');
-      if (textSeparator === '｜') {
-        btnFullPipe.className = activeClass;
-        btnHalfPipe.className = inactiveClass;
-      } else {
-        btnHalfPipe.className = activeClass;
-        btnFullPipe.className = inactiveClass;
+      // 6. Name mode toggle (短縮名 vs 正式名)
+      const btnModalNameShort = document.getElementById('btnModalNameShort');
+      const btnModalNameFull = document.getElementById('btnModalNameFull');
+      if (btnModalNameShort && btnModalNameFull) {
+        if (textNameMode === 'short') {
+          btnModalNameShort.className = activeClass3;
+          btnModalNameFull.className = inactiveClass3;
+        } else {
+          btnModalNameFull.className = activeClass3;
+          btnModalNameShort.className = inactiveClass3;
+        }
+      }
+      const legacyNameShort = document.getElementById('btnNameShort');
+      const legacyNameFull = document.getElementById('btnNameFull');
+      if (legacyNameShort && legacyNameFull) {
+        legacyNameShort.className = textNameMode === 'short' ? activeClass : inactiveClass;
+        legacyNameFull.className = textNameMode === 'full' ? activeClass : inactiveClass;
+      }
+
+      // 7. Separator toggle (全角｜ vs 半角|)
+      const btnModalSepFullPipe = document.getElementById('btnModalSepFullPipe');
+      const btnModalSepHalfPipe = document.getElementById('btnModalSepHalfPipe');
+      if (btnModalSepFullPipe && btnModalSepHalfPipe) {
+        if (textSeparator === '｜') {
+          btnModalSepFullPipe.className = activeClass3;
+          btnModalSepHalfPipe.className = inactiveClass3;
+        } else {
+          btnModalSepHalfPipe.className = activeClass3;
+          btnModalSepFullPipe.className = inactiveClass3;
+        }
+      }
+      const legacySepFullPipe = document.getElementById('btnSepFullPipe');
+      const legacySepHalfPipe = document.getElementById('btnSepHalfPipe');
+      if (legacySepFullPipe && legacySepHalfPipe) {
+        legacySepFullPipe.className = textSeparator === '｜' ? activeClass : inactiveClass;
+        legacySepHalfPipe.className = textSeparator === '|' ? activeClass : inactiveClass;
       }
 
       // Preview width mode buttons, Direct Edit mode & container style
@@ -4069,24 +4282,173 @@
         }
       });
 
-      // Overlap mode toggle (merge 🔴 vs stack) & Overlap Symbols Settings Modal
-      document.getElementById('btnOverlapMerge').addEventListener('click', () => {
-        textOverlapMode = 'merge';
-        saveToLocalStorage();
-        updateTextTogglesUI();
-        renderMonospaceText();
-      });
-      document.getElementById('btnOverlapStack').addEventListener('click', () => {
-        textOverlapMode = 'stack';
-        saveToLocalStorage();
-        updateTextTogglesUI();
-        renderMonospaceText();
-      });
-      document.getElementById('btnOpenOverlapSettingsModal').addEventListener('click', openOverlapSettingsModal);
-      document.getElementById('btnCloseOverlapSettingsModal').addEventListener('click', closeOverlapSettingsModal);
-      document.getElementById('btnCancelOverlapSettingsModal').addEventListener('click', closeOverlapSettingsModal);
-      document.getElementById('btnSaveOverlapSettingsModal').addEventListener('click', saveOverlapSettingsModal);
-      document.getElementById('btnResetOverlapSymbolsDefault').addEventListener('click', resetOverlapSymbolsDefault);
+      // Output Settings Modal Trigger & Close Buttons
+      const btnOpenOutputSettings = document.getElementById('btnOpenOutputSettingsModal');
+      if (btnOpenOutputSettings) btnOpenOutputSettings.addEventListener('click', openOutputSettingsModal);
+      const btnCloseOutputSettings = document.getElementById('btnCloseOutputSettingsModal');
+      if (btnCloseOutputSettings) btnCloseOutputSettings.addEventListener('click', closeOutputSettingsModal);
+      const btnCloseOutputSettingsBtn = document.getElementById('btnCloseOutputSettingsModalBtn');
+      if (btnCloseOutputSettingsBtn) btnCloseOutputSettingsBtn.addEventListener('click', closeOutputSettingsModal);
+
+      // Output Settings Modal: 1. Day format (曜日 vs 数字)
+      const btnDayFormatDay = document.getElementById('btnDayFormatDay');
+      if (btnDayFormatDay) {
+        btnDayFormatDay.addEventListener('click', () => {
+          textDayFormat = 'day';
+          saveToLocalStorage();
+          updateTextTogglesUI();
+          renderMonospaceText();
+        });
+      }
+      const btnDayFormatNumber = document.getElementById('btnDayFormatNumber');
+      if (btnDayFormatNumber) {
+        btnDayFormatNumber.addEventListener('click', () => {
+          textDayFormat = 'number';
+          saveToLocalStorage();
+          updateTextTogglesUI();
+          renderMonospaceText();
+        });
+      }
+
+      // Output Settings Modal: 2. Leading pipe (|) on/off
+      const btnLeadingPipeOn = document.getElementById('btnLeadingPipeOn');
+      if (btnLeadingPipeOn) {
+        btnLeadingPipeOn.addEventListener('click', () => {
+          textLeadingPipe = true;
+          saveToLocalStorage();
+          updateTextTogglesUI();
+          renderMonospaceText();
+        });
+      }
+      const btnLeadingPipeOff = document.getElementById('btnLeadingPipeOff');
+      if (btnLeadingPipeOff) {
+        btnLeadingPipeOff.addEventListener('click', () => {
+          textLeadingPipe = false;
+          saveToLocalStorage();
+          updateTextTogglesUI();
+          renderMonospaceText();
+        });
+      }
+
+      // Output Settings Modal: 3. Header separator on/off
+      const btnHeaderSepOn = document.getElementById('btnHeaderSepOn');
+      if (btnHeaderSepOn) {
+        btnHeaderSepOn.addEventListener('click', () => {
+          textHeaderSep = true;
+          saveToLocalStorage();
+          updateTextTogglesUI();
+          renderMonospaceText();
+        });
+      }
+      const btnHeaderSepOff = document.getElementById('btnHeaderSepOff');
+      if (btnHeaderSepOff) {
+        btnHeaderSepOff.addEventListener('click', () => {
+          textHeaderSep = false;
+          saveToLocalStorage();
+          updateTextTogglesUI();
+          renderMonospaceText();
+        });
+      }
+
+      // Output Settings Modal: 4. Overlap mode & Symbols settings
+      const btnModalOverlapMerge = document.getElementById('btnModalOverlapMerge');
+      if (btnModalOverlapMerge) {
+        btnModalOverlapMerge.addEventListener('click', () => {
+          textOverlapMode = 'merge';
+          saveToLocalStorage();
+          updateTextTogglesUI();
+          renderMonospaceText();
+        });
+      }
+      const btnModalOverlapStack = document.getElementById('btnModalOverlapStack');
+      if (btnModalOverlapStack) {
+        btnModalOverlapStack.addEventListener('click', () => {
+          textOverlapMode = 'stack';
+          saveToLocalStorage();
+          updateTextTogglesUI();
+          renderMonospaceText();
+        });
+      }
+      const btnOpenOverlapFromOutput = document.getElementById('btnOpenOverlapSettingsFromOutputModal');
+      if (btnOpenOverlapFromOutput) {
+        btnOpenOverlapFromOutput.addEventListener('click', () => {
+          closeOutputSettingsModal();
+          returnToOutputSettingsModal = true;
+          openOverlapSettingsModal();
+        });
+      }
+
+      // Output Settings Modal: 5. Empty cell character (ー vs 　)
+      const btnModalEmptyHyphen = document.getElementById('btnModalEmptyHyphen');
+      if (btnModalEmptyHyphen) {
+        btnModalEmptyHyphen.addEventListener('click', () => {
+          textEmptyChar = 'ー';
+          saveToLocalStorage();
+          updateTextTogglesUI();
+          renderMonospaceText();
+        });
+      }
+      const btnModalEmptySpace = document.getElementById('btnModalEmptySpace');
+      if (btnModalEmptySpace) {
+        btnModalEmptySpace.addEventListener('click', () => {
+          textEmptyChar = '　';
+          saveToLocalStorage();
+          updateTextTogglesUI();
+          renderMonospaceText();
+        });
+      }
+
+      // Output Settings Modal: 6. Name mode (短縮名 vs 正式名)
+      const btnModalNameShort = document.getElementById('btnModalNameShort');
+      if (btnModalNameShort) {
+        btnModalNameShort.addEventListener('click', () => {
+          textNameMode = 'short';
+          saveToLocalStorage();
+          updateTextTogglesUI();
+          renderMonospaceText();
+        });
+      }
+      const btnModalNameFull = document.getElementById('btnModalNameFull');
+      if (btnModalNameFull) {
+        btnModalNameFull.addEventListener('click', () => {
+          textNameMode = 'full';
+          saveToLocalStorage();
+          updateTextTogglesUI();
+          renderMonospaceText();
+        });
+      }
+
+      // Output Settings Modal: 7. Separator style (全角｜ vs 半角|)
+      const btnModalSepFullPipe = document.getElementById('btnModalSepFullPipe');
+      if (btnModalSepFullPipe) {
+        btnModalSepFullPipe.addEventListener('click', () => {
+          textSeparator = '｜';
+          saveToLocalStorage();
+          updateTextTogglesUI();
+          renderMonospaceText();
+        });
+      }
+      const btnModalSepHalfPipe = document.getElementById('btnModalSepHalfPipe');
+      if (btnModalSepHalfPipe) {
+        btnModalSepHalfPipe.addEventListener('click', () => {
+          textSeparator = '|';
+          saveToLocalStorage();
+          updateTextTogglesUI();
+          renderMonospaceText();
+        });
+      }
+
+      // Overlap Symbols Modal controls
+      const btnOpenOverlapModal = document.getElementById('btnOpenOverlapSettingsModal');
+      if (btnOpenOverlapModal) btnOpenOverlapModal.addEventListener('click', openOverlapSettingsModal);
+      const btnCloseOverlapModal = document.getElementById('btnCloseOverlapSettingsModal');
+      if (btnCloseOverlapModal) btnCloseOverlapModal.addEventListener('click', closeOverlapSettingsModal);
+      const btnCancelOverlapModal = document.getElementById('btnCancelOverlapSettingsModal');
+      if (btnCancelOverlapModal) btnCancelOverlapModal.addEventListener('click', closeOverlapSettingsModal);
+      const btnSaveOverlapModal = document.getElementById('btnSaveOverlapSettingsModal');
+      if (btnSaveOverlapModal) btnSaveOverlapModal.addEventListener('click', saveOverlapSettingsModal);
+      const btnResetOverlapDefault = document.getElementById('btnResetOverlapSymbolsDefault');
+      if (btnResetOverlapDefault) btnResetOverlapDefault.addEventListener('click', resetOverlapSymbolsDefault);
       document.querySelectorAll('.btn-overlap-quick').forEach(btn => {
         btn.addEventListener('click', () => {
           const sym = btn.textContent.trim();
@@ -4152,47 +4514,6 @@
         });
       }
 
-      // Empty character toggle (ー vs 　)
-      document.getElementById('btnEmptyHyphen').addEventListener('click', () => {
-        textEmptyChar = 'ー';
-        saveToLocalStorage();
-        updateTextTogglesUI();
-        renderMonospaceText();
-      });
-      document.getElementById('btnEmptySpace').addEventListener('click', () => {
-        textEmptyChar = '　';
-        saveToLocalStorage();
-        updateTextTogglesUI();
-        renderMonospaceText();
-      });
-
-      // Name mode toggle
-      document.getElementById('btnNameShort').addEventListener('click', () => {
-        textNameMode = 'short';
-        saveToLocalStorage();
-        updateTextTogglesUI();
-        renderMonospaceText();
-      });
-      document.getElementById('btnNameFull').addEventListener('click', () => {
-        textNameMode = 'full';
-        saveToLocalStorage();
-        updateTextTogglesUI();
-        renderMonospaceText();
-      });
-
-      // Separator toggle
-      document.getElementById('btnSepFullPipe').addEventListener('click', () => {
-        textSeparator = '｜';
-        saveToLocalStorage();
-        updateTextTogglesUI();
-        renderMonospaceText();
-      });
-      document.getElementById('btnSepHalfPipe').addEventListener('click', () => {
-        textSeparator = '|';
-        saveToLocalStorage();
-        updateTextTogglesUI();
-        renderMonospaceText();
-      });
 
       // Title input & Insert Date
       document.getElementById('textTitleInput').addEventListener('input', (e) => {
