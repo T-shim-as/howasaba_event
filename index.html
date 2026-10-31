@@ -629,7 +629,17 @@
             class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 transition flex items-center gap-1">
             <span>↔️ 広げて確認 (全体)</span>
           </button>
-          <span class="text-[10px] text-slate-500 hidden md:inline ml-1">※右下のつまみをドラッグして任意の幅に伸縮できます</span>
+          <div class="h-4 w-px bg-slate-800 mx-0.5 hidden sm:block"></div>
+          <button type="button" id="btnToggleEditMode"
+            class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-900 text-slate-300 hover:text-white border border-slate-700 transition flex items-center gap-1"
+            title="出力されたテキストを直接書き換える編集モードに切り替えます">
+            <span>✏️ 編集モード</span>
+          </button>
+          <button type="button" id="btnResetManualEdit"
+            class="hidden px-2 py-1 rounded-lg text-[10px] font-semibold bg-slate-900 text-amber-300 hover:text-amber-200 border border-amber-800/70 transition flex items-center gap-1"
+            title="手動編集を破棄して自動生成テキストに戻します">
+            <span>🔄 自動生成に戻す</span>
+          </button>
         </div>
 
         <div class="flex items-center gap-3 flex-wrap justify-between sm:justify-end">
@@ -661,16 +671,24 @@
           <div id="monospaceEditorContainer" style="width: 16.6em;"
             class="visual-editor-box show-ws bg-slate-950 text-cyan-200 p-3.5 rounded-xl border border-slate-800 shadow-inner min-h-[260px] resize-x overflow-x-auto max-w-full">
           </div>
-          <!-- Hidden plain textarea for clipboard copy & compatibility -->
-          <textarea id="monospaceTextArea" readonly class="hidden"></textarea>
+          <!-- Direct editable textarea (toggled by ✏️ 編集モード) -->
+          <textarea id="monospaceTextArea" readonly style="width: 16.6em;"
+            class="hidden visual-editor-box bg-slate-950 text-cyan-100 p-3.5 rounded-xl border-2 border-amber-500/80 focus:outline-none focus:border-amber-400 shadow-inner min-h-[260px] resize-x overflow-x-auto max-w-full"></textarea>
         </div>
 
         <div class="flex flex-col items-stretch sm:items-start gap-2 w-full sm:w-auto shrink-0 sm:mb-1">
-          <!-- Lightweight wrap overflow alert above Copy button -->
+          <!-- Alert 1: Wrap overflow alert above Copy button -->
           <div id="textWrapAlert"
             class="hidden px-3 py-1.5 rounded-lg bg-amber-950/90 border border-amber-700/80 text-amber-200 text-[11px] font-semibold flex items-center gap-1.5 shadow-md">
             <span class="shrink-0">⚠️</span>
-            <span id="textWrapAlertMsg">1行16文字を超えている行があり、折り返しが崩れています</span>
+            <span id="textWrapAlertMsg">表の1行が折り返し幅（16文字）を超えているため、出力が崩れています</span>
+          </div>
+
+          <!-- Alert 2: Newline count overflow alert above Copy button -->
+          <div id="textNewlineAlert"
+            class="hidden px-3 py-1.5 rounded-lg bg-rose-950/90 border border-rose-700/80 text-rose-200 text-[11px] font-semibold flex items-center gap-1.5 shadow-md">
+            <span class="shrink-0">⚠️</span>
+            <span id="textNewlineAlertMsg">改行数が上限（10回）を超えています（現在 11回）</span>
           </div>
 
           <button id="btnCopyTextMatrix" type="button"
@@ -733,7 +751,7 @@
             <button type="button"
               class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">👑</button>
             <button type="button"
-              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">💠</button>
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">❄️</button>
             <button type="button"
               class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🏆</button>
             <button type="button"
@@ -756,6 +774,22 @@
               class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🟢</button>
             <button type="button"
               class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🟡</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">💩</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">💪</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">💀</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">👻</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">♨️</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">👍️</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">❤</button>
+            <button type="button"
+              class="btn-quick-symbol px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🐱</button>
           </div>
         </div>
 
@@ -1211,7 +1245,8 @@
           </h3>
           <p class="text-[11px] text-slate-400 mt-0.5">複数イベントが重なった際に割り当てる記号（1文字）の順番を設定します</p>
         </div>
-        <button id="btnCloseOverlapSettingsModal" class="text-slate-400 hover:text-white p-1 rounded-lg text-lg">✕</button>
+        <button id="btnCloseOverlapSettingsModal"
+          class="text-slate-400 hover:text-white p-1 rounded-lg text-lg">✕</button>
       </div>
 
       <div class="p-4 sm:p-5 space-y-4 text-xs">
@@ -1225,26 +1260,70 @@
         <div>
           <label class="block text-[11px] font-semibold text-slate-400 mb-1.5">記号パレット（クリックで選択中の枠に入力）</label>
           <div class="flex flex-wrap gap-1" id="overlapQuickPalette">
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🔴</button>
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🔵</button>
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🟢</button>
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🟡</button>
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🟣</button>
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🟠</button>
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🟤</button>
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">⚪</button>
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">◎</button>
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">◆</button>
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">●</button>
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">◯</button>
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">👑</button>
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">💠</button>
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🏆</button>
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🚩</button>
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">①</button>
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">②</button>
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">③</button>
-            <button type="button" class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">④</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">◯</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">●</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">◎</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">◆</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">軍</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">士</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">準</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">季</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">👑</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">❄️</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🏆</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🚩</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🎃</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🌸</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🐹</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🎄</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🎁</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🔴</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🔵</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🟢</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🟡</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🟣</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🟠</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🟤</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">💩</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">💪</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">💀</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">👻</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">♨️</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">👍️</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">❤</button>
+            <button type="button"
+              class="btn-overlap-quick px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 rounded border border-slate-700">🐱</button>
           </div>
         </div>
       </div>
@@ -1561,9 +1640,11 @@
     let textEmptyChar = 'ー'; // 'ー' or '　'
     let previewWidthMode = 'mobile'; // 'mobile' (16.6em) or 'wide' (100%)
     let showWhitespaceMarks = true; // 改行・空白記号の可視化
+    let isDirectEditMode = false; // 出力テキストの直接編集モード
+    let hasManualTextEdit = false; // 手動でテキストが書き換えられたか
 
     // Auto-assigned overlap symbols (excluding ★ which is unsupported in WOS)
-    const DEFAULT_OVERLAP_SYMBOLS = ['🔴', '🔵', '🟢', '🟡', '🟣', '🟠', '🟤', '⚪', '◎', '◆'];
+    const DEFAULT_OVERLAP_SYMBOLS = ['🔴', '🔵', '🟢', '🟡', '🟣', '🟠', '🟤', '❤', '👍️', '💀'];
     let overlapSymbols = [...DEFAULT_OVERLAP_SYMBOLS];
     let activeOverlapInputIdx = 0;
 
@@ -3155,10 +3236,49 @@
         .replace(/'/g, '&#39;');
     }
 
-    // Render Visual Editor with visible newline (↵) and whitespace (␣, □) markers
-    function renderVisualEditor(rawText) {
+    // Helper: Check if rawText has any line exceeding 16 fullwidth chars (32 halfwidth units)
+    function checkTextWrapOverflow(rawText) {
+      const lines = String(rawText || '').split('\n');
+      for (const line of lines) {
+        const tokens = tokenizeChars(line);
+        let idx = 0;
+        while (idx < tokens.length) {
+          let w = 0;
+          let endIdx = idx;
+          while (endIdx < tokens.length && w < 32) {
+            const code = tokens[endIdx].codePointAt(0);
+            const charW = ((code >= 0x0020 && code <= 0x007e) || (code >= 0xff61 && code <= 0xff9f)) ? 1 : 2;
+            w += charW;
+            endIdx++;
+          }
+          if (w < 32) {
+            // Remaining segment is <= 32 halfwidth units
+            break;
+          }
+          if (w === 32 && endIdx === tokens.length) {
+            // Exact 32 halfwidth units at end of line
+            break;
+          }
+          if (w === 32 && tokens[endIdx] === ' ') {
+            // Valid 32-unit line followed by auto-wrap halfwidth space ' '
+            idx = endIdx + 1;
+            continue;
+          }
+          // Exceeded 32 halfwidth units without a wrap boundary
+          return true;
+        }
+      }
+      return false;
+    }
+
+    // Render Visual Editor with visible newline (↵) and whitespace (␣, □) markers, and update alerts
+    function renderVisualEditor(rawText, customWrapAlertMsg = null) {
       const container = document.getElementById('monospaceEditorContainer');
       const nlBadge = document.getElementById('newlineCountBadge');
+      const nlAlert = document.getElementById('textNewlineAlert');
+      const nlAlertMsg = document.getElementById('textNewlineAlertMsg');
+      const wrapAlert = document.getElementById('textWrapAlert');
+      const wrapAlertMsg = document.getElementById('textWrapAlertMsg');
       if (!container) return;
 
       const tokens = tokenizeChars(rawText);
@@ -3193,6 +3313,29 @@
         } else {
           nlBadge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950/90 text-rose-300 border border-rose-700';
           nlBadge.textContent = `⚠️ 改行: ${nlCount} / 10回 (上限超過)`;
+        }
+      }
+
+      // Alert 2: Newline count alert above Copy button (independent of wrap alert)
+      if (nlAlert && nlAlertMsg) {
+        if (nlCount > 10) {
+          nlAlertMsg.textContent = `改行数が上限（10回）を超えています（現在 ${nlCount}回）`;
+          nlAlert.classList.remove('hidden');
+        } else {
+          nlAlert.classList.add('hidden');
+        }
+      }
+
+      // Alert 1: Wrap overflow alert above Copy button
+      if (wrapAlert && wrapAlertMsg) {
+        if (customWrapAlertMsg) {
+          wrapAlertMsg.textContent = customWrapAlertMsg;
+          wrapAlert.classList.remove('hidden');
+        } else if (checkTextWrapOverflow(rawText)) {
+          wrapAlertMsg.textContent = '1行16文字（折り返し幅）を超えている行があり、出力が崩れています';
+          wrapAlert.classList.remove('hidden');
+        } else {
+          wrapAlert.classList.add('hidden');
         }
       }
     }
@@ -3352,27 +3495,20 @@
         out += legendLines.join('\n');
       }
 
-      // Check wrap overflow & newline alert above Copy button
-      const alertBox = document.getElementById('textWrapAlert');
-      const alertMsg = document.getElementById('textWrapAlertMsg');
-      const totalNewlines = (out.match(/\n/g) || []).length;
-      if (alertBox && alertMsg) {
-        if (hasMatrixOverflow) {
-          alertMsg.textContent = '表の1行が折り返し幅（16文字）を超えているため、出力が崩れています';
-          alertBox.classList.remove('hidden');
-        } else if (hasLegendOrTitleOverflow) {
-          alertMsg.textContent = 'タイトルまたは凡例が折り返し幅（16文字）を超えています';
-          alertBox.classList.remove('hidden');
-        } else if (totalNewlines > 10) {
-          alertMsg.textContent = `改行数が上限（10回）を超えています（現在 ${totalNewlines}回）`;
-          alertBox.classList.remove('hidden');
-        } else {
-          alertBox.classList.add('hidden');
-        }
+      // Determine specific wrap overflow message if any
+      let wrapAlertMessage = null;
+      if (hasMatrixOverflow) {
+        wrapAlertMessage = '表の1行が折り返し幅（16文字）を超えているため、出力が崩れています';
+      } else if (hasLegendOrTitleOverflow) {
+        wrapAlertMessage = 'タイトルまたは凡例が折り返し幅（16文字）を超えています';
       }
 
+      hasManualTextEdit = false;
+      const resetEditBtn = document.getElementById('btnResetManualEdit');
+      if (resetEditBtn) resetEditBtn.classList.add('hidden');
+
       document.getElementById('monospaceTextArea').value = out;
-      renderVisualEditor(out);
+      renderVisualEditor(out, wrapAlertMessage);
     }
 
     // Modal: Overlap Symbols Settings
@@ -3835,27 +3971,51 @@
         btnFullPipe.className = inactiveClass;
       }
 
-      // Preview width mode buttons & container style
+      // Preview width mode buttons, Direct Edit mode & container style
       const btnWidthMobile = document.getElementById('btnWidthMobile');
       const btnWidthWide = document.getElementById('btnWidthWide');
+      const btnToggleEditMode = document.getElementById('btnToggleEditMode');
       const editorContainer = document.getElementById('monospaceEditorContainer');
+      const textArea = document.getElementById('monospaceTextArea');
       const editorWrapper = document.getElementById('monospaceEditorWrapper');
       const widthActiveClass = 'px-2.5 py-1 rounded-lg text-[11px] font-bold bg-cyan-900/80 text-cyan-200 border border-cyan-700/60 transition flex items-center gap-1';
       const widthInactiveClass = 'px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-900 text-slate-400 hover:text-white border border-slate-800 transition flex items-center gap-1';
 
-      if (btnWidthMobile && btnWidthWide && editorContainer) {
+      if (btnWidthMobile && btnWidthWide && editorContainer && textArea) {
         if (previewWidthMode === 'mobile') {
           btnWidthMobile.className = widthActiveClass;
           btnWidthWide.className = widthInactiveClass;
           if (editorWrapper) editorWrapper.className = 'overflow-x-auto pb-1 max-w-full';
           editorContainer.style.boxSizing = 'content-box';
           editorContainer.style.width = '16.6em';
+          textArea.style.boxSizing = 'content-box';
+          textArea.style.width = '16.6em';
         } else {
           btnWidthWide.className = widthActiveClass;
           btnWidthMobile.className = widthInactiveClass;
           if (editorWrapper) editorWrapper.className = 'overflow-x-auto pb-1 w-full';
           editorContainer.style.boxSizing = 'border-box';
           editorContainer.style.width = '100%';
+          textArea.style.boxSizing = 'border-box';
+          textArea.style.width = '100%';
+        }
+
+        if (isDirectEditMode) {
+          editorContainer.classList.add('hidden');
+          textArea.classList.remove('hidden');
+          textArea.removeAttribute('readonly');
+          if (btnToggleEditMode) {
+            btnToggleEditMode.className = 'px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-600 hover:bg-amber-500 text-white border border-amber-400 transition flex items-center gap-1 shadow-sm';
+            btnToggleEditMode.innerHTML = '<span>👁️ 編集終了 (可視化表示)</span>';
+          }
+        } else {
+          editorContainer.classList.remove('hidden');
+          textArea.classList.add('hidden');
+          textArea.setAttribute('readonly', 'readonly');
+          if (btnToggleEditMode) {
+            btnToggleEditMode.className = 'px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-900 text-slate-300 hover:text-white border border-slate-700 transition flex items-center gap-1';
+            btnToggleEditMode.innerHTML = '<span>✏️ 編集モード</span>';
+          }
         }
       }
     }
@@ -3941,7 +4101,7 @@
         });
       });
 
-      // Preview width & whitespace visibility toggles
+      // Preview width & whitespace visibility toggles & Direct Text Edit Mode
       document.getElementById('btnWidthMobile').addEventListener('click', () => {
         previewWidthMode = 'mobile';
         updateTextTogglesUI();
@@ -3957,6 +4117,40 @@
           editorContainer.classList.toggle('show-ws', showWhitespaceMarks);
         }
       });
+
+      // Toggle Direct Edit Mode
+      const btnToggleEditMode = document.getElementById('btnToggleEditMode');
+      const textArea = document.getElementById('monospaceTextArea');
+      const btnResetManualEdit = document.getElementById('btnResetManualEdit');
+
+      if (btnToggleEditMode) {
+        btnToggleEditMode.addEventListener('click', () => {
+          isDirectEditMode = !isDirectEditMode;
+          updateTextTogglesUI();
+          if (isDirectEditMode && textArea) {
+            textArea.focus();
+          } else if (!isDirectEditMode && textArea) {
+            // Switched back to visual preview
+            renderVisualEditor(textArea.value);
+          }
+        });
+      }
+
+      if (textArea) {
+        textArea.addEventListener('input', () => {
+          hasManualTextEdit = true;
+          if (btnResetManualEdit) btnResetManualEdit.classList.remove('hidden');
+          renderVisualEditor(textArea.value);
+        });
+      }
+
+      if (btnResetManualEdit) {
+        btnResetManualEdit.addEventListener('click', () => {
+          hasManualTextEdit = false;
+          renderMonospaceText();
+          showToast('自動生成テキストに戻しました');
+        });
+      }
 
       // Empty character toggle (ー vs 　)
       document.getElementById('btnEmptyHyphen').addEventListener('click', () => {
