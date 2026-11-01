@@ -401,9 +401,6 @@
           <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2">
             <span class="text-cyan-400">●</span> イベント選択（タップで表示切替）
           </h2>
-          <p class="text-[11px] sm:text-xs text-slate-400 mt-0.5">
-            バッジをタップして表示ON/OFF。並べ替えや編集は「⚙️ イベント管理」から行えます
-          </p>
         </div>
         <div class="flex items-center gap-2 flex-wrap">
           <button id="btnManageActionsModal"
@@ -472,20 +469,19 @@
     <!-- Section 3: Text Output (Checkbox Days Selection & Layout Options) -->
     <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 sm:p-5 shadow-xl flex flex-col gap-3.5">
       <!-- Section Header with Accordion Toggle Button -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-slate-800/80">
+      <div
+        class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-slate-800/80">
         <div>
           <h2 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
             <span class="p-1 rounded-lg bg-cyan-950 border border-cyan-800/60 text-cyan-400">📋</span>
             <span>チャット用テキスト出力</span>
           </h2>
-          <p class="text-[11px] text-slate-400 mt-0.5">
-            同盟チャットの制限（10回改行・16文字折り返し）に最適化した等幅テキストを生成します
-          </p>
         </div>
 
         <!-- Accordion Toggle Button & Quick Summary -->
         <div class="flex items-center gap-2 self-start sm:self-auto flex-wrap">
-          <span id="outputSettingsSummaryBadge" class="hidden sm:inline-block text-[11px] text-slate-400 bg-slate-950/80 px-2.5 py-1 rounded-lg border border-slate-800 font-normal">
+          <span id="outputSettingsSummaryBadge"
+            class="hidden sm:inline-block text-[11px] text-slate-400 bg-slate-950/80 px-2.5 py-1 rounded-lg border border-slate-800 font-normal">
             <!-- Populated by JS -->
           </span>
           <button type="button" id="btnToggleOutputAccordion"
@@ -493,7 +489,8 @@
             title="出力期間・タイトル・書式設定パネルを開閉します">
             <span id="accordionToggleIcon">⚙️</span>
             <span id="accordionToggleText">設定・期間を収納</span>
-            <span id="accordionChevron" class="text-[10px] text-cyan-400 font-mono transition-transform duration-200">▲</span>
+            <span id="accordionChevron"
+              class="text-[10px] text-cyan-400 font-mono transition-transform duration-200">▲</span>
           </button>
         </div>
       </div>
@@ -501,22 +498,27 @@
       <!-- Accordion Collapsible Wrapper for Period, Title & All Output Settings -->
       <div id="outputSettingsAccordion" class="space-y-3 transition-all duration-300">
         <div class="bg-slate-950/70 p-3 sm:p-4 rounded-2xl border border-slate-800/90 text-xs space-y-3.5 shadow-inner">
-          
+
           <!-- Block 1: 出力期間 & タイトル (2-Column Grid on lg+) -->
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-stretch">
-            
+
             <!-- 出力期間 (lg:col-span-8) -->
-            <div class="lg:col-span-8 space-y-2 bg-slate-900/70 p-3 rounded-xl border border-slate-800/80 flex flex-col justify-between">
+            <div
+              class="lg:col-span-8 space-y-2 bg-slate-900/70 p-3 rounded-xl border border-slate-800/80 flex flex-col justify-between">
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div class="flex items-center gap-2 flex-wrap">
                   <span class="text-[11px] font-bold text-cyan-300 flex items-center gap-1">
                     <span>📅</span> 出力期間
                   </span>
-                  <div class="inline-flex items-center gap-1 bg-slate-950 px-2 py-0.5 rounded-lg border border-slate-700 text-[11px]">
-                    <select id="selectStartDay" class="bg-transparent text-cyan-300 font-bold focus:outline-none cursor-pointer"></select>
+                  <div
+                    class="inline-flex items-center gap-1 bg-slate-950 px-2 py-0.5 rounded-lg border border-slate-700 text-[11px]">
+                    <select id="selectStartDay"
+                      class="bg-transparent text-cyan-300 font-bold focus:outline-none cursor-pointer"></select>
                     <span class="text-slate-500">〜</span>
-                    <select id="selectEndDay" class="bg-transparent text-cyan-300 font-bold focus:outline-none cursor-pointer"></select>
-                    <span id="selectedDaysCountBadge" class="ml-1 px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 text-[10px] font-bold border border-cyan-700">7日間</span>
+                    <select id="selectEndDay"
+                      class="bg-transparent text-cyan-300 font-bold focus:outline-none cursor-pointer"></select>
+                    <span id="selectedDaysCountBadge"
+                      class="ml-1 px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 text-[10px] font-bold border border-cyan-700">7日間</span>
                   </div>
                   <span id="rangeTapHint" class="text-[10px] text-slate-400 hidden xl:inline">（ドラッグまたは開始→終了タップ）</span>
                 </div>
@@ -524,20 +526,28 @@
                 <!-- Quick Presets -->
                 <div class="flex items-center gap-1 flex-wrap">
                   <span class="text-[10px] text-slate-400">定番:</span>
-                  <button type="button" id="btnQuickSelectMonSun" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">月〜日 (7日)</button>
-                  <button type="button" id="btnQuickSelectTueMon" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">火〜月 (7日)</button>
-                  <button type="button" id="btnQuickSelectMonFri" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">月〜金 (5日)</button>
+                  <button type="button" id="btnQuickSelectMonSun"
+                    class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">月〜日
+                    (7日)</button>
+                  <button type="button" id="btnQuickSelectTueMon"
+                    class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">火〜月
+                    (7日)</button>
+                  <button type="button" id="btnQuickSelectMonFri"
+                    class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">月〜金
+                    (5日)</button>
                 </div>
               </div>
 
               <!-- 8-Day Range Track -->
-              <div class="grid grid-cols-8 bg-slate-950 p-1 rounded-xl border border-slate-800 select-none mt-1" id="textDaysCheckboxGroup">
+              <div class="grid grid-cols-8 bg-slate-950 p-1 rounded-xl border border-slate-800 select-none mt-1"
+                id="textDaysCheckboxGroup">
                 <!-- Rendered dynamically by JS as a connected range bar -->
               </div>
             </div>
 
             <!-- タイトル入力 (lg:col-span-4) -->
-            <div class="lg:col-span-4 space-y-2 bg-slate-900/70 p-3 rounded-xl border border-slate-800/80 flex flex-col justify-between">
+            <div
+              class="lg:col-span-4 space-y-2 bg-slate-900/70 p-3 rounded-xl border border-slate-800/80 flex flex-col justify-between">
               <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-cyan-300 flex items-center gap-1">
                   <span>🏷️</span> タイトル
@@ -569,15 +579,17 @@
 
             <!-- 7 Settings Cards Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
-              
+
               <!-- ① 曜日行の文字形式 -->
               <div class="space-y-1 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
                 <label class="block text-[11px] font-semibold text-slate-300">① 曜日行の文字形式</label>
                 <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
-                  <button id="btnDayFormatDay" type="button" class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+                  <button id="btnDayFormatDay" type="button"
+                    class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
                     曜日 (月・火...)
                   </button>
-                  <button id="btnDayFormatNumber" type="button" class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+                  <button id="btnDayFormatNumber" type="button"
+                    class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
                     数字 (１・２...)
                   </button>
                 </div>
@@ -587,13 +599,19 @@
               <div class="space-y-1 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
                 <label class="block text-[11px] font-semibold text-slate-300">② 先頭の区切り</label>
                 <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
-                  <button id="btnLeadingPipePipe" type="button" class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition" title="項目名直後に縦線を出力（例: 加速｜◯）">
+                  <button id="btnLeadingPipePipe" type="button"
+                    class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition"
+                    title="項目名直後に縦線を出力（例: 加速｜◯）">
                     縦線
                   </button>
-                  <button id="btnLeadingPipeSpace" type="button" class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition" title="項目名直後にスペースを出力（例: 加速　◯）">
+                  <button id="btnLeadingPipeSpace" type="button"
+                    class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition"
+                    title="項目名直後にスペースを出力（例: 加速　◯）">
                     スペース
                   </button>
-                  <button id="btnLeadingPipeNone" type="button" class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition" title="区切りなし（例: 加速◯）">
+                  <button id="btnLeadingPipeNone" type="button"
+                    class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition"
+                    title="区切りなし（例: 加速◯）">
                     なし
                   </button>
                 </div>
@@ -603,11 +621,13 @@
               <div class="space-y-1 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
                 <label class="block text-[11px] font-semibold text-slate-300">③ 曜日行の仕切り線</label>
                 <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
-                  <button id="btnHeaderSepOn" type="button" class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
-                    あり (月｜火)
+                  <button id="btnHeaderSepOn" type="button"
+                    class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+                    あり
                   </button>
-                  <button id="btnHeaderSepOff" type="button" class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
-                    なし (月　火)
+                  <button id="btnHeaderSepOff" type="button"
+                    class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+                    なし
                   </button>
                 </div>
               </div>
@@ -616,10 +636,14 @@
               <div class="space-y-1 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
                 <label class="block text-[11px] font-semibold text-slate-300">④ 重複(ダブり)項目</label>
                 <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
-                  <button id="btnModalOverlapMerge" type="button" class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition" title="重複を記号でまとめ凡例に表示">
-                    記号統合 (🔴)
+                  <button id="btnModalOverlapMerge" type="button"
+                    class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition"
+                    title="重複を記号でまとめ凡例に表示">
+                    統合記号 (🔴)
                   </button>
-                  <button id="btnModalOverlapStack" type="button" class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition" title="重複を縦並び複数行で出力">
+                  <button id="btnModalOverlapStack" type="button"
+                    class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition"
+                    title="重複を縦並び複数行で出力">
                     縦並び (複数行)
                   </button>
                 </div>
@@ -629,10 +653,12 @@
               <div class="space-y-1 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
                 <label class="block text-[11px] font-semibold text-slate-300">⑤ 空欄の表示</label>
                 <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
-                  <button id="btnModalEmptyHyphen" type="button" class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+                  <button id="btnModalEmptyHyphen" type="button"
+                    class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
                     ー (線)
                   </button>
-                  <button id="btnModalEmptySpace" type="button" class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+                  <button id="btnModalEmptySpace" type="button"
+                    class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
                     　 (空白)
                   </button>
                 </div>
@@ -642,24 +668,45 @@
               <div class="space-y-1 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
                 <label class="block text-[11px] font-semibold text-slate-300">⑥ 項目名表示</label>
                 <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
-                  <button id="btnModalNameShort" type="button" class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+                  <button id="btnModalNameShort" type="button"
+                    class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
                     短縮名 (2文字)
                   </button>
-                  <button id="btnModalNameFull" type="button" class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+                  <button id="btnModalNameFull" type="button"
+                    class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
                     正式名
                   </button>
                 </div>
               </div>
 
-              <!-- ⑦ 仕切り線スタイル (sm:col-span-2) -->
-              <div class="space-y-1 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80 sm:col-span-2">
-                <label class="block text-[11px] font-semibold text-slate-300">⑦ 仕切り線スタイル (全角 / 半角)</label>
+              <!-- ⑦ 仕切り線スタイル -->
+              <div class="space-y-1 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
+                <label class="block text-[11px] font-semibold text-slate-300">⑦ 仕切り線</label>
                 <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
-                  <button id="btnModalSepFullPipe" type="button" class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
-                    全角 ｜ (推奨: ゲーム内ズレ防止)
+                  <button id="btnModalSepFullPipe" type="button"
+                    class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+                    全角 ｜
                   </button>
-                  <button id="btnModalSepHalfPipe" type="button" class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
-                    半角 | (文字数節約)
+                  <button id="btnModalSepHalfPipe" type="button"
+                    class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+                    半角 |
+                  </button>
+                </div>
+              </div>
+
+              <!-- ⑧ 凡例の出力 -->
+              <div class="space-y-1 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
+                <label class="block text-[11px] font-semibold text-slate-300">⑧ 凡例の出力</label>
+                <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+                  <button id="btnLegendOn" type="button"
+                    class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition"
+                    title="テキスト末尾にイベント名と記号の凡例を出力">
+                    あり (表示)
+                  </button>
+                  <button id="btnLegendOff" type="button"
+                    class="flex-1 py-1.5 px-1 text-center text-slate-400 bg-slate-900 hover:text-white transition"
+                    title="凡例を省略して改行数・行数を節約">
+                    なし (非表示)
                   </button>
                 </div>
               </div>
@@ -707,7 +754,8 @@
           </label>
 
           <!-- Legend for invisible chars -->
-          <div class="flex items-center gap-2 text-[10px] bg-slate-900/90 px-2 py-0.5 rounded-lg border border-slate-800 text-slate-400">
+          <div
+            class="flex items-center gap-2 text-[10px] bg-slate-900/90 px-2 py-0.5 rounded-lg border border-slate-800 text-slate-400">
             <span title="本物の改行コード (上限10回)"><strong class="text-amber-400">↵</strong> 改行</span>
             <span title="自動折り返し用の半角スペース"><strong class="text-cyan-400">␣</strong> 半角</span>
             <span title="全角スペース"><strong class="text-slate-300">□</strong> 全角</span>
@@ -753,9 +801,6 @@
             <span id="copyBtnIcon" class="text-base">📋</span>
             <span id="copyBtnText">テキストをコピー</span>
           </button>
-          <p class="text-[10px] text-slate-500 text-center lg:text-left px-1">
-            ※コピーしたテキストをゲーム内チャットに直接貼り付けて使用できます
-          </p>
         </div>
       </div>
     </section>
@@ -1302,7 +1347,7 @@
       <div class="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
         <div>
           <h3 class="text-base font-bold text-white flex items-center gap-2">
-            <span>⚙️</span> ダブり項目（記号統合）の設定
+            <span>⚙️</span> ダブり項目（統合記号）の設定
           </h3>
           <p class="text-[11px] text-slate-400 mt-0.5">複数イベントが重なった際に割り当てる記号（1文字）の順番を設定します</p>
         </div>
@@ -1445,6 +1490,7 @@
       "textDayFormat": "day",
       "textLeadingPipe": "pipe",
       "textHeaderSep": true,
+      "textShowLegend": true,
       "textTitle": "【 スケジュール 】",
       "actions": [
         { "id": "act_1", "name": "総力UP", "short": "総力" },
@@ -1698,7 +1744,7 @@
     // Text output state (Checkbox Days & Layout Options)
     let textSelectedDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
     let textOutputPeriod = 'mon_sun'; // legacy fallback
-    let textOverlapMode = 'merge'; // 'merge' (記号統合 🔴) or 'stack' (縦並び複数行)
+    let textOverlapMode = 'merge'; // 'merge' (統合記号 🔴) or 'stack' (縦並び複数行)
     let textNameMode = 'short'; // 'short' (短縮名) or 'full' (正式名)
     let textSeparator = '｜'; // '｜' or '|'
     let textTitle = '【 スケジュール 】';
@@ -1706,6 +1752,7 @@
     let textDayFormat = 'day'; // 'day' (月, 火...) or 'number' (１, ２...)
     let textLeadingPipe = 'pipe'; // 'pipe' (縦線), 'space' (スペース), 'none' (なし)
     let textHeaderSep = true; // true (曜日行の仕切り線あり) or false (なし: 空白)
+    let textShowLegend = true; // true (凡例あり) or false (凡例なし)
     let previewWidthMode = 'mobile'; // 'mobile' (16.6em) or 'wide' (100%)
     let showWhitespaceMarks = true; // 改行・空白記号の可視化
     let isDirectEditMode = false; // 出力テキストの直接編集モード
@@ -1862,6 +1909,7 @@
         textDayFormat: textDayFormat,
         textLeadingPipe: textLeadingPipe,
         textHeaderSep: textHeaderSep,
+        textShowLegend: textShowLegend,
         savedAt: new Date().toISOString()
       };
     }
@@ -1894,6 +1942,7 @@
       else if (payload.textLeadingPipe === false) textLeadingPipe = 'none';
       else if (['pipe', 'space', 'none'].includes(payload.textLeadingPipe)) textLeadingPipe = payload.textLeadingPipe;
       if (typeof payload.textHeaderSep === 'boolean') textHeaderSep = payload.textHeaderSep;
+      if (typeof payload.textShowLegend === 'boolean') textShowLegend = payload.textShowLegend;
       if (payload.textTitle) {
         textTitle = payload.textTitle;
         document.getElementById('textTitleInput').value = textTitle;
@@ -2069,6 +2118,7 @@
         textDayFormat: 'day',
         textLeadingPipe: 'pipe',
         textHeaderSep: true,
+        textShowLegend: true,
         savedAt: new Date().toISOString()
       } : {
         actions: [],
@@ -2085,6 +2135,7 @@
         textDayFormat: 'day',
         textLeadingPipe: 'pipe',
         textHeaderSep: true,
+        textShowLegend: true,
         savedAt: new Date().toISOString()
       };
 
@@ -2693,6 +2744,7 @@
       textDayFormat = 'day';
       textLeadingPipe = 'pipe';
       textHeaderSep = true;
+      textShowLegend = true;
       textTitle = '【 スケジュール 】';
       document.getElementById('textTitleInput').value = textTitle;
       saveToLocalStorage();
@@ -2722,6 +2774,7 @@
         textDayFormat: textDayFormat,
         textLeadingPipe: textLeadingPipe,
         textHeaderSep: textHeaderSep,
+        textShowLegend: textShowLegend,
         actions: actions,
         events: events
       };
@@ -2786,6 +2839,7 @@
         else if (obj.textLeadingPipe === false) textLeadingPipe = 'none';
         else if (['pipe', 'space', 'none'].includes(obj.textLeadingPipe)) textLeadingPipe = obj.textLeadingPipe;
         if (typeof obj.textHeaderSep === 'boolean') textHeaderSep = obj.textHeaderSep;
+        if (typeof obj.textShowLegend === 'boolean') textShowLegend = obj.textShowLegend;
         if (obj.textTitle) {
           textTitle = obj.textTitle;
           document.getElementById('textTitleInput').value = textTitle;
@@ -2832,6 +2886,7 @@
           else if (decoded.textLeadingPipe === false) textLeadingPipe = 'none';
           else if (['pipe', 'space', 'none'].includes(decoded.textLeadingPipe)) textLeadingPipe = decoded.textLeadingPipe;
           if (typeof decoded.textHeaderSep === 'boolean') textHeaderSep = decoded.textHeaderSep;
+          if (typeof decoded.textShowLegend === 'boolean') textShowLegend = decoded.textShowLegend;
           if (decoded.textTitle) textTitle = decoded.textTitle;
           showToast('共有URLからスケジュールを読み込みました！');
           saveToLocalStorage();
@@ -2906,6 +2961,9 @@
         const savedHeaderSep = localStorage.getItem('wos_text_header_sep');
         if (savedHeaderSep !== null) textHeaderSep = (savedHeaderSep === 'true');
 
+        const savedShowLegend = localStorage.getItem('wos_text_show_legend');
+        if (savedShowLegend !== null) textShowLegend = (savedShowLegend === 'true');
+
         const savedAccordion = localStorage.getItem('wos_text_settings_accordion_open');
         if (savedAccordion !== null) {
           isOutputSettingsAccordionOpen = (savedAccordion === 'true');
@@ -2947,6 +3005,7 @@
         localStorage.setItem('wos_text_day_format', textDayFormat);
         localStorage.setItem('wos_text_leading_pipe', textLeadingPipe);
         localStorage.setItem('wos_text_header_sep', textHeaderSep ? 'true' : 'false');
+        localStorage.setItem('wos_text_show_legend', textShowLegend ? 'true' : 'false');
       } catch (e) {
         console.warn('Failed to save localStorage:', e);
       }
@@ -3590,7 +3649,7 @@
           }
         });
 
-        const hasLegend = activeEvents.length > 0;
+        const hasLegend = textShowLegend && (activeEvents.length > 0);
         const wrappedLines = matrixLines.map((line, idx) => {
           if (idx === matrixLines.length - 1 && !hasLegend) {
             return line; // No legend below: no trailing space needed on final line
@@ -3604,7 +3663,7 @@
       let hasLegendOrTitleOverflow = textTitle ? (getHalfwidthLength(textTitle) > 32) : false;
 
       // Legend at bottom (first legend line or blank line wraps naturally via the last matrix line's trailing space)
-      if (activeEvents.length > 0) {
+      if (textShowLegend && activeEvents.length > 0) {
         const legendLines = activeEvents.map(ev => `${ev.symbol} : ${ev.name}`);
         overlapComboList.forEach(c => {
           legendLines.push(`${c.symbol} : ${c.label}`);
@@ -3708,10 +3767,11 @@
 
       const dayFmtStr = textDayFormat === 'number' ? '数字' : '曜日';
       const nameStr = textNameMode === 'full' ? '正式名' : '短縮名';
-      const overlapStr = textOverlapMode === 'merge' ? '記号統合' : '縦並び';
+      const overlapStr = textOverlapMode === 'merge' ? '統合記号' : '縦並び';
       const leadStr = textLeadingPipe === 'pipe' ? '縦線あり' : (textLeadingPipe === 'space' ? '空白' : '区切無');
+      const legendStr = textShowLegend ? '凡例あり' : '凡例なし';
 
-      badge.textContent = `📅 ${rangeStr}(${daysCount}日) ｜ ${dayFmtStr} ｜ ${nameStr} ｜ ${overlapStr} ｜ 先頭:${leadStr}`;
+      badge.textContent = `📅 ${rangeStr}(${daysCount}日) ｜ ${dayFmtStr} ｜ ${nameStr} ｜ ${overlapStr} ｜ 先頭:${leadStr} ｜ ${legendStr}`;
     }
 
     function openOverlapSettingsModal() {
@@ -4143,7 +4203,7 @@
       const btnModalOverlapMerge = document.getElementById('btnModalOverlapMerge');
       const btnModalOverlapStack = document.getElementById('btnModalOverlapStack');
       if (btnModalOverlapMerge && btnModalOverlapStack) {
-        btnModalOverlapMerge.textContent = `記号統合 (${firstSym})`;
+        btnModalOverlapMerge.textContent = `統合記号 (${firstSym})`;
         if (textOverlapMode === 'merge') {
           btnModalOverlapMerge.className = activeClass;
           btnModalOverlapStack.className = inactiveClass;
@@ -4155,7 +4215,7 @@
       const legacyOverlapMerge = document.getElementById('btnOverlapMerge');
       const legacyOverlapStack = document.getElementById('btnOverlapStack');
       if (legacyOverlapMerge && legacyOverlapStack) {
-        legacyOverlapMerge.textContent = `記号統合 (${firstSym})`;
+        legacyOverlapMerge.textContent = `統合記号 (${firstSym})`;
         legacyOverlapMerge.className = textOverlapMode === 'merge' ? activeClass : inactiveClass;
         legacyOverlapStack.className = textOverlapMode === 'stack' ? activeClass : inactiveClass;
       }
@@ -4215,6 +4275,19 @@
       if (legacySepFullPipe && legacySepHalfPipe) {
         legacySepFullPipe.className = textSeparator === '｜' ? activeClass : inactiveClass;
         legacySepHalfPipe.className = textSeparator === '|' ? activeClass : inactiveClass;
+      }
+
+      // 8. Legend on/off toggle (凡例の出力 あり vs なし)
+      const btnLegendOn = document.getElementById('btnLegendOn');
+      const btnLegendOff = document.getElementById('btnLegendOff');
+      if (btnLegendOn && btnLegendOff) {
+        if (textShowLegend) {
+          btnLegendOn.className = activeClass3;
+          btnLegendOff.className = inactiveClass3;
+        } else {
+          btnLegendOff.className = activeClass3;
+          btnLegendOn.className = inactiveClass3;
+        }
       }
 
       // Preview width mode buttons, Direct Edit mode & container style
@@ -4482,6 +4555,26 @@
       if (btnModalSepHalfPipe) {
         btnModalSepHalfPipe.addEventListener('click', () => {
           textSeparator = '|';
+          saveToLocalStorage();
+          updateTextTogglesUI();
+          renderMonospaceText();
+        });
+      }
+
+      // Output Settings: 8. Legend on/off (凡例出力 あり vs なし)
+      const btnLegendOn = document.getElementById('btnLegendOn');
+      if (btnLegendOn) {
+        btnLegendOn.addEventListener('click', () => {
+          textShowLegend = true;
+          saveToLocalStorage();
+          updateTextTogglesUI();
+          renderMonospaceText();
+        });
+      }
+      const btnLegendOff = document.getElementById('btnLegendOff');
+      if (btnLegendOff) {
+        btnLegendOff.addEventListener('click', () => {
+          textShowLegend = false;
           saveToLocalStorage();
           updateTextTogglesUI();
           renderMonospaceText();

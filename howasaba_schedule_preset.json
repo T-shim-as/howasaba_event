@@ -8,6 +8,7 @@
   "textDayFormat": "day",
   "textLeadingPipe": "pipe",
   "textHeaderSep": true,
+  "textShowLegend": true,
   "textTitle": "【 スケジュール 】",
   "actions": [
     {
