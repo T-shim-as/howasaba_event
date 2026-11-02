@@ -264,13 +264,25 @@
               </button>
             </div>
 
-            <!-- Help section (Always accessible) -->
+            <!-- Always accessible section (News, Help, Feedback) -->
             <div class="py-1">
+              <button id="btnOpenNewsModal" type="button"
+                class="w-full px-3.5 py-2.5 text-left text-amber-300 hover:bg-slate-800/90 flex items-center gap-2.5 font-semibold transition">
+                <span class="text-sm">📢</span>
+                <span>お知らせ・更新情報</span>
+                <span class="ml-auto text-[9px] px-1.5 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800 font-bold">New</span>
+              </button>
               <button id="btnOpenHelpModal" type="button"
                 class="w-full px-3.5 py-2.5 text-left text-cyan-300 hover:bg-slate-800/90 flex items-center gap-2.5 font-semibold transition">
                 <span class="text-sm">❓</span>
                 <span>ヘルプ / 使い方</span>
               </button>
+              <a id="btnMenuFeedback" href="#" target="_blank" rel="noopener noreferrer"
+                class="w-full px-3.5 py-2.5 text-left text-slate-300 hover:bg-slate-800/90 flex items-center gap-2.5 font-semibold transition">
+                <span class="text-sm">📮</span>
+                <span>不具合報告・ご要望</span>
+                <span class="text-xs text-slate-500 ml-auto">↗</span>
+              </a>
             </div>
 
             <!-- Logout section (Auth-only) -->
@@ -468,121 +480,113 @@
 
     <!-- Section 3: Text Output (Checkbox Days Selection & Layout Options) -->
     <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 sm:p-5 shadow-xl flex flex-col gap-3.5">
-      <!-- Section Header with Accordion Toggle Button -->
-      <div
-        class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-slate-800/80">
-        <div>
-          <h2 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-            <span class="p-1 rounded-lg bg-cyan-950 border border-cyan-800/60 text-cyan-400">📋</span>
-            <span>チャット用テキスト出力</span>
-          </h2>
-        </div>
-
-        <!-- Accordion Toggle Button & Quick Summary -->
-        <div class="flex items-center gap-2 self-start sm:self-auto flex-wrap">
-          <span id="outputSettingsSummaryBadge"
-            class="hidden sm:inline-block text-[11px] text-slate-400 bg-slate-950/80 px-2.5 py-1 rounded-lg border border-slate-800 font-normal">
-            <!-- Populated by JS -->
-          </span>
-          <button type="button" id="btnToggleOutputAccordion"
-            class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700/80 text-cyan-300 hover:text-cyan-200 border border-slate-700 hover:border-cyan-600/50 flex items-center gap-1.5 transition shadow-sm"
-            title="出力期間・タイトル・書式設定パネルを開閉します">
-            <span id="accordionToggleIcon">⚙️</span>
-            <span id="accordionToggleText">設定・期間を収納</span>
-            <span id="accordionChevron"
-              class="text-[10px] text-cyan-400 font-mono transition-transform duration-200">▲</span>
-          </button>
-        </div>
+      <!-- Section Header -->
+      <div class="flex items-center justify-between pb-2.5 border-b border-slate-800/80">
+        <h2 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+          <span class="p-1 rounded-lg bg-cyan-950 border border-cyan-800/60 text-cyan-400">📋</span>
+          <span>チャット用テキスト出力</span>
+        </h2>
       </div>
 
-      <!-- Accordion Collapsible Wrapper for Period, Title & All Output Settings -->
-      <div id="outputSettingsAccordion" class="space-y-3 transition-all duration-300">
-        <div class="bg-slate-950/70 p-3 sm:p-4 rounded-2xl border border-slate-800/90 text-xs space-y-3.5 shadow-inner">
+      <!-- Main Config Container -->
+      <div class="bg-slate-950/70 p-3 sm:p-4 rounded-2xl border border-slate-800/90 text-xs space-y-3.5 shadow-inner">
 
-          <!-- Block 1: 出力期間 & タイトル (2-Column Grid on lg+) -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-stretch">
+        <!-- Block 1: 出力期間 & タイトル (Always Visible, 2-Column Grid on lg+) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-stretch">
 
-            <!-- 出力期間 (lg:col-span-8) -->
-            <div
-              class="lg:col-span-8 space-y-2 bg-slate-900/70 p-3 rounded-xl border border-slate-800/80 flex flex-col justify-between">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div class="flex items-center gap-2 flex-wrap">
-                  <span class="text-[11px] font-bold text-cyan-300 flex items-center gap-1">
-                    <span>📅</span> 出力期間
-                  </span>
-                  <div
-                    class="inline-flex items-center gap-1 bg-slate-950 px-2 py-0.5 rounded-lg border border-slate-700 text-[11px]">
-                    <select id="selectStartDay"
-                      class="bg-transparent text-cyan-300 font-bold focus:outline-none cursor-pointer"></select>
-                    <span class="text-slate-500">〜</span>
-                    <select id="selectEndDay"
-                      class="bg-transparent text-cyan-300 font-bold focus:outline-none cursor-pointer"></select>
-                    <span id="selectedDaysCountBadge"
-                      class="ml-1 px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 text-[10px] font-bold border border-cyan-700">7日間</span>
-                  </div>
-                  <span id="rangeTapHint" class="text-[10px] text-slate-400 hidden xl:inline">（ドラッグまたは開始→終了タップ）</span>
-                </div>
-
-                <!-- Quick Presets -->
-                <div class="flex items-center gap-1 flex-wrap">
-                  <span class="text-[10px] text-slate-400">定番:</span>
-                  <button type="button" id="btnQuickSelectMonSun"
-                    class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">月〜日
-                    (7日)</button>
-                  <button type="button" id="btnQuickSelectTueMon"
-                    class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">火〜月
-                    (7日)</button>
-                  <button type="button" id="btnQuickSelectMonFri"
-                    class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">月〜金
-                    (5日)</button>
-                </div>
-              </div>
-
-              <!-- 8-Day Range Track -->
-              <div class="grid grid-cols-8 bg-slate-950 p-1 rounded-xl border border-slate-800 select-none mt-1"
-                id="textDaysCheckboxGroup">
-                <!-- Rendered dynamically by JS as a connected range bar -->
-              </div>
-            </div>
-
-            <!-- タイトル入力 (lg:col-span-4) -->
-            <div
-              class="lg:col-span-4 space-y-2 bg-slate-900/70 p-3 rounded-xl border border-slate-800/80 flex flex-col justify-between">
-              <div class="flex items-center justify-between">
+          <!-- 出力期間 (lg:col-span-8) -->
+          <div
+            class="lg:col-span-8 space-y-2 bg-slate-900/70 p-3 rounded-xl border border-slate-800/80 flex flex-col justify-between">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div class="flex items-center gap-2 flex-wrap">
                 <span class="text-[11px] font-bold text-cyan-300 flex items-center gap-1">
-                  <span>🏷️</span> タイトル
+                  <span>📅</span> 出力期間
                 </span>
-                <button type="button" id="btnInsertDate"
-                  class="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 transition flex items-center gap-1 shadow-sm"
-                  title="選択中の曜日に合わせた日付をタイトルに挿入">
-                  <span>📅 日付挿入</span>
-                </button>
+                <div
+                  class="inline-flex items-center gap-1 bg-slate-950 px-2 py-0.5 rounded-lg border border-slate-700 text-[11px]">
+                  <select id="selectStartDay"
+                    class="bg-transparent text-cyan-300 font-bold focus:outline-none cursor-pointer"></select>
+                  <span class="text-slate-500">〜</span>
+                  <select id="selectEndDay"
+                    class="bg-transparent text-cyan-300 font-bold focus:outline-none cursor-pointer"></select>
+                  <span id="selectedDaysCountBadge"
+                    class="ml-1 px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 text-[10px] font-bold border border-cyan-700">7日間</span>
+                </div>
+                <span id="rangeTapHint" class="text-[10px] text-slate-400 hidden xl:inline">（ドラッグまたは開始→終了タップ）</span>
               </div>
-              <input type="text" id="textTitleInput" value="【 スケジュール 】"
-                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white text-xs focus:outline-none focus:border-cyan-500">
-              <p class="text-[10px] text-slate-400">※空欄時はタイトル行なしで出力します</p>
+
+              <!-- Quick Presets -->
+              <div class="flex items-center gap-1 flex-wrap">
+                <span class="text-[10px] text-slate-400">定番:</span>
+                <button type="button" id="btnQuickSelectMonSun"
+                  class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">月〜日
+                  (7日)</button>
+                <button type="button" id="btnQuickSelectTueMon"
+                  class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">火〜月
+                  (7日)</button>
+                <button type="button" id="btnQuickSelectMonFri"
+                  class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">月〜金
+                  (5日)</button>
+              </div>
             </div>
 
+            <!-- 8-Day Range Track -->
+            <div class="grid grid-cols-8 bg-slate-950 p-1 rounded-xl border border-slate-800 select-none mt-1"
+              id="textDaysCheckboxGroup">
+              <!-- Rendered dynamically by JS as a connected range bar -->
+            </div>
           </div>
 
-          <!-- Block 2: 出力書式・レイアウト設定 (すべてオープン化) -->
-          <div class="space-y-2.5 pt-2 border-t border-slate-800/80">
+          <!-- タイトル入力 (lg:col-span-4) -->
+          <div
+            class="lg:col-span-4 space-y-2 bg-slate-900/70 p-3 rounded-xl border border-slate-800/80 flex flex-col justify-between">
             <div class="flex items-center justify-between">
-              <span class="text-[11px] font-bold text-slate-300 flex items-center gap-1.5">
-                <span>⚙️</span> 出力書式・レイアウト設定
+              <span class="text-[11px] font-bold text-cyan-300 flex items-center gap-1">
+                <span>🏷️</span> タイトル
               </span>
-              <button type="button" id="btnOpenOverlapSettingsModal"
-                class="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 transition flex items-center gap-1 shadow-sm">
-                <span>🎨 重複記号順・パレット設定</span>
+              <button type="button" id="btnInsertDate"
+                class="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 transition flex items-center gap-1 shadow-sm"
+                title="選択中の曜日に合わせた日付をタイトルに挿入">
+                <span>📅 日付挿入</span>
               </button>
             </div>
+            <input type="text" id="textTitleInput" value="【 スケジュール 】"
+              class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white text-xs focus:outline-none focus:border-cyan-500">
+            <p class="text-[10px] text-slate-400">※空欄時はタイトル行なしで出力します</p>
+          </div>
 
-            <!-- 7 Settings Cards Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+        </div>
 
-              <!-- ① 曜日行の文字形式 -->
+        <!-- Block 2: 出力レイアウト設定 (アコーディオン) -->
+        <div class="space-y-2.5 pt-2 border-t border-slate-800/80">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <!-- Accordion Toggle Button directly above the settings grid -->
+            <button type="button" id="btnToggleOutputAccordion"
+              class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-850 text-cyan-300 hover:text-cyan-200 border border-slate-800 hover:border-cyan-600/50 flex items-center gap-2 transition shadow-sm self-start sm:self-auto group"
+              title="出力レイアウト設定を開閉します">
+              <span id="accordionToggleIcon">⚙️</span>
+              <span id="accordionToggleText">出力レイアウト設定 (8項目)</span>
+              <span id="outputSettingsSummaryBadge"
+                class="hidden md:inline-block text-[11px] text-slate-400 font-normal">
+                <!-- Populated by JS -->
+              </span>
+              <span id="accordionChevron"
+                class="text-[10px] text-cyan-400 font-mono transition-transform duration-200">▲</span>
+            </button>
+
+            <button type="button" id="btnOpenOverlapSettingsModal"
+              class="text-[10px] font-bold px-2.5 py-1.5 rounded-lg bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 transition flex items-center gap-1 shadow-sm self-start sm:self-auto">
+              <span>🎨 重複記号順・パレット設定</span>
+            </button>
+          </div>
+
+          <!-- Accordion Collapsible Wrapper for Layout Settings Grid -->
+          <div id="outputSettingsAccordion" class="space-y-3 transition-all duration-300">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-0.5">
+
+              <!-- ① 日程ヘッダーの文字形式 -->
               <div class="space-y-1 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
-                <label class="block text-[11px] font-semibold text-slate-300">① 曜日行の文字形式</label>
+                <label class="block text-[11px] font-semibold text-slate-300">① 日程ヘッダーの形式</label>
                 <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
                   <button id="btnDayFormatDay" type="button"
                     class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
@@ -617,9 +621,9 @@
                 </div>
               </div>
 
-              <!-- ③ 曜日行の仕切り線 -->
+              <!-- ③ 日程ヘッダーの仕切り線 -->
               <div class="space-y-1 bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/80">
-                <label class="block text-[11px] font-semibold text-slate-300">③ 曜日行の仕切り線</label>
+                <label class="block text-[11px] font-semibold text-slate-300">③ 日程ヘッダー仕切り線</label>
                 <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
                   <button id="btnHeaderSepOn" type="button"
                     class="flex-1 py-1.5 px-1 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
@@ -907,11 +911,16 @@
 
         <!-- 8 Days Schedule Checkboxes (Unchanged as requested) -->
         <div>
-          <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
             <label class="block text-xs font-semibold text-slate-300">
               各曜日に発生するアクションを選択 (月〜翌月)
             </label>
-            <span class="text-[11px] text-slate-400">該当する曜日のマスをクリック</span>
+            <button type="button" id="btnOpenActionsFromEventModal"
+              class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 transition flex items-center gap-1 shadow-sm"
+              title="アクション項目の追加・編集・並べ替え画面へ移動">
+              <span>⚙️ 項目編集へ</span>
+              <span class="text-[10px]">→</span>
+            </button>
           </div>
 
           <div class="border border-slate-800 rounded-xl overflow-x-auto bg-slate-950">
@@ -937,22 +946,16 @@
         </div>
       </div>
 
-      <!-- Modal Footer -->
+      <!-- Modal Footer (統一: 自動同期 & 閉じるボタン) -->
       <div class="p-4 border-t border-slate-800 bg-slate-900/80 flex items-center justify-between">
         <button id="btnDeleteCurrentEvent" type="button"
           class="text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 px-3 py-1.5 rounded-lg border border-transparent hover:border-rose-800 transition hidden">
           このイベントを削除
         </button>
-        <div class="flex items-center gap-2 ml-auto">
-          <button id="btnCancelEventModal" type="button"
-            class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
-            キャンセル
-          </button>
-          <button id="btnSaveEventModal" type="button"
-            class="px-5 py-2 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow transition">
-            保存する
-          </button>
-        </div>
+        <button id="btnCloseEventModalBottom" type="button"
+          class="px-5 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-white transition ml-auto">
+          閉じる
+        </button>
       </div>
     </div>
   </div>
@@ -963,11 +966,18 @@
     <div
       class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
       <div class="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
-        <div>
-          <h3 class="text-base font-bold text-white flex items-center gap-2">
-            ⚙️ アクション項目編集・並べ替え
-          </h3>
-          <p class="text-[11px] text-slate-400 mt-0.5">並び順の変更や文字修正はすべて自動保存されます</p>
+        <div class="flex items-center gap-2">
+          <button id="btnBackToEventModal" type="button"
+            class="hidden px-2.5 py-1 rounded-lg bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 text-xs font-bold transition flex items-center gap-1"
+            title="イベント編集画面に戻る">
+            <span>← イベント編集に戻る</span>
+          </button>
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              ⚙️ 項目編集
+            </h3>
+            <p class="text-[11px] text-slate-400 mt-0.5">並び順の変更や文字修正はすべて自動保存されます</p>
+          </div>
         </div>
         <button id="btnCloseActionsModal" class="text-slate-400 hover:text-white p-1 rounded-lg text-lg">✕</button>
       </div>
@@ -1005,11 +1015,7 @@
       </div>
 
       <div class="p-4 border-t border-slate-800 bg-slate-900/80 flex flex-wrap gap-2 justify-between items-center">
-        <div class="flex items-center gap-3">
-          <button id="btnLoadPresetActions" type="button"
-            class="text-xs text-amber-300 hover:text-amber-200 hover:underline">
-            📦 定番20項目を読み込む
-          </button>
+        <div>
           <button id="btnResetActionsDefault" type="button"
             class="text-xs text-rose-400 hover:text-rose-300 hover:underline">
             全項目クリア
@@ -1036,15 +1042,33 @@
       </div>
 
       <div class="p-4 sm:p-5 space-y-4 text-xs">
+        <!-- Scope Selection -->
+        <div class="space-y-1.5">
+          <label class="block text-[11px] font-semibold text-slate-300">エクスポート対象</label>
+          <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+            <button id="btnExportScopeAll" type="button"
+              class="flex-1 py-1.5 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition">
+              全体
+            </button>
+            <button id="btnExportScopeEvents" type="button"
+              class="flex-1 py-1.5 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+              イベントのみ
+            </button>
+            <button id="btnExportScopeActions" type="button"
+              class="flex-1 py-1.5 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition">
+              項目のみ
+            </button>
+          </div>
+        </div>
+
         <div class="p-3.5 rounded-xl bg-slate-950 border border-amber-500/30 space-y-3">
-          <p class="text-slate-300 leading-relaxed">
-            現在設定されているすべてのイベント・アクション項目・出力設定をバックアップデータ（JSON）として手元に保存します。<br>
-            <span class="text-amber-300 text-[11px]">※大幅な編集を行う前や、定期的なバックアップとしてご活用ください。</span>
+          <p id="exportScopeDescText" class="text-slate-300 leading-relaxed">
+            現在設定されているすべてのイベント・項目・出力設定をJSONデータとして保存します。
           </p>
           <div class="flex flex-col gap-2.5 pt-1">
             <button id="btnDownloadJsonFile" type="button"
               class="w-full py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-amber-600/20">
-              <span>📄 JSONファイルをダウンロード</span>
+              <span id="btnDownloadJsonFileText">📄 JSONファイルをダウンロード</span>
             </button>
             <button id="btnCopyJsonText" type="button"
               class="w-full py-2 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 font-semibold transition flex items-center justify-center gap-2">
@@ -1099,9 +1123,32 @@
             <span>📥</span> バックアップファイルからのインポート (復元)
           </h4>
           <p class="text-slate-400 text-[11px]">
-            エクスポートしたバックアップJSONファイルを選択し、実行ボタンを押してスケジュールを復元します。
+            エクスポートしたバックアップJSONファイルを選択し、復元対象を選んで実行します。
           </p>
-          <div class="space-y-2">
+
+          <!-- Import Target Scope -->
+          <div class="space-y-1">
+            <label class="block text-[11px] font-semibold text-slate-300">復元する内容</label>
+            <div class="flex rounded-lg border border-slate-700 overflow-hidden text-xs">
+              <button id="btnImportScopeAll" type="button"
+                class="flex-1 py-1.5 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition"
+                title="ファイル内の全データをそのまま復元">
+                ファイル内すべて
+              </button>
+              <button id="btnImportScopeEvents" type="button"
+                class="flex-1 py-1.5 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition"
+                title="イベント設定のみ復元し、現在の項目設定はそのまま維持">
+                イベントのみ復元
+              </button>
+              <button id="btnImportScopeActions" type="button"
+                class="flex-1 py-1.5 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition"
+                title="項目設定のみ復元し、現在のイベント設定はそのまま維持">
+                項目のみ復元
+              </button>
+            </div>
+          </div>
+
+          <div class="space-y-2 pt-1">
             <input type="file" id="jsonFileInput" accept=".json"
               class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-cyan-300 hover:file:bg-slate-700 cursor-pointer">
 
@@ -1115,7 +1162,7 @@
             <!-- Explicit Import Execution Button -->
             <button id="btnExecuteFileImport" type="button" disabled
               class="w-full py-2 px-3 rounded-lg bg-slate-800 text-slate-500 font-bold transition flex items-center justify-center gap-1.5 cursor-not-allowed">
-              <span>📥 このファイルをインポートする (上書き)</span>
+              <span id="btnExecuteFileImportText">📥 このファイルをインポートする (上書き)</span>
             </button>
           </div>
         </div>
@@ -1270,12 +1317,30 @@
             </p>
             <ul class="list-disc list-inside space-y-1 text-slate-400 pl-1">
               <li><strong class="text-amber-300">📤 エクスポート:</strong>
-                現在の編集内容をJSONバックアップとしてファイル保存・コピーできます。大きな編集の前に保存しておくと安心です。</li>
+                現在の編集内容をJSONバックアップとしてファイル保存・コピーできます。全体だけでなくイベントのみ・項目のみの個別保存も可能です。</li>
               <li><strong class="text-slate-200">📥 インポート:</strong>
-                初期テンプレート（定番20項目・主要12イベント）の展開、バックアップファイルからの復元、全クリアを行えます。</li>
+                初期テンプレート（定番20項目・主要12イベント）の展開、バックアップファイルからの復元（全体/イベントのみ/項目のみ）、全クリアを行えます。</li>
               <li><strong class="text-slate-200">🔑 パスワード変更:</strong>
-                アカウントIDとスケジュールデータを維持したまま、ログインパスワードを変更できます（幹部メンバーの入れ替わり時などに便利です）。</li>
+                アカウントIDとスケジュールデータを維持したまま、ログインパスワードを変更できます。</li>
             </ul>
+          </div>
+        </div>
+
+        <!-- Guide 5: Feedback & Support -->
+        <div class="space-y-2">
+          <h4 class="font-bold text-cyan-400 text-sm flex items-center gap-1.5">
+            <span>📮</span> 5. ご意見・バグ報告・機能要望
+          </h4>
+          <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2.5 text-slate-300 leading-relaxed text-xs">
+            <p>
+              不具合の報告や「こんな機能が欲しい」といったご要望は、専用のGoogleフォームよりお気軽にお寄せください。<br>
+              <span class="text-slate-400 text-[11px]">※Googleアカウントへのログイン不要で、完全匿名で送信いただけます。</span>
+            </p>
+            <a id="btnHelpFeedbackFormLink" href="https://forms.gle/placeholder" target="_blank" rel="noopener noreferrer"
+              class="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold transition shadow-lg shadow-cyan-600/20">
+              <span>📝 バグ報告・機能要望フォームを開く (外部)</span>
+              <span class="text-xs">↗</span>
+            </a>
           </div>
         </div>
 
@@ -1449,6 +1514,66 @@
             保存する
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modal 8: News / Release Notes Modal -->
+  <div id="modalNews"
+    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div
+      class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <span>📢</span> お知らせ・更新履歴
+          </h3>
+          <p class="text-[11px] text-slate-400 mt-0.5">機能追加や改善のお知らせ</p>
+        </div>
+        <button id="btnCloseNewsModal" class="text-slate-400 hover:text-white p-1 rounded-lg text-lg">✕</button>
+      </div>
+
+      <div class="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1 custom-scrollbar text-xs">
+
+        <!-- Update Article 2 -->
+        <div class="p-3.5 rounded-xl bg-slate-950 border border-cyan-800/60 space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-950 text-cyan-300 border border-cyan-800">アップデート</span>
+            <span class="text-slate-400 font-mono text-[11px]">2026/11/02 v1.1.0</span>
+          </div>
+          <h4 class="font-bold text-white text-sm">出力レイアウト設定＆編集機能の大型改善</h4>
+          <ul class="list-disc list-inside space-y-1 text-slate-300 pl-1 leading-relaxed">
+            <li>出力期間とタイトルを常時表示にし、出力レイアウト設定のみをアコーディオン収納に変更</li>
+            <li>「日程ヘッダー」名称への統一と、仕切り線なし時の先頭パイプ表示不具合の修正</li>
+            <li>表内に登場しないイベントの凡例を自動非表示にして改行数を大幅節約</li>
+            <li>正式名称モードで全角文字・全角スペースに最適化し、ゲーム内での崩れを解消</li>
+            <li>イベント管理に「📋 コピー機能」を追加</li>
+            <li>イベント編集画面の自動同期化（「閉じる」へ統一）と、項目編集への相互遷移ボタンを追加</li>
+            <li>エクスポート／インポートで「全体 / イベントのみ / 項目のみ」の個別入出力に対応</li>
+            <li>ヘルプおよびメニューに「📮 バグ報告・機能要望フォーム」を設置</li>
+          </ul>
+        </div>
+
+        <!-- Update Article 1 -->
+        <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-800">リリース</span>
+            <span class="text-slate-400 font-mono text-[11px]">2026/10/31 v1.0.0</span>
+          </div>
+          <h4 class="font-bold text-slate-200 text-sm">ホワサバ スケジュール共有ツール 正式公開</h4>
+          <p class="text-slate-400 leading-relaxed">
+            ホワイトアウト・サバイバル（ホワサバ）の週間イベントを同盟チャット向け等幅テキスト（10改行・16文字制限対応）に自動変換・共有できるファンメイドツールを公開しました。
+          </p>
+        </div>
+
+      </div>
+
+      <div class="p-3.5 border-t border-slate-800 bg-slate-900/80 flex justify-end">
+        <button id="btnCloseNewsModalBtn"
+          class="px-4 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white transition">
+          閉じる
+        </button>
       </div>
     </div>
   </div>
@@ -1751,7 +1876,7 @@
     let textEmptyChar = 'ー'; // 'ー' or '　'
     let textDayFormat = 'day'; // 'day' (月, 火...) or 'number' (１, ２...)
     let textLeadingPipe = 'pipe'; // 'pipe' (縦線), 'space' (スペース), 'none' (なし)
-    let textHeaderSep = true; // true (曜日行の仕切り線あり) or false (なし: 空白)
+    let textHeaderSep = true; // true (日程ヘッダーの仕切り線あり) or false (なし: 空白)
     let textShowLegend = true; // true (凡例あり) or false (凡例なし)
     let previewWidthMode = 'mobile'; // 'mobile' (16.6em) or 'wide' (100%)
     let showWhitespaceMarks = true; // 改行・空白記号の可視化
@@ -1768,6 +1893,9 @@
     let draggedActionIdx = null;
     let draggedManageEventIdx = null;
     let returnToManageEventsModal = false;
+    let returnToEventModalId = null;
+    let currentExportScope = 'all'; // 'all' | 'events' | 'actions'
+    let currentImportScope = 'all'; // 'all' | 'events' | 'actions'
     let rangeTapStartIdx = null;
     let rangeDragOriginIdx = null;
     let rangeDragMoved = false;
@@ -1962,7 +2090,7 @@
     let pendingRemotePayload = null;
 
     function isAnyEditModalOpen() {
-      const modalIds = ['modalEvent', 'modalActions', 'modalManageEvents', 'modalBackup', 'modalChangePassword', 'modalOverlapSettings'];
+      const modalIds = ['modalEvent', 'modalActions', 'modalManageEvents', 'modalExport', 'modalBackup', 'modalChangePassword', 'modalOverlapSettings', 'modalNews'];
       return modalIds.some(id => {
         const el = document.getElementById(id);
         return el && !el.classList.contains('hidden');
@@ -2675,6 +2803,7 @@
 
     function openExportModal() {
       closeHeaderMenu();
+      updateExportScopeUI();
       document.getElementById('modalExport').classList.remove('hidden');
     }
 
@@ -2695,6 +2824,7 @@
         executeBtn.className = 'w-full py-2 px-3 rounded-lg bg-slate-800 text-slate-500 font-bold transition flex items-center justify-center gap-1.5 cursor-not-allowed';
       }
       selectedImportFile = null;
+      updateImportScopeUI();
       document.getElementById('modalBackup').classList.remove('hidden');
     }
 
@@ -2757,9 +2887,25 @@
       showToast('🗑️ 初期状態にクリアしました');
     }
 
-    function getExportDataObject() {
+    function getExportDataObject(scope = currentExportScope) {
+      if (scope === 'events') {
+        return {
+          version: 10,
+          type: 'events_only',
+          exportedAt: new Date().toISOString(),
+          events: events
+        };
+      } else if (scope === 'actions') {
+        return {
+          version: 10,
+          type: 'actions_only',
+          exportedAt: new Date().toISOString(),
+          actions: actions
+        };
+      }
       return {
         version: 10,
+        type: 'all',
         exportedAt: new Date().toISOString(),
         spanMode: spanMode,
         textSelectedDays: textSelectedDays,
@@ -2787,14 +2933,17 @@
     }
 
     function downloadJsonFile() {
-      const obj = getExportDataObject();
+      const obj = getExportDataObject(currentExportScope);
       const jsonStr = JSON.stringify(obj, null, 2);
       const blob = new Blob([jsonStr], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       const datePart = new Date().toISOString().slice(0, 10);
+      let filename = `howasaba_schedule_${datePart}.json`;
+      if (currentExportScope === 'events') filename = `howasaba_events_${datePart}.json`;
+      else if (currentExportScope === 'actions') filename = `howasaba_actions_${datePart}.json`;
       a.href = url;
-      a.download = `howasaba_schedule_${datePart}.json`;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -2803,8 +2952,52 @@
     }
 
     function copyExportJson() {
-      const obj = getExportDataObject();
+      const obj = getExportDataObject(currentExportScope);
       copyToClipboard(JSON.stringify(obj, null, 2), 'JSONテキストをコピーしました！');
+    }
+
+    function updateExportScopeUI() {
+      const btnAll = document.getElementById('btnExportScopeAll');
+      const btnEvents = document.getElementById('btnExportScopeEvents');
+      const btnActions = document.getElementById('btnExportScopeActions');
+      const desc = document.getElementById('exportScopeDescText');
+      const activeClass = 'flex-1 py-1.5 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition';
+      const inactiveClass = 'flex-1 py-1.5 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition';
+
+      if (btnAll && btnEvents && btnActions) {
+        btnAll.className = currentExportScope === 'all' ? activeClass : inactiveClass;
+        btnEvents.className = currentExportScope === 'events' ? activeClass : inactiveClass;
+        btnActions.className = currentExportScope === 'actions' ? activeClass : inactiveClass;
+      }
+      if (desc) {
+        if (currentExportScope === 'events') {
+          desc.textContent = `現在登録されている全イベント（${events.length}件）の設定とスケジュール日程のみをJSONデータとして保存します。`;
+        } else if (currentExportScope === 'actions') {
+          desc.textContent = `現在登録されている全項目（${actions.length}件）の正式名・短縮名・並び順のみをJSONデータとして保存します。`;
+        } else {
+          desc.textContent = '現在設定されているすべてのイベント・項目・出力レイアウト設定を完全なバックアップデータとして保存します。';
+        }
+      }
+    }
+
+    function updateImportScopeUI() {
+      const btnAll = document.getElementById('btnImportScopeAll');
+      const btnEvents = document.getElementById('btnImportScopeEvents');
+      const btnActions = document.getElementById('btnImportScopeActions');
+      const btnExecText = document.getElementById('btnExecuteFileImportText');
+      const activeClass = 'flex-1 py-1.5 px-2 text-center font-bold bg-cyan-900/80 text-cyan-200 transition';
+      const inactiveClass = 'flex-1 py-1.5 px-2 text-center text-slate-400 bg-slate-900 hover:text-white transition';
+
+      if (btnAll && btnEvents && btnActions) {
+        btnAll.className = currentImportScope === 'all' ? activeClass : inactiveClass;
+        btnEvents.className = currentImportScope === 'events' ? activeClass : inactiveClass;
+        btnActions.className = currentImportScope === 'actions' ? activeClass : inactiveClass;
+      }
+      if (btnExecText) {
+        if (currentImportScope === 'events') btnExecText.textContent = '📥 イベント設定のみインポートする';
+        else if (currentImportScope === 'actions') btnExecText.textContent = '📥 項目設定のみインポートする';
+        else btnExecText.textContent = '📥 このファイルをインポートする (上書き)';
+      }
     }
 
     function importFromJsonString(text) {
@@ -2814,36 +3007,55 @@
       }
       try {
         const obj = JSON.parse(text.trim());
-        if (obj.actions && Array.isArray(obj.actions)) actions = normalizeActions(obj.actions);
-        if (obj.events && Array.isArray(obj.events)) events = obj.events;
-        if (obj.spanMode) spanMode = obj.spanMode;
-        if (obj.textSelectedDays && Array.isArray(obj.textSelectedDays)) {
-          textSelectedDays = obj.textSelectedDays;
-        } else if (obj.textOutputPeriod === 'mon_sat') {
-          textSelectedDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-        } else if (obj.textOutputPeriod === 'tue_mon' || obj.textStartDay === 'tue') {
-          textSelectedDays = ['tue', 'wed', 'thu', 'fri', 'sat', 'sun', 'next_mon'];
+        const hasActions = obj.actions && Array.isArray(obj.actions);
+        const hasEvents = obj.events && Array.isArray(obj.events);
+
+        if (currentImportScope === 'events') {
+          if (!hasEvents) {
+            showToast('選択したファイル内にイベントデータが見つかりません');
+            return;
+          }
+          events = obj.events;
+        } else if (currentImportScope === 'actions') {
+          if (!hasActions) {
+            showToast('選択したファイル内に項目データが見つかりません');
+            return;
+          }
+          actions = normalizeActions(obj.actions);
         } else {
-          textSelectedDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+          // 'all'
+          if (hasActions) actions = normalizeActions(obj.actions);
+          if (hasEvents) events = obj.events;
+          if (obj.spanMode) spanMode = obj.spanMode;
+          if (obj.textSelectedDays && Array.isArray(obj.textSelectedDays)) {
+            textSelectedDays = obj.textSelectedDays;
+          } else if (obj.textOutputPeriod === 'mon_sat') {
+            textSelectedDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+          } else if (obj.textOutputPeriod === 'tue_mon' || obj.textStartDay === 'tue') {
+            textSelectedDays = ['tue', 'wed', 'thu', 'fri', 'sat', 'sun', 'next_mon'];
+          } else {
+            textSelectedDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+          }
+          if (obj.textOutputPeriod) textOutputPeriod = obj.textOutputPeriod;
+          if (obj.textOverlapMode) textOverlapMode = obj.textOverlapMode;
+          if (obj.overlapSymbols && Array.isArray(obj.overlapSymbols) && obj.overlapSymbols.length > 0) {
+            overlapSymbols = obj.overlapSymbols.map((s, idx) => (s && String(s).trim()) ? String(s).trim() : DEFAULT_OVERLAP_SYMBOLS[idx] || '🔴');
+          }
+          if (obj.textNameMode) textNameMode = obj.textNameMode;
+          if (obj.textSeparator) textSeparator = obj.textSeparator;
+          if (obj.textEmptyChar) textEmptyChar = obj.textEmptyChar;
+          if (obj.textDayFormat) textDayFormat = obj.textDayFormat;
+          if (obj.textLeadingPipe === true) textLeadingPipe = 'pipe';
+          else if (obj.textLeadingPipe === false) textLeadingPipe = 'none';
+          else if (['pipe', 'space', 'none'].includes(obj.textLeadingPipe)) textLeadingPipe = obj.textLeadingPipe;
+          if (typeof obj.textHeaderSep === 'boolean') textHeaderSep = obj.textHeaderSep;
+          if (typeof obj.textShowLegend === 'boolean') textShowLegend = obj.textShowLegend;
+          if (obj.textTitle) {
+            textTitle = obj.textTitle;
+            document.getElementById('textTitleInput').value = textTitle;
+          }
         }
-        if (obj.textOutputPeriod) textOutputPeriod = obj.textOutputPeriod;
-        if (obj.textOverlapMode) textOverlapMode = obj.textOverlapMode;
-        if (obj.overlapSymbols && Array.isArray(obj.overlapSymbols) && obj.overlapSymbols.length > 0) {
-          overlapSymbols = obj.overlapSymbols.map((s, idx) => (s && String(s).trim()) ? String(s).trim() : DEFAULT_OVERLAP_SYMBOLS[idx] || '🔴');
-        }
-        if (obj.textNameMode) textNameMode = obj.textNameMode;
-        if (obj.textSeparator) textSeparator = obj.textSeparator;
-        if (obj.textEmptyChar) textEmptyChar = obj.textEmptyChar;
-        if (obj.textDayFormat) textDayFormat = obj.textDayFormat;
-        if (obj.textLeadingPipe === true) textLeadingPipe = 'pipe';
-        else if (obj.textLeadingPipe === false) textLeadingPipe = 'none';
-        else if (['pipe', 'space', 'none'].includes(obj.textLeadingPipe)) textLeadingPipe = obj.textLeadingPipe;
-        if (typeof obj.textHeaderSep === 'boolean') textHeaderSep = obj.textHeaderSep;
-        if (typeof obj.textShowLegend === 'boolean') textShowLegend = obj.textShowLegend;
-        if (obj.textTitle) {
-          textTitle = obj.textTitle;
-          document.getElementById('textTitleInput').value = textTitle;
-        }
+
         saveToLocalStorage();
         updateSpanButtons();
         updateTextTogglesUI();
@@ -2852,7 +3064,10 @@
         renderMatrix();
         renderMonospaceText();
         closeBackupModal();
-        showToast('データを正常に読み込み・復元しました！');
+        let targetMsg = 'データ';
+        if (currentImportScope === 'events') targetMsg = 'イベント設定';
+        else if (currentImportScope === 'actions') targetMsg = '項目設定';
+        showToast(`${targetMsg}を正常に読み込み・復元しました！`);
       } catch (err) {
         showToast('JSONの解析に失敗しました。データ形式をご確認ください。');
       }
@@ -3076,6 +3291,21 @@
       showToast(`「${moved.name}」の順序を変更しました`);
     }
 
+    function duplicateEvent(idx) {
+      const source = events[idx];
+      if (!source) return;
+      const copyObj = JSON.parse(JSON.stringify(source));
+      copyObj.id = 'ev_' + Date.now();
+      copyObj.name = `${source.name} (コピー)`;
+      events.splice(idx + 1, 0, copyObj);
+      saveToLocalStorage();
+      renderManageEventsList();
+      renderEventCheckboxes();
+      renderMatrix();
+      renderMonospaceText();
+      showToast(`「${copyObj.name}」を作成しました！`);
+    }
+
     function renderManageEventsList() {
       const container = document.getElementById('eventsManageListContainer');
       container.innerHTML = '';
@@ -3121,9 +3351,10 @@
             ${ev.note ? `<span class="text-[10px] text-slate-400 ml-1">(${escapeHtml(ev.note)})</span>` : ''}
           </div>
 
-          <!-- Edit & Delete Buttons -->
+          <!-- Edit, Copy & Delete Buttons -->
           <div class="flex items-center gap-1 shrink-0">
             <button type="button" data-event-edit-id="${escapeHtml(ev.id)}" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-cyan-300 rounded font-semibold transition" title="スケジュール編集">✏️ 編集</button>
+            <button type="button" data-event-copy-idx="${idx}" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded font-semibold transition" title="このイベントを複製">📋 コピー</button>
             <button type="button" data-event-del-idx="${idx}" class="px-2 py-1 bg-rose-950/40 hover:bg-rose-900 text-rose-300 rounded transition" title="削除">🗑️</button>
           </div>
         `;
@@ -3158,6 +3389,15 @@
           closeManageEventsModal();
           openEventModal(ev.id, true);
         });
+
+        // Copy
+        const copyBtn = row.querySelector(`[data-event-copy-idx="${idx}"]`);
+        if (copyBtn) {
+          copyBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            duplicateEvent(idx);
+          });
+        }
 
         // Delete
         row.querySelector(`[data-event-del-idx="${idx}"]`).addEventListener('click', () => {
@@ -3385,11 +3625,46 @@
       return len;
     }
 
-    // Helper: Precision padding for label
+    // Helper: Convert ASCII halfwidth characters & halfwidth katakana to fullwidth
+    function toFullwidthKanaAndAscii(str) {
+      if (!str) return '';
+      const kanaMap = {
+        'ｶﾞ': 'ガ', 'ｷﾞ': 'ギ', 'ｸﾞ': 'グ', 'ｹﾞ': 'ゲ', 'ｺﾞ': 'ゴ',
+        'ｻﾞ': 'ザ', 'ｼﾞ': 'ジ', 'ｽﾞ': 'ズ', 'ｾﾞ': 'ゼ', 'ｿﾞ': 'ゾ',
+        'ﾀﾞ': 'ダ', 'ﾁﾞ': 'ヂ', 'ﾂﾞ': 'ヅ', 'ﾃﾞ': 'デ', 'ﾄﾞ': 'ド',
+        'ﾊﾞ': 'バ', 'ﾋﾞ': 'ビ', 'ﾌﾞ': 'ブ', 'ﾍﾞ': 'ベ', 'ﾎﾞ': 'ボ',
+        'ﾊﾟ': 'パ', 'ﾋﾟ': 'ピ', 'ﾌﾟ': 'プ', 'ﾍﾟ': 'ペ', 'ﾎﾟ': 'ポ',
+        'ｳﾞ': 'ヴ', 'ﾜﾞ': 'ヷ', 'ｦﾞ': 'ヺ',
+        'ｱ': 'ア', 'ｲ': 'イ', 'ｳ': 'ウ', 'ｴ': 'エ', 'ｵ': 'オ',
+        'ｶ': 'カ', 'ｷ': 'キ', 'ｸ': 'ク', 'ｹ': 'ケ', 'ｺ': 'コ',
+        'ｻ': 'サ', 'ｼ': 'シ', 'ｽ': 'ス', 'ｾ': 'セ', 'ｿ': 'ソ',
+        'ﾀ': 'タ', 'ﾁ': 'チ', 'ﾂ': 'ツ', 'ﾃ': 'テ', 'ﾄ': 'ト',
+        'ﾅ': 'ナ', 'ﾆ': 'ニ', 'ﾇ': 'ヌ', 'ﾈ': 'ネ', 'ﾉ': 'ノ',
+        'ﾊ': 'ハ', 'ﾋ': 'ヒ', 'ﾌ': 'フ', 'ﾍ': 'ヘ', 'ﾎ': 'ホ',
+        'ﾏ': 'マ', 'ﾐ': 'ミ', 'ﾑ': 'ム', 'ﾒ': 'メ', 'ﾓ': 'モ',
+        'ﾔ': 'ヤ', 'ﾕ': 'ユ', 'ﾖ': 'ヨ',
+        'ﾗ': 'ラ', 'ﾘ': 'リ', 'ﾙ': 'ル', 'ﾚ': 'レ', 'ﾛ': 'ロ',
+        'ﾜ': 'ワ', 'ｦ': 'ヲ', 'ﾝ': 'ン',
+        'ｧ': 'ァ', 'ｨ': 'ィ', 'ｩ': 'ゥ', 'ｪ': 'ェ', 'ｫ': 'ォ',
+        'ｯ': 'ッ', 'ｬ': 'ャ', 'ｭ': 'ュ', 'ｮ': 'ョ',
+        'ｰ': 'ー', '｡': '。', '｢': '「', '｣': '」', '､': '、', '･': '・'
+      };
+      let reg = new RegExp('(' + Object.keys(kanaMap).join('|') + ')', 'g');
+      let s = String(str).replace(reg, m => kanaMap[m]);
+      s = s.replace(/[A-Za-z0-9!-/:-@[-`{-~]/g, function(c) {
+        return String.fromCharCode(c.charCodeAt(0) + 0xFEE0);
+      }).replace(/ /g, '　');
+      return s;
+    }
+
+    // Helper: Precision padding for label (prioritizing fullwidth spaces)
     function padStringToFullwidth(str, targetWidth) {
       const len = getHalfwidthLength(str);
       if (len >= targetWidth) return str;
-      return str + ' '.repeat(targetWidth - len);
+      const diff = targetWidth - len;
+      const fullSpaces = Math.floor(diff / 2);
+      const halfSpaces = diff % 2;
+      return str + '　'.repeat(fullSpaces) + ' '.repeat(halfSpaces);
     }
 
     // Helper: Pad matrix line to 16 fullwidth chars (32 halfwidth) + 1 trailing halfwidth space for in-game auto-wrap
@@ -3559,14 +3834,16 @@
       if (textNameMode === 'full') {
         let maxW = 4;
         rowsToRender.forEach(r => {
-          const w = getHalfwidthLength(r.action.name);
+          const fn = toFullwidthKanaAndAscii(r.action.name);
+          const w = getHalfwidthLength(fn);
           if (w > maxW) maxW = w;
         });
+        if (maxW % 2 !== 0) maxW++; // Ensure even length for pixel-perfect fullwidth space alignment
         labelWidth = maxW;
       }
 
-      // Header row
-      const indentSpace = (textNameMode === 'short') ? '　　' : ' '.repeat(labelWidth);
+      // Header row (日程ヘッダー)
+      const indentSpace = '　'.repeat(labelWidth / 2);
       const dayTokens = textDays.map(d => (textDayFormat === 'number' ? (d.numShort || d.short) : d.short));
       const headerSep = textHeaderSep ? sep : (sep === '｜' ? '　' : ' ');
       let leadSep = '';
@@ -3577,7 +3854,19 @@
       } else {
         leadSep = '';
       }
-      const headerLine = indentSpace + leadSep + dayTokens.join(headerSep);
+
+      // Task 3: 日程ヘッダーの仕切り線なし時は、先頭の縦線も出さずスペースで揃える
+      let headerLeadSep = '';
+      if (!textHeaderSep) {
+        if (textLeadingPipe === 'pipe' || textLeadingPipe === 'space') {
+          headerLeadSep = (sep === '｜' ? '　' : ' ');
+        } else {
+          headerLeadSep = '';
+        }
+      } else {
+        headerLeadSep = leadSep;
+      }
+      const headerLine = indentSpace + headerLeadSep + dayTokens.join(headerSep);
 
       // Prepare overlap symbol assignment for 'merge' mode
       const usedSymbols = new Set(activeEvents.map(e => e.symbol));
@@ -3585,6 +3874,7 @@
       const availableOverlapPool = poolSource.filter(s => s && !usedSymbols.has(s));
       const overlapComboMap = new Map();
       const overlapComboList = [];
+      const actuallyUsedEventIds = new Set();
       let hasMatrixOverflow = getHalfwidthLength(headerLine) > 32;
 
       // Rows (Matrix body uses trailing spaces instead of newlines to preserve the 10-newline limit)
@@ -3595,9 +3885,14 @@
         const matrixLines = [headerLine];
 
         rowsToRender.forEach(item => {
-          const displayName = (textNameMode === 'short') ? item.action.short : item.action.name;
-          const paddedName = (textNameMode === 'short') ? padStringToFullwidth(displayName, 4) : padStringToFullwidth(displayName, labelWidth);
-          const blankPrefix = (textNameMode === 'short') ? '　　' : ' '.repeat(labelWidth);
+          let displayName = '';
+          if (textNameMode === 'short') {
+            displayName = toFullwidthKanaAndAscii(item.action.short);
+          } else {
+            displayName = toFullwidthKanaAndAscii(item.action.name);
+          }
+          const paddedName = padStringToFullwidth(displayName, labelWidth);
+          const blankPrefix = '　'.repeat(labelWidth / 2);
 
           if (textOverlapMode === 'merge') {
             // 1行統合モード: 重複箇所は自動で 🔴, 🔵 等を割り当てて1行にまとめる
@@ -3607,6 +3902,7 @@
                 return textEmptyChar;
               }
               if (evs.length === 1) {
+                actuallyUsedEventIds.add(evs[0].id);
                 return evs[0].symbol;
               }
               // 2つ以上のイベントが重複している場合
@@ -3633,6 +3929,7 @@
               const cells = textDays.map(d => {
                 const ev = item.dayEvents[d.id][line];
                 if (ev) {
+                  actuallyUsedEventIds.add(ev.id);
                   return ev.symbol;
                 }
                 return textEmptyChar;
@@ -3649,7 +3946,9 @@
           }
         });
 
-        const hasLegend = textShowLegend && (activeEvents.length > 0);
+        // Task 4: 凡例に出力するのは、表中に単独シンボルが実際に登場したイベント、または重複組み合わせのみ
+        const visibleLegendEvents = activeEvents.filter(ev => actuallyUsedEventIds.has(ev.id));
+        const hasLegend = textShowLegend && ((visibleLegendEvents.length > 0) || (overlapComboList.length > 0));
         const wrappedLines = matrixLines.map((line, idx) => {
           if (idx === matrixLines.length - 1 && !hasLegend) {
             return line; // No legend below: no trailing space needed on final line
@@ -3663,25 +3962,28 @@
       let hasLegendOrTitleOverflow = textTitle ? (getHalfwidthLength(textTitle) > 32) : false;
 
       // Legend at bottom (first legend line or blank line wraps naturally via the last matrix line's trailing space)
-      if (textShowLegend && activeEvents.length > 0) {
-        const legendLines = activeEvents.map(ev => `${ev.symbol} : ${ev.name}`);
-        overlapComboList.forEach(c => {
-          legendLines.push(`${c.symbol} : ${c.label}`);
-        });
+      if (textShowLegend) {
+        const visibleLegendEvents = activeEvents.filter(ev => actuallyUsedEventIds.has(ev.id));
+        if (visibleLegendEvents.length > 0 || overlapComboList.length > 0) {
+          const legendLines = visibleLegendEvents.map(ev => `${ev.symbol} : ${ev.name}`);
+          overlapComboList.forEach(c => {
+            legendLines.push(`${c.symbol} : ${c.label}`);
+          });
 
-        legendLines.forEach(line => {
-          if (getHalfwidthLength(line) > 32) {
-            hasLegendOrTitleOverflow = true;
+          legendLines.forEach(line => {
+            if (getHalfwidthLength(line) > 32) {
+              hasLegendOrTitleOverflow = true;
+            }
+          });
+
+          // Calculate used newlines without blank line (Title + Legend newlines)
+          const baseNewlines = (textTitle ? 1 : 0) + Math.max(0, legendLines.length - 1);
+          // If we have room within the 10-newline limit, insert 1 fullwidth space + \n to create a blank line using only 1 newline
+          if (baseNewlines + 1 <= 10) {
+            out += '　\n';
           }
-        });
-
-        // Calculate used newlines without blank line (Title + Legend newlines)
-        const baseNewlines = (textTitle ? 1 : 0) + Math.max(0, legendLines.length - 1);
-        // If we have room within the 10-newline limit, insert 1 fullwidth space + \n to create a blank line using only 1 newline
-        if (baseNewlines + 1 <= 10) {
-          out += '　\n';
+          out += legendLines.join('\n');
         }
-        out += legendLines.join('\n');
       }
 
       // Determine specific wrap overflow message if any
@@ -3744,11 +4046,11 @@
       if (accordion) {
         if (isOutputSettingsAccordionOpen) {
           accordion.classList.remove('hidden');
-          if (toggleText) toggleText.textContent = '設定・期間を収納';
+          if (toggleText) toggleText.textContent = '出力レイアウト設定 (8項目)';
           if (chevron) chevron.textContent = '▲';
         } else {
           accordion.classList.add('hidden');
-          if (toggleText) toggleText.textContent = '設定・期間を展開';
+          if (toggleText) toggleText.textContent = '出力レイアウト設定 (8項目)';
           if (chevron) chevron.textContent = '▼';
         }
       }
@@ -3760,18 +4062,13 @@
       const badge = document.getElementById('outputSettingsSummaryBadge');
       if (!badge) return;
 
-      const daysCount = textSelectedDays.length;
-      const startDayObj = ALL_DAYS.find(d => d.id === textSelectedDays[0]);
-      const endDayObj = ALL_DAYS.find(d => d.id === textSelectedDays[textSelectedDays.length - 1]);
-      const rangeStr = (startDayObj && endDayObj) ? `${startDayObj.label}〜${endDayObj.label}` : `${daysCount}日間`;
-
       const dayFmtStr = textDayFormat === 'number' ? '数字' : '曜日';
       const nameStr = textNameMode === 'full' ? '正式名' : '短縮名';
       const overlapStr = textOverlapMode === 'merge' ? '統合記号' : '縦並び';
-      const leadStr = textLeadingPipe === 'pipe' ? '縦線あり' : (textLeadingPipe === 'space' ? '空白' : '区切無');
+      const leadStr = textLeadingPipe === 'pipe' ? '縦線' : (textLeadingPipe === 'space' ? '空白' : '区切無');
       const legendStr = textShowLegend ? '凡例あり' : '凡例なし';
 
-      badge.textContent = `📅 ${rangeStr}(${daysCount}日) ｜ ${dayFmtStr} ｜ ${nameStr} ｜ ${overlapStr} ｜ 先頭:${leadStr} ｜ ${legendStr}`;
+      badge.textContent = `${dayFmtStr} ｜ ${nameStr} ｜ ${overlapStr} ｜ 先頭:${leadStr} ｜ ${legendStr}`;
     }
 
     function openOverlapSettingsModal() {
@@ -3808,8 +4105,26 @@
       showToast('デフォルトの記号順に戻しました');
     }
 
-    // Modal: Event Create/Edit
+    // Modal: Event Create/Edit (Auto-synchronized & Unified)
     function openEventModal(eventId = null, fromManageModal = false) {
+      if (!eventId) {
+        const newEvent = {
+          id: 'ev_' + Date.now(),
+          name: '新規イベント',
+          symbol: '◯',
+          note: '',
+          color: '#38bdf8',
+          enabled: true,
+          schedule: { mon: [], tue: [], wed: [], thu: [], fri: [], sat: [], sun: [], next_mon: [] }
+        };
+        events.push(newEvent);
+        eventId = newEvent.id;
+        saveToLocalStorage();
+        renderEventCheckboxes();
+        renderMatrix();
+        renderMonospaceText();
+      }
+
       editingEventId = eventId;
       returnToManageEventsModal = fromManageModal;
       const modal = document.getElementById('modalEvent');
@@ -3819,19 +4134,68 @@
       const tbody = document.getElementById('modalMatrixTbody');
       tbody.innerHTML = '';
 
-      let targetEvent = null;
-      if (eventId) {
-        targetEvent = events.find(e => e.id === eventId);
-        title.textContent = 'イベントの編集';
-        deleteBtn.classList.remove('hidden');
-      } else {
-        title.textContent = 'イベントの追加';
-        deleteBtn.classList.add('hidden');
-      }
+      const targetEvent = events.find(e => e.id === eventId);
+      title.textContent = 'イベントの編集';
+      deleteBtn.classList.remove('hidden');
 
-      document.getElementById('inputEventName').value = targetEvent ? targetEvent.name : '';
-      document.getElementById('inputEventSymbol').value = targetEvent ? targetEvent.symbol : '◯';
-      document.getElementById('inputEventNote').value = targetEvent ? (targetEvent.note || '') : '';
+      const nameInput = document.getElementById('inputEventName');
+      const symInput = document.getElementById('inputEventSymbol');
+      const noteInput = document.getElementById('inputEventNote');
+
+      nameInput.value = targetEvent ? targetEvent.name : '';
+      symInput.value = targetEvent ? targetEvent.symbol : '◯';
+      noteInput.value = targetEvent ? (targetEvent.note || '') : '';
+
+      // Live auto-sync event inputs
+      nameInput.oninput = () => {
+        if (!editingEventId) return;
+        const ev = events.find(e => e.id === editingEventId);
+        if (ev) {
+          ev.name = nameInput.value.trim() || '名称未設定';
+          saveToLocalStorage();
+          renderEventCheckboxes();
+          renderMatrix();
+          renderMonospaceText();
+        }
+      };
+
+      symInput.oninput = () => {
+        if (!editingEventId) return;
+        const ev = events.find(e => e.id === editingEventId);
+        if (ev) {
+          ev.symbol = symInput.value.trim() || '◯';
+          saveToLocalStorage();
+          renderEventCheckboxes();
+          renderMatrix();
+          renderMonospaceText();
+        }
+      };
+
+      noteInput.oninput = () => {
+        if (!editingEventId) return;
+        const ev = events.find(e => e.id === editingEventId);
+        if (ev) {
+          ev.note = noteInput.value.trim();
+          saveToLocalStorage();
+        }
+      };
+
+      document.querySelectorAll('.btn-quick-symbol').forEach(btn => {
+        btn.onclick = () => {
+          const sym = btn.textContent.trim();
+          symInput.value = sym;
+          if (editingEventId) {
+            const ev = events.find(e => e.id === editingEventId);
+            if (ev) {
+              ev.symbol = sym;
+              saveToLocalStorage();
+              renderEventCheckboxes();
+              renderMatrix();
+              renderMonospaceText();
+            }
+          }
+        };
+      });
 
       actions.forEach(actionObj => {
         const tr = document.createElement('tr');
@@ -3853,6 +4217,27 @@
         });
 
         tr.innerHTML = trHtml;
+
+        // Auto-sync schedule checkboxes
+        tr.querySelectorAll('.modal-schedule-cb').forEach(cb => {
+          cb.onchange = () => {
+            if (!editingEventId) return;
+            const ev = events.find(e => e.id === editingEventId);
+            if (!ev) return;
+            const day = cb.getAttribute('data-day');
+            const act = cb.getAttribute('data-action');
+            if (!ev.schedule[day]) ev.schedule[day] = [];
+            if (cb.checked) {
+              if (!ev.schedule[day].includes(act)) ev.schedule[day].push(act);
+            } else {
+              ev.schedule[day] = ev.schedule[day].filter(a => a !== act);
+            }
+            saveToLocalStorage();
+            renderMatrix();
+            renderMonospaceText();
+          };
+        });
+
         tbody.appendChild(tr);
       });
 
@@ -3870,54 +4255,6 @@
       }
     }
 
-    function saveEventModal() {
-      const name = document.getElementById('inputEventName').value.trim();
-      const symbol = document.getElementById('inputEventSymbol').value.trim() || '◯';
-      const note = document.getElementById('inputEventNote').value.trim();
-
-      if (!name) {
-        showToast('イベント名を入力してください');
-        return;
-      }
-
-      const newSchedule = { mon: [], tue: [], wed: [], thu: [], fri: [], sat: [], sun: [], next_mon: [] };
-      document.querySelectorAll('.modal-schedule-cb:checked').forEach(cb => {
-        const day = cb.getAttribute('data-day');
-        const action = cb.getAttribute('data-action');
-        if (newSchedule[day]) {
-          newSchedule[day].push(action);
-        }
-      });
-
-      if (editingEventId) {
-        const ev = events.find(e => e.id === editingEventId);
-        if (ev) {
-          ev.name = name;
-          ev.symbol = symbol;
-          ev.note = note;
-          ev.schedule = newSchedule;
-        }
-      } else {
-        const newEvent = {
-          id: 'ev_' + Date.now(),
-          name: name,
-          symbol: symbol,
-          note: note,
-          color: '#38bdf8',
-          enabled: true,
-          schedule: newSchedule
-        };
-        events.push(newEvent);
-      }
-
-      saveToLocalStorage();
-      renderEventCheckboxes();
-      renderMatrix();
-      renderMonospaceText();
-      closeEventModal();
-      showToast('イベントを保存しました！');
-    }
-
     function deleteEvent() {
       if (!editingEventId) return;
       events = events.filter(e => e.id !== editingEventId);
@@ -3932,6 +4269,14 @@
     // Modal: Manage Actions (Full Name & Short Name)
     function openActionsModal() {
       renderActionsList();
+      const backBtn = document.getElementById('btnBackToEventModal');
+      if (backBtn) {
+        if (returnToEventModalId) {
+          backBtn.classList.remove('hidden');
+        } else {
+          backBtn.classList.add('hidden');
+        }
+      }
       document.getElementById('modalActions').classList.remove('hidden');
     }
 
@@ -4678,65 +5023,62 @@
       // Event Modal
       document.getElementById('btnOpenNewEventModal').addEventListener('click', () => openEventModal(null, false));
       document.getElementById('btnCloseEventModal').addEventListener('click', closeEventModal);
-      document.getElementById('btnCancelEventModal').addEventListener('click', closeEventModal);
-      document.getElementById('btnSaveEventModal').addEventListener('click', saveEventModal);
+      const btnCloseEventBottom = document.getElementById('btnCloseEventModalBottom');
+      if (btnCloseEventBottom) btnCloseEventBottom.addEventListener('click', closeEventModal);
       document.getElementById('btnDeleteCurrentEvent').addEventListener('click', deleteEvent);
 
-      document.querySelectorAll('.btn-quick-symbol').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.getElementById('inputEventSymbol').value = btn.textContent.trim();
+      const btnOpenActionsFromEvent = document.getElementById('btnOpenActionsFromEventModal');
+      if (btnOpenActionsFromEvent) {
+        btnOpenActionsFromEvent.addEventListener('click', () => {
+          returnToEventModalId = editingEventId;
+          document.getElementById('modalEvent').classList.add('hidden');
+          openActionsModal();
         });
-      });
+      }
 
       // Action Modal
-      document.getElementById('btnManageActionsModal').addEventListener('click', openActionsModal);
+      document.getElementById('btnManageActionsModal').addEventListener('click', () => {
+        returnToEventModalId = null;
+        openActionsModal();
+      });
       document.getElementById('btnCloseActionsModal').addEventListener('click', closeActionsModal);
       document.getElementById('btnCloseActionsModalBtn').addEventListener('click', closeActionsModal);
       document.getElementById('btnAddNewAction').addEventListener('click', addNewAction);
-      document.getElementById('btnLoadPresetActions').addEventListener('click', async () => {
-        try {
-          const res = await fetch('howasaba_schedule_preset.json');
-          if (!res.ok) throw new Error('Fetch failed');
-          const data = await res.json();
-          if (data && data.actions) {
-            actions = normalizeActions(data.actions);
-            saveToLocalStorage();
-            renderActionsList();
-            renderMatrix();
-            renderMonospaceText();
-            showToast('定番20項目を読み込みました！');
-            return;
-          }
-        } catch (err) { }
-        // Fallback to built-in standard preset data
-        if (typeof STANDARD_PRESET_DATA !== 'undefined' && STANDARD_PRESET_DATA.actions) {
-          actions = normalizeActions(STANDARD_PRESET_DATA.actions);
-          saveToLocalStorage();
-          renderActionsList();
-          renderMatrix();
-          renderMonospaceText();
-          showToast('定番20項目を読み込みました！');
-        } else {
-          showToast('項目の読み込みに失敗しました。');
-        }
-      });
+
+      const btnBackToEventModal = document.getElementById('btnBackToEventModal');
+      if (btnBackToEventModal) {
+        btnBackToEventModal.addEventListener('click', () => {
+          const targetId = returnToEventModalId;
+          returnToEventModalId = null;
+          closeActionsModal();
+          openEventModal(targetId, returnToManageEventsModal);
+        });
+      }
+
       document.getElementById('btnResetActionsDefault').addEventListener('click', () => {
-        if (confirm('登録されているすべてのアクション項目を削除しますか？')) {
+        if (confirm('登録されているすべての項目を削除しますか？')) {
           actions = [];
           saveToLocalStorage();
           renderActionsList();
           renderMatrix();
           renderMonospaceText();
-          showToast('アクション項目をすべてクリアしました');
+          showToast('項目をすべてクリアしました');
         }
       });
 
-      // Export Modal (Header Backup)
+      // Export Modal
       document.getElementById('btnOpenExportModal').addEventListener('click', openExportModal);
       document.getElementById('btnCloseExportModal').addEventListener('click', closeExportModal);
       document.getElementById('btnCloseExportModalBtn').addEventListener('click', closeExportModal);
       document.getElementById('btnDownloadJsonFile').addEventListener('click', downloadJsonFile);
       document.getElementById('btnCopyJsonText').addEventListener('click', copyExportJson);
+
+      const btnExportScopeAll = document.getElementById('btnExportScopeAll');
+      const btnExportScopeEvents = document.getElementById('btnExportScopeEvents');
+      const btnExportScopeActions = document.getElementById('btnExportScopeActions');
+      if (btnExportScopeAll) btnExportScopeAll.addEventListener('click', () => { currentExportScope = 'all'; updateExportScopeUI(); });
+      if (btnExportScopeEvents) btnExportScopeEvents.addEventListener('click', () => { currentExportScope = 'events'; updateExportScopeUI(); });
+      if (btnExportScopeActions) btnExportScopeActions.addEventListener('click', () => { currentExportScope = 'actions'; updateExportScopeUI(); });
 
       // Import & Preset Modal
       document.getElementById('btnCloseBackupModal').addEventListener('click', closeBackupModal);
@@ -4745,6 +5087,13 @@
         applyStandardPreset();
         closeBackupModal();
       });
+
+      const btnImportScopeAll = document.getElementById('btnImportScopeAll');
+      const btnImportScopeEvents = document.getElementById('btnImportScopeEvents');
+      const btnImportScopeActions = document.getElementById('btnImportScopeActions');
+      if (btnImportScopeAll) btnImportScopeAll.addEventListener('click', () => { currentImportScope = 'all'; updateImportScopeUI(); });
+      if (btnImportScopeEvents) btnImportScopeEvents.addEventListener('click', () => { currentImportScope = 'events'; updateImportScopeUI(); });
+      if (btnImportScopeActions) btnImportScopeActions.addEventListener('click', () => { currentImportScope = 'actions'; updateImportScopeUI(); });
 
       // JSON File Selection & Explicit Import Execution
       const jsonFileInput = document.getElementById('jsonFileInput');
@@ -4794,6 +5143,27 @@
         resetAllToBlank();
         closeBackupModal();
       });
+
+      // News Modal Listeners
+      const btnOpenNewsModal = document.getElementById('btnOpenNewsModal');
+      if (btnOpenNewsModal) {
+        btnOpenNewsModal.addEventListener('click', () => {
+          closeHeaderMenu();
+          document.getElementById('modalNews').classList.remove('hidden');
+        });
+      }
+      const btnCloseNewsModal = document.getElementById('btnCloseNewsModal');
+      if (btnCloseNewsModal) {
+        btnCloseNewsModal.addEventListener('click', () => {
+          document.getElementById('modalNews').classList.add('hidden');
+        });
+      }
+      const btnCloseNewsModalBtn = document.getElementById('btnCloseNewsModalBtn');
+      if (btnCloseNewsModalBtn) {
+        btnCloseNewsModalBtn.addEventListener('click', () => {
+          document.getElementById('modalNews').classList.add('hidden');
+        });
+      }
 
       // Help Modal Listeners
       document.getElementById('btnOpenHelpModal').addEventListener('click', () => {
