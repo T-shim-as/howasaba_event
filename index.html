@@ -1002,16 +1002,16 @@
 
       <div class="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1 custom-scrollbar">
         <p class="text-xs text-slate-400">
-          マトリクス表用の「正式名」と、チャット出力用の「短縮名（全角2文字推奨）」を管理できます。<span
+          マトリクス表用の「正式名（最大6文字・半角は全角に自動変換）」と、チャット出力用の「短縮名（全角2文字／半角4文字まで）」を管理できます。<span
             class="text-cyan-400 font-semibold">※入力・変更内容は即座に自動保存されます。</span>
         </p>
 
         <!-- Add new action -->
         <div class="flex gap-2">
-          <input type="text" id="inputNewActionFullName" placeholder="正式名 (例: ミスリル消費)"
+          <input type="text" id="inputNewActionFullName" placeholder="正式名 (最大6文字・全角自動変換)" maxlength="6"
             class="flex-1 text-xs bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500">
-          <input type="text" id="inputNewActionShortName" placeholder="短縮名 (例: ﾐｽﾘﾙ)"
-            class="w-24 text-xs bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-white focus:outline-none focus:border-cyan-500">
+          <input type="text" id="inputNewActionShortName" placeholder="短縮名 (全角2/半角4)"
+            class="w-32 text-xs bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-white focus:outline-none focus:border-cyan-500">
           <button id="btnAddNewAction"
             class="px-3.5 py-2 text-xs font-bold rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white shrink-0">
             追加
@@ -2939,13 +2939,20 @@
       if (!Array.isArray(loaded)) return [];
       return loaded.map((item, idx) => {
         if (typeof item === 'string') {
+          const fn = sanitizeActionFullName(item);
           return {
             id: 'act_' + idx,
-            name: item,
-            short: item.slice(0, 2)
+            name: fn,
+            short: sanitizeActionShortName(fn)
           };
         }
-        return item;
+        const fn = sanitizeActionFullName(item.name || '');
+        const sn = sanitizeActionShortName(item.short || fn);
+        return {
+          id: item.id || ('act_' + idx),
+          name: fn,
+          short: sn
+        };
       });
     }
 
@@ -3837,6 +3844,28 @@
       return s;
     }
 
+    // Helper: Sanitize Action Full Name (Auto Fullwidth conversion, max 6 chars)
+    function sanitizeActionFullName(str) {
+      if (!str) return '';
+      return toFullwidthKanaAndAscii(str.trim()).slice(0, 6);
+    }
+
+    // Helper: Sanitize Action Short Name (Display width max 4: 2 fullwidth or 4 halfwidth)
+    function sanitizeActionShortName(str) {
+      if (!str) return '';
+      const trimmed = str.trim();
+      const tokens = Array.from(trimmed);
+      let res = '';
+      let currentWidth = 0;
+      for (const ch of tokens) {
+        const w = getHalfwidthLength(ch);
+        if (currentWidth + w > 4) break;
+        res += ch;
+        currentWidth += w;
+      }
+      return res;
+    }
+
     // Helper: Precision padding for label (prioritizing fullwidth spaces)
     function padStringToFullwidth(str, targetWidth) {
       const len = getHalfwidthLength(str);
@@ -4508,8 +4537,8 @@
           </div>
 
           <!-- Name & Short Inputs -->
-          <input type="text" data-action-idx="${idx}" data-field="name" value="${escapeHtml(act.name)}" placeholder="正式名" class="bg-slate-900 border border-slate-700/60 focus:border-cyan-500 rounded text-slate-200 font-medium px-2 py-1 focus:outline-none flex-1">
-          <input type="text" data-action-idx="${idx}" data-field="short" value="${escapeHtml(act.short)}" placeholder="短縮名" maxlength="4" class="w-16 text-center bg-slate-900 border border-slate-700/60 focus:border-cyan-500 rounded text-cyan-300 font-bold px-1 py-1 focus:outline-none">
+          <input type="text" data-action-idx="${idx}" data-field="name" value="${escapeHtml(act.name)}" placeholder="正式名 (全角6文字)" maxlength="6" class="bg-slate-900 border border-slate-700/60 focus:border-cyan-500 rounded text-slate-200 font-medium px-2 py-1 focus:outline-none flex-1">
+          <input type="text" data-action-idx="${idx}" data-field="short" value="${escapeHtml(act.short)}" placeholder="短縮名" class="w-20 text-center bg-slate-900 border border-slate-700/60 focus:border-cyan-500 rounded text-cyan-300 font-bold px-1 py-1 focus:outline-none">
 
           <!-- Actions -->
           <div class="flex items-center justify-end shrink-0 w-12">
@@ -4537,29 +4566,47 @@
         const inputName = row.querySelector(`[data-action-idx="${idx}"][data-field="name"]`);
         const inputShort = row.querySelector(`[data-action-idx="${idx}"][data-field="short"]`);
 
-        const handleAutoSave = () => {
-          const newName = inputName.value.trim();
-          const newShort = inputShort.value.trim();
-          if (newName && newShort) {
+        const handleAutoSave = (isBlurOrChange = false) => {
+          // 短縮名は即座に半角4/全角2幅で切り詰め
+          const sanitizedShort = sanitizeActionShortName(inputShort.value);
+          if (inputShort.value !== sanitizedShort) {
+            inputShort.value = sanitizedShort;
+          }
+
+          // 正式名は確定時（blur/change）に全角自動変換＋最大6文字
+          let sanitizedName = inputName.value.trim();
+          if (isBlurOrChange) {
+            sanitizedName = sanitizeActionFullName(inputName.value);
+            if (inputName.value !== sanitizedName) {
+              inputName.value = sanitizedName;
+            }
+          }
+
+          if (sanitizedName && sanitizedShort) {
             const oldName = actions[idx].name;
-            if (oldName !== newName) {
+            if (oldName !== sanitizedName) {
               events.forEach(ev => {
                 Object.keys(ev.schedule).forEach(day => {
-                  ev.schedule[day] = ev.schedule[day].map(n => (n === oldName ? newName : n));
+                  ev.schedule[day] = ev.schedule[day].map(n => (n === oldName ? sanitizedName : n));
                 });
               });
             }
 
-            actions[idx].name = newName;
-            actions[idx].short = newShort;
+            actions[idx].name = sanitizedName;
+            actions[idx].short = sanitizedShort;
             saveToLocalStorage();
             renderMatrix();
             renderMonospaceText();
           }
         };
 
-        inputName.addEventListener('input', handleAutoSave);
-        inputShort.addEventListener('input', handleAutoSave);
+        inputName.addEventListener('input', () => handleAutoSave(false));
+        inputName.addEventListener('change', () => handleAutoSave(true));
+        inputName.addEventListener('blur', () => handleAutoSave(true));
+
+        inputShort.addEventListener('input', () => handleAutoSave(false));
+        inputShort.addEventListener('change', () => handleAutoSave(true));
+        inputShort.addEventListener('blur', () => handleAutoSave(true));
 
         // Delete
         row.querySelector(`[data-del-idx="${idx}"]`).addEventListener('click', () => {
@@ -4616,10 +4663,10 @@
     function addNewAction() {
       const inputFull = document.getElementById('inputNewActionFullName');
       const inputShort = document.getElementById('inputNewActionShortName');
-      const valFull = inputFull.value.trim();
-      let valShort = inputShort.value.trim();
+      const valFull = sanitizeActionFullName(inputFull.value);
+      let valShort = sanitizeActionShortName(inputShort.value);
       if (!valFull) return;
-      if (!valShort) valShort = valFull.slice(0, 2);
+      if (!valShort) valShort = sanitizeActionShortName(valFull);
 
       if (actions.some(a => a.name === valFull)) {
         showToast('同名のアクション項目が既に存在します');
@@ -5232,6 +5279,23 @@
       document.getElementById('btnCloseActionsModal').addEventListener('click', closeActionsModal);
       document.getElementById('btnCloseActionsModalBtn').addEventListener('click', closeActionsModal);
       document.getElementById('btnAddNewAction').addEventListener('click', addNewAction);
+
+      const inputNewActionFull = document.getElementById('inputNewActionFullName');
+      if (inputNewActionFull) {
+        inputNewActionFull.addEventListener('blur', () => {
+          inputNewActionFull.value = sanitizeActionFullName(inputNewActionFull.value);
+        });
+        inputNewActionFull.addEventListener('change', () => {
+          inputNewActionFull.value = sanitizeActionFullName(inputNewActionFull.value);
+        });
+      }
+
+      const inputNewActionShort = document.getElementById('inputNewActionShortName');
+      if (inputNewActionShort) {
+        inputNewActionShort.addEventListener('input', () => {
+          inputNewActionShort.value = sanitizeActionShortName(inputNewActionShort.value);
+        });
+      }
 
       const btnBackToEventModal = document.getElementById('btnBackToEventModal');
       if (btnBackToEventModal) {
