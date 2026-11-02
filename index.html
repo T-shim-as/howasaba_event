@@ -496,46 +496,38 @@
       <div class="bg-slate-950/70 p-3 sm:p-4 rounded-2xl border border-slate-800/90 text-xs space-y-3.5 shadow-inner">
 
         <!-- Block 1: 出力期間 & タイトル (Always Visible, 2-Column Grid on lg+) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-stretch">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5 items-stretch">
 
           <!-- 出力期間 (lg:col-span-8) -->
           <div
-            class="lg:col-span-8 space-y-2 bg-slate-900/70 p-3 rounded-xl border border-slate-800/80 flex flex-col justify-between">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="text-[11px] font-bold text-cyan-300 flex items-center gap-1">
+            class="lg:col-span-8 bg-slate-900/70 p-2.5 rounded-xl border border-slate-800/80 flex flex-col justify-between gap-1.5">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <div class="flex items-center gap-1.5 min-w-0">
+                <span class="text-[11px] font-bold text-cyan-300 flex items-center gap-1 shrink-0">
                   <span>📅</span> 出力期間
                 </span>
-                <div
-                  class="inline-flex items-center gap-1 bg-slate-950 px-2 py-0.5 rounded-lg border border-slate-700 text-[11px]">
-                  <select id="selectStartDay"
-                    class="bg-transparent text-cyan-300 font-bold focus:outline-none cursor-pointer"></select>
-                  <span class="text-slate-500">〜</span>
-                  <select id="selectEndDay"
-                    class="bg-transparent text-cyan-300 font-bold focus:outline-none cursor-pointer"></select>
-                  <span id="selectedDaysCountBadge"
-                    class="ml-1 px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 text-[10px] font-bold border border-cyan-700">7日間</span>
-                </div>
-                <span id="rangeTapHint" class="text-[10px] text-slate-400 hidden xl:inline">（ドラッグまたは開始→終了タップ）</span>
+                <span id="selectedDaysCountBadge"
+                  class="px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 text-[10px] font-bold border border-cyan-700/80 shrink-0">7日間</span>
+                <span id="rangeTapHint" class="text-[10px] text-slate-400 truncate hidden sm:inline">（ドラッグまたはタップで選択）</span>
               </div>
 
               <!-- Quick Presets -->
-              <div class="flex items-center gap-1 flex-wrap">
-                <span class="text-[10px] text-slate-400">定番:</span>
+              <div class="flex items-center gap-1 shrink-0">
+                <span class="text-[10px] text-slate-400">プリセット:</span>
                 <button type="button" id="btnQuickSelectMonSun"
-                  class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">月〜日
-                  (7日)</button>
+                  class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition"
+                  title="月曜〜日曜（7日間）を選択">月〜日</button>
                 <button type="button" id="btnQuickSelectTueMon"
-                  class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">火〜月
-                  (7日)</button>
+                  class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition"
+                  title="火曜〜翌月曜（7日間）を選択">火〜月</button>
                 <button type="button" id="btnQuickSelectMonFri"
-                  class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">月〜金
-                  (5日)</button>
+                  class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition"
+                  title="月曜〜金曜（5日間）を選択">月〜金</button>
               </div>
             </div>
 
             <!-- 8-Day Range Track -->
-            <div class="grid grid-cols-8 bg-slate-950 p-1 rounded-xl border border-slate-800 select-none mt-1"
+            <div class="grid grid-cols-8 bg-slate-950 p-1 rounded-xl border border-slate-800 select-none"
               id="textDaysCheckboxGroup">
               <!-- Rendered dynamically by JS as a connected range bar -->
             </div>
@@ -543,20 +535,21 @@
 
           <!-- タイトル入力 (lg:col-span-4) -->
           <div
-            class="lg:col-span-4 space-y-2 bg-slate-900/70 p-3 rounded-xl border border-slate-800/80 flex flex-col justify-between">
-            <div class="flex items-center justify-between">
+            class="lg:col-span-4 bg-slate-900/70 p-2.5 rounded-xl border border-slate-800/80 flex flex-col justify-between gap-1.5">
+            <div class="flex items-center justify-between h-5">
               <span class="text-[11px] font-bold text-cyan-300 flex items-center gap-1">
                 <span>🏷️</span> タイトル
               </span>
               <button type="button" id="btnInsertDate"
-                class="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 transition flex items-center gap-1 shadow-sm"
+                class="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 transition flex items-center gap-1 shadow-sm leading-tight"
                 title="選択中の曜日に合わせた日付をタイトルに挿入">
                 <span>📅 日付挿入</span>
               </button>
             </div>
-            <input type="text" id="textTitleInput" value="【 スケジュール 】"
-              class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white text-xs focus:outline-none focus:border-cyan-500">
-            <p class="text-[10px] text-slate-400">※空欄時はタイトル行なしで出力します</p>
+            <div>
+              <input type="text" id="textTitleInput" value="【 スケジュール 】" placeholder="空欄時はタイトル行なし"
+                class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white text-xs focus:outline-none focus:border-cyan-500">
+            </div>
           </div>
 
         </div>
@@ -1580,6 +1573,7 @@
               <span>🎨</span> デザイン・UI改善
             </div>
             <ul class="list-disc list-inside space-y-1 text-slate-300 pl-1 leading-relaxed">
+              <li>出力期間・タイトル入力部をスリム化（不要な選択肢を撤廃し、プリセット選択を1行に集約）</li>
               <li>出力レイアウト設定のスムーズな開閉アニメーション対応と8項目の並び順・デザイン最適化</li>
               <li>出力期間とタイトルを常時表示にし、手早く期間変更や日付挿入が行えるよう改善</li>
               <li>イベント編集画面から項目編集へ遷移した際、フッター左下からワンタップで戻れる導線を追加</li>
@@ -2827,16 +2821,16 @@
       if (hintEl) {
         if (rangeTapStartIdx !== null) {
           hintEl.className = 'text-[10px] text-amber-300 font-bold animate-pulse';
-          hintEl.textContent = `📍 開始日「${ALL_DAYS[rangeTapStartIdx].label}」を選択中 — 終了日をタップしてください`;
+          hintEl.textContent = `📍 開始日「${ALL_DAYS[rangeTapStartIdx].label}」選択中 — 終了日をタップ`;
         } else {
           hintEl.className = 'text-[10px] text-slate-400';
-          hintEl.textContent = '（バーをドラッグ、または開始日→終了日の順にタップ）';
+          hintEl.textContent = '（ドラッグまたはタップで選択）';
         }
       }
 
       // Update Preset Buttons Active State
-      const presetActiveClass = 'px-2.5 py-1 sm:py-0.5 rounded-md text-[11px] sm:text-[10px] font-bold bg-cyan-900/90 text-cyan-200 border border-cyan-500/80 shadow-sm transition';
-      const presetInactiveClass = 'px-2.5 py-1 sm:py-0.5 rounded-md text-[11px] sm:text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition';
+      const presetActiveClass = 'px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-900/90 text-cyan-200 border border-cyan-500/80 shadow-sm transition';
+      const presetInactiveClass = 'px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition';
 
       const btnMonSun = document.getElementById('btnQuickSelectMonSun');
       const btnTueMon = document.getElementById('btnQuickSelectTueMon');
@@ -4915,19 +4909,25 @@
         setSelectedDayRange(1, 7, true);
       });
 
-      document.getElementById('selectStartDay').addEventListener('change', (e) => {
-        rangeTapStartIdx = null;
-        const newStart = parseInt(e.target.value, 10);
-        const [, curEnd] = getSelectedDayRangeIndices();
-        setSelectedDayRange(newStart, Math.max(newStart, curEnd), true);
-      });
+      const selectStart = document.getElementById('selectStartDay');
+      if (selectStart) {
+        selectStart.addEventListener('change', (e) => {
+          rangeTapStartIdx = null;
+          const newStart = parseInt(e.target.value, 10);
+          const [, curEnd] = getSelectedDayRangeIndices();
+          setSelectedDayRange(newStart, Math.max(newStart, curEnd), true);
+        });
+      }
 
-      document.getElementById('selectEndDay').addEventListener('change', (e) => {
-        rangeTapStartIdx = null;
-        const newEnd = parseInt(e.target.value, 10);
-        const [curStart] = getSelectedDayRangeIndices();
-        setSelectedDayRange(Math.min(curStart, newEnd), newEnd, true);
-      });
+      const selectEnd = document.getElementById('selectEndDay');
+      if (selectEnd) {
+        selectEnd.addEventListener('change', (e) => {
+          rangeTapStartIdx = null;
+          const newEnd = parseInt(e.target.value, 10);
+          const [curStart] = getSelectedDayRangeIndices();
+          setSelectedDayRange(Math.min(curStart, newEnd), newEnd, true);
+        });
+      }
 
       window.addEventListener('mouseup', () => {
         if (rangeDragOriginIdx !== null) {
