@@ -1002,13 +1002,13 @@
 
       <div class="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1 custom-scrollbar">
         <p class="text-xs text-slate-400">
-          マトリクス表用の「正式名（最大6文字・半角は全角に自動変換）」と、チャット出力用の「短縮名（全角2文字／半角4文字まで）」を管理できます。<span
+          マトリクス表用の「正式名（最大5文字・半角は全角に自動変換）」と、チャット出力用の「短縮名（全角2文字／半角4文字まで）」を管理できます。<span
             class="text-cyan-400 font-semibold">※入力・変更内容は即座に自動保存されます。</span>
         </p>
 
         <!-- Add new action -->
         <div class="flex gap-2">
-          <input type="text" id="inputNewActionFullName" placeholder="正式名 (最大6文字・全角自動変換)" maxlength="6"
+          <input type="text" id="inputNewActionFullName" placeholder="正式名 (最大5文字・全角自動変換)" maxlength="5"
             class="flex-1 text-xs bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-cyan-500">
           <input type="text" id="inputNewActionShortName" placeholder="短縮名 (全角2/半角4)"
             class="w-32 text-xs bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-2 text-white focus:outline-none focus:border-cyan-500">
@@ -1021,7 +1021,18 @@
         <!-- Header of list -->
         <div class="flex items-center text-[11px] text-slate-400 px-2 pt-2">
           <span class="w-16">並び順</span>
-          <span class="flex-1">正式名</span>
+          <span class="flex-1 flex items-center gap-1">
+            <span>正式名</span>
+            <span class="relative group cursor-help inline-flex items-center" tabindex="0">
+              <span class="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-slate-800 border border-slate-600 text-[9px] font-bold text-slate-300 group-hover:text-cyan-300 group-hover:border-cyan-500 transition select-none">!</span>
+              <!-- Tooltip Popup -->
+              <span class="absolute bottom-full left-0 mb-1.5 hidden group-hover:block group-focus:block z-50 w-60 p-2.5 rounded-xl bg-slate-800 text-[11px] text-slate-200 border border-slate-700 shadow-2xl leading-relaxed text-left pointer-events-none whitespace-normal">
+                <strong class="text-white block mb-0.5">💡 正式名の入力目安</strong>
+                マトリクス表や正式名モード出力用に、最大全角5文字まで入力可能です。<br>
+                <span class="text-slate-400 text-[10px] block mt-1">※半角英数や半角カナで入力された文字は、自動的に全角に変換されます。</span>
+              </span>
+            </span>
+          </span>
           <span class="w-20 text-center flex items-center justify-center gap-1">
             <span>短縮名</span>
             <span class="relative group cursor-help inline-flex items-center" tabindex="0">
@@ -4217,10 +4228,10 @@
       return s;
     }
 
-    // Helper: Sanitize Action Full Name (Auto Fullwidth conversion, max 6 chars)
+    // Helper: Sanitize Action Full Name (Auto Fullwidth conversion, max 5 chars)
     function sanitizeActionFullName(str) {
       if (!str) return '';
-      return toFullwidthKanaAndAscii(str.trim()).slice(0, 6);
+      return toFullwidthKanaAndAscii(str.trim()).slice(0, 5);
     }
 
     // Helper: Sanitize Action Short Name (Display width max 4: 2 fullwidth or 4 halfwidth)
@@ -4910,7 +4921,7 @@
           </div>
 
           <!-- Name & Short Inputs -->
-          <input type="text" data-action-idx="${idx}" data-field="name" value="${escapeHtml(act.name)}" placeholder="正式名 (全角6文字)" maxlength="6" class="bg-slate-900 border border-slate-700/60 focus:border-cyan-500 rounded text-slate-200 font-medium px-2 py-1 focus:outline-none flex-1">
+          <input type="text" data-action-idx="${idx}" data-field="name" value="${escapeHtml(act.name)}" placeholder="正式名 (全角5文字)" maxlength="5" class="bg-slate-900 border border-slate-700/60 focus:border-cyan-500 rounded text-slate-200 font-medium px-2 py-1 focus:outline-none flex-1">
           <input type="text" data-action-idx="${idx}" data-field="short" value="${escapeHtml(act.short)}" placeholder="短縮名" class="w-20 text-center bg-slate-900 border border-slate-700/60 focus:border-cyan-500 rounded text-cyan-300 font-bold px-1 py-1 focus:outline-none">
 
           <!-- Actions -->
