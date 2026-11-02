@@ -1569,7 +1569,51 @@
 
       <div class="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1 custom-scrollbar text-xs">
 
-        <!-- Update Article 2 -->
+        <!-- Update Article 3 (v1.1.1) -->
+        <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 border border-slate-700">アップデート</span>
+            <span class="text-slate-400 font-mono text-[11px]">2026/11/03 v1.1.1</span>
+          </div>
+          <h4 class="font-bold text-white text-sm">出力設定のスリム化 ＆ 項目名の文字仕様・プリセット最適化</h4>
+
+          <!-- Category: Feature -->
+          <div class="space-y-1">
+            <div class="font-bold text-white text-[11px] flex items-center gap-1.5">
+              <span>🚀</span> 機能追加
+            </div>
+            <ul class="list-disc list-inside space-y-1 text-slate-300 pl-1 leading-relaxed">
+              <li>正式名称入力時に半角英数や半角カナを自動で全角文字に一括変換する機能を追加</li>
+              <li>項目編集画面の「正式名」「短縮名」に、文字数や文字幅の目安を確認できるツールチップ（`!`）を新設</li>
+            </ul>
+          </div>
+
+          <!-- Category: UI/UX -->
+          <div class="space-y-1">
+            <div class="font-bold text-white text-[11px] flex items-center gap-1.5">
+              <span>🎨</span> デザイン・UI改善
+            </div>
+            <ul class="list-disc list-inside space-y-1 text-slate-300 pl-1 leading-relaxed">
+              <li>出力期間・タイトル枠を大幅スリム化（不要な選択肢を撤廃し、プリセットボタンを1行に集約）</li>
+              <li>プリセット選択の並び順を「月〜金」「月〜日」「火〜月」に最適化</li>
+              <li>正式名称の制限を最大全角5文字、短縮名を幅4以内（全角2文字／半角4文字）に最適化</li>
+              <li>初期テンプレート（プリセット）データを最新の20項目・11イベント構成に更新</li>
+            </ul>
+          </div>
+
+          <!-- Category: Bug Fixes -->
+          <div class="space-y-1">
+            <div class="font-bold text-white text-[11px] flex items-center gap-1.5">
+              <span>🐛</span> 不具合修正
+            </div>
+            <ul class="list-disc list-inside space-y-1 text-slate-300 pl-1 leading-relaxed">
+              <li>短縮名出力時に半角カタカナ（`ﾐｽﾘﾙ`、`ﾍﾟｯﾄ` 等）が勝手に全角化されてマトリクスが崩れる不具合を修正</li>
+              <li>項目名入力中にIME変換や未確定文字が中断されてしまう入力不具合を解消</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Update Article 2 (v1.1.0) -->
         <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
           <div class="flex items-center justify-between gap-2">
             <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 border border-slate-700">アップデート</span>
@@ -1596,7 +1640,6 @@
               <span>🎨</span> デザイン・UI改善
             </div>
             <ul class="list-disc list-inside space-y-1 text-slate-300 pl-1 leading-relaxed">
-              <li>出力期間・タイトル入力部をスリム化（不要な選択肢を撤廃し、プリセット選択を1行に集約）</li>
               <li>出力レイアウト設定のスムーズな開閉アニメーション対応と8項目の並び順・デザイン最適化</li>
               <li>出力期間とタイトルを常時表示にし、手早く期間変更や日付挿入が行えるよう改善</li>
               <li>イベント編集画面から項目編集へ遷移した際、フッター左下からワンタップで戻れる導線を追加</li>
