@@ -508,21 +508,21 @@
                 </span>
                 <span id="selectedDaysCountBadge"
                   class="px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 text-[10px] font-bold border border-cyan-700/80 shrink-0">7日間</span>
-                <span id="rangeTapHint" class="text-[10px] text-slate-400 truncate hidden sm:inline">（ドラッグまたはタップで選択）</span>
+                <span id="rangeTapHint" class="text-[10px] text-slate-400 truncate hidden sm:inline">（バーをドラッグ、または開始日→終了日の順にタップ）</span>
               </div>
 
-              <!-- Quick Presets -->
+              <!-- Quick Presets (月〜金, 月〜日, 火〜月) -->
               <div class="flex items-center gap-1 shrink-0">
                 <span class="text-[10px] text-slate-400">プリセット:</span>
+                <button type="button" id="btnQuickSelectMonFri"
+                  class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition"
+                  title="月曜〜金曜（5日間）を選択">月〜金</button>
                 <button type="button" id="btnQuickSelectMonSun"
                   class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition"
                   title="月曜〜日曜（7日間）を選択">月〜日</button>
                 <button type="button" id="btnQuickSelectTueMon"
                   class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition"
                   title="火曜〜翌月曜（7日間）を選択">火〜月</button>
-                <button type="button" id="btnQuickSelectMonFri"
-                  class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition"
-                  title="月曜〜金曜（5日間）を選択">月〜金</button>
               </div>
             </div>
 
@@ -546,9 +546,10 @@
                 <span>📅 日付挿入</span>
               </button>
             </div>
-            <div>
-              <input type="text" id="textTitleInput" value="【 スケジュール 】" placeholder="空欄時はタイトル行なし"
+            <div class="space-y-1">
+              <input type="text" id="textTitleInput" value="【 スケジュール 】"
                 class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white text-xs focus:outline-none focus:border-cyan-500">
+              <p class="text-[10px] text-slate-400">※空欄時はタイトル行なしで出力します</p>
             </div>
           </div>
 
@@ -2824,7 +2825,7 @@
           hintEl.textContent = `📍 開始日「${ALL_DAYS[rangeTapStartIdx].label}」選択中 — 終了日をタップ`;
         } else {
           hintEl.className = 'text-[10px] text-slate-400';
-          hintEl.textContent = '（ドラッグまたはタップで選択）';
+          hintEl.textContent = '（バーをドラッグ、または開始日→終了日の順にタップ）';
         }
       }
 
