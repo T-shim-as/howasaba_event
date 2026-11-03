@@ -540,17 +540,24 @@
           <div
             class="lg:col-span-4 bg-slate-900/70 p-2.5 rounded-xl border border-slate-800/80 flex flex-col justify-between gap-1.5">
             <div class="flex items-center justify-between h-5">
-              <span class="text-[11px] font-bold text-cyan-300 flex items-center gap-1">
+              <span class="text-[11px] font-bold text-cyan-300 flex items-center gap-1 shrink-0">
                 <span>🏷️</span> タイトル
               </span>
-              <button type="button" id="btnInsertDate"
-                class="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 transition flex items-center gap-1 shadow-sm leading-tight"
-                title="選択中の曜日に合わせた日付をタイトルに挿入">
-                <span>📅 日付挿入</span>
-              </button>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button type="button" id="btnInsertEventName"
+                  class="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 transition flex items-center gap-1 shadow-sm leading-tight"
+                  title="有効な一番上のイベント名をタイトルに反映">
+                  <span>🎪 イベント名</span>
+                </button>
+                <button type="button" id="btnInsertDate"
+                  class="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800 transition flex items-center gap-1 shadow-sm leading-tight"
+                  title="選択中の曜日に合わせた日付をタイトルに挿入">
+                  <span>📅 日付挿入</span>
+                </button>
+              </div>
             </div>
             <div class="space-y-1">
-              <input type="text" id="textTitleInput" value="【 スケジュール 】"
+              <input type="text" id="textTitleInput" value="【スケジュール】"
                 class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white text-xs focus:outline-none focus:border-cyan-500">
               <p class="text-[10px] text-slate-400">※空欄時はタイトル行なしで出力します</p>
             </div>
@@ -1351,7 +1358,8 @@
             <p>イベント期間に応じて出力する曜日を選択できます：</p>
             <ul class="list-disc list-inside space-y-1 text-slate-400 pl-1">
               <li>月曜から翌週の月曜日まで連続する任意の期間を設定可能</li>
-              <li>「📅 日付挿入」を押すと、現在の日時に応じて適切な開始日〜終了日（例: [10/26～11/1]）が自動計算されてタイトルに挿入されます。</li>
+              <li>「🎪 イベント名」を押すと、有効になっている一番上のイベント名を取得してタイトル（例: 【童心の宴】）に反映します。</li>
+              <li>「📅 日付挿入」を押すと、現在の日時と選択中の曜日に応じて適切な開始日〜終了日（例: 10/26～11/1）が自動計算されてタイトルに挿入されます。</li>
               <li>※手動入力も可能です。</li>
             </ul>
           </div>
@@ -1865,7 +1873,7 @@
       ],
       "textNameMode": "full",
       "textSeparator": "｜",
-      "textTitle": "【 スケジュール 】 [11/2～11/6]",
+      "textTitle": "【スケジュール】11/2～11/6",
       "textEmptyChar": "ー",
       "textDayFormat": "day",
       "textLeadingPipe": "space",
@@ -2465,7 +2473,7 @@
     let textOverlapMode = 'merge'; // 'merge' (統合記号 🔴) or 'stack' (縦並び複数行)
     let textNameMode = 'short'; // 'short' (短縮名) or 'full' (正式名)
     let textSeparator = '｜'; // '｜' or '|'
-    let textTitle = '【 スケジュール 】';
+    let textTitle = '【スケジュール】';
     let textEmptyChar = 'ー'; // 'ー' or '　'
     let textDayFormat = 'day'; // 'day' (月, 火...) or 'number' (１, ２...)
     let textLeadingPipe = 'pipe'; // 'pipe' (縦線), 'space' (スペース), 'none' (なし)
@@ -2834,7 +2842,7 @@
         textOverlapMode: 'merge',
         textNameMode: 'short',
         textSeparator: '｜',
-        textTitle: '【 スケジュール 】',
+        textTitle: '【スケジュール】',
         textEmptyChar: 'ー',
         textDayFormat: 'day',
         textLeadingPipe: 'pipe',
@@ -2851,7 +2859,7 @@
         textOverlapMode: 'merge',
         textNameMode: 'short',
         textSeparator: '｜',
-        textTitle: '【 スケジュール 】',
+        textTitle: '【スケジュール】',
         textEmptyChar: 'ー',
         textDayFormat: 'day',
         textLeadingPipe: 'pipe',
@@ -3182,7 +3190,7 @@
 
       const startStr = `${startDate.getMonth() + 1}/${startDate.getDate()}`;
       const endStr = `${endDate.getMonth() + 1}/${endDate.getDate()}`;
-      return `[${startStr}～${endStr}]`;
+      return `${startStr}～${endStr}`;
     }
 
     function insertDateToTitle() {
@@ -3193,7 +3201,7 @@
         return;
       }
       const currentVal = input.value;
-      const datePattern = /\[\d{1,2}\/\d{1,2}[～~]\d{1,2}\/\d{1,2}\]/;
+      const datePattern = /\[?\d{1,2}\/\d{1,2}[～~]\d{1,2}\/\d{1,2}\]?/;
 
       if (datePattern.test(currentVal)) {
         input.value = currentVal.replace(datePattern, dateStr);
@@ -3201,7 +3209,7 @@
         if (!currentVal.trim()) {
           input.value = dateStr;
         } else {
-          input.value = currentVal + (currentVal.endsWith(' ') ? '' : ' ') + dateStr;
+          input.value = currentVal.trimEnd() + dateStr;
         }
       }
 
@@ -3209,6 +3217,42 @@
       saveToLocalStorage();
       renderMonospaceText();
       showToast(`タイトルに日付「${dateStr}」を反映しました`);
+    }
+
+    function insertEventNameToTitle() {
+      const activeEvent = events.find(e => e.enabled);
+      if (!activeEvent) {
+        showToast('有効なイベントがありません');
+        return;
+      }
+      const eventName = (activeEvent.name || '').trim();
+      if (!eventName) {
+        showToast('イベント名が空です');
+        return;
+      }
+
+      const input = document.getElementById('textTitleInput');
+      const currentVal = input.value;
+      const bracketPattern = /【\s*[^】]*?\s*】\s*/;
+
+      if (bracketPattern.test(currentVal)) {
+        input.value = currentVal.replace(bracketPattern, `【${eventName}】`);
+      } else if (!currentVal.trim()) {
+        input.value = `【${eventName}】`;
+      } else {
+        const datePattern = /\[?\d{1,2}\/\d{1,2}[～~]\d{1,2}\/\d{1,2}\]?/;
+        const dateMatch = currentVal.match(datePattern);
+        if (dateMatch) {
+          input.value = `【${eventName}】${dateMatch[0]}`;
+        } else {
+          input.value = `【${eventName}】${currentVal.trim()}`;
+        }
+      }
+
+      textTitle = input.value;
+      saveToLocalStorage();
+      renderMonospaceText();
+      showToast(`タイトルにイベント名「${eventName}」を反映しました`);
     }
 
     // Helper: Get contiguous [startIdx, endIdx] from textSelectedDays
@@ -3487,7 +3531,7 @@
       textLeadingPipe = 'pipe';
       textHeaderSep = true;
       textShowLegend = true;
-      textTitle = '【 スケジュール 】';
+      textTitle = '【スケジュール】';
       document.getElementById('textTitleInput').value = textTitle;
       saveToLocalStorage();
       updateSpanButtons();
@@ -5690,12 +5734,14 @@
       }
 
 
-      // Title input & Insert Date
+      // Title input & Insert Event Name / Insert Date
       document.getElementById('textTitleInput').addEventListener('input', (e) => {
         textTitle = e.target.value;
         saveToLocalStorage();
         renderMonospaceText();
       });
+      const btnInsertEventName = document.getElementById('btnInsertEventName');
+      if (btnInsertEventName) btnInsertEventName.addEventListener('click', insertEventNameToTitle);
       document.getElementById('btnInsertDate').addEventListener('click', insertDateToTitle);
 
       // Event Manage Modal
