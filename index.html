@@ -17,6 +17,7 @@
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -281,7 +282,7 @@
               <button id="btnOpenShareModal" type="button"
                 class="w-full px-3.5 py-2.5 text-left text-slate-200 hover:bg-slate-800/90 flex items-center gap-2.5 font-semibold transition">
                 <span class="text-sm">🔗</span>
-                <span>アプリを共有 / 布教</span>
+                <span>アプリを共有</span>
               </button>
               <button id="btnOpenNewsModal" type="button"
                 class="w-full px-3.5 py-2.5 text-left text-slate-200 hover:bg-slate-800/90 flex items-center gap-2.5 font-semibold transition">
@@ -877,7 +878,7 @@
       <span>•</span>
       <button type="button" id="btnFooterNews" class="hover:text-cyan-400 transition cursor-pointer text-slate-400">お知らせ</button>
       <span>•</span>
-      <button type="button" id="btnFooterShare" class="hover:text-cyan-400 transition cursor-pointer text-slate-400">共有 / 布教</button>
+      <button type="button" id="btnFooterShare" class="hover:text-cyan-400 transition cursor-pointer text-slate-400">共有</button>
       <span>•</span>
       <button type="button" id="btnFooterHelp" class="hover:text-cyan-400 transition cursor-pointer text-slate-400">使い方</button>
     </div>
@@ -1627,12 +1628,46 @@
 
       <div class="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1 custom-scrollbar text-xs">
 
+        <!-- Update Article 4 (v1.2.0) -->
+        <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <span
+              class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 border border-slate-700">アップデート</span>
+            <span class="text-slate-400 font-mono text-[11px]">2026/11/05 <span class="app-version-val">v1.2.0</span></span>
+          </div>
+          <h4 class="font-bold text-white text-sm">リアルタイム接続端末数の監視 ＆ アプリ共有・フッター機能の追加</h4>
+
+          <!-- Category: Feature -->
+          <div class="space-y-1">
+            <div class="font-bold text-white text-[11px] flex items-center gap-1.5">
+              <span>🚀</span> 機能追加
+            </div>
+            <ul class="list-disc list-inside space-y-1 text-slate-300 pl-1 leading-relaxed">
+              <li>同一アカウントでの同時接続端末数をヘッダーにリアルタイム表示（「🟢 接続数: 1」／「🔴 接続エラー」）</li>
+              <li>アプリ共有モーダルを新設（URLコピー、Discord・SNS用紹介文コピー、スマホ標準共有シート連携）</li>
+              <li>画面最下部のフッターにアプリのバージョン番号表示を追加</li>
+            </ul>
+          </div>
+
+          <!-- Category: UI/UX -->
+          <div class="space-y-1">
+            <div class="font-bold text-white text-[11px] flex items-center gap-1.5">
+              <span>🎨</span> デザイン・UI改善
+            </div>
+            <ul class="list-disc list-inside space-y-1 text-slate-300 pl-1 leading-relaxed">
+              <li>ヘッダーの自動同期時計表示を廃止し、より実用的な接続状況ステータスへ刷新</li>
+              <li>Discord等のSNSでURLを展開した際に綺麗にカード表示されるOGP設定を整備</li>
+              <li>メニュー・フッターの共有導線をスッキリした名称に統一</li>
+            </ul>
+          </div>
+        </div>
+
         <!-- Update Article 3 (v1.1.1) -->
         <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
           <div class="flex items-center justify-between gap-2">
             <span
               class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 border border-slate-700">アップデート</span>
-            <span class="text-slate-400 font-mono text-[11px]">2026/11/03 <span class="app-version-val">v1.1.1</span></span>
+            <span class="text-slate-400 font-mono text-[11px]">2026/11/03 v1.1.1</span>
           </div>
           <h4 class="font-bold text-white text-sm">出力設定のスリム化 ＆ 項目名の文字仕様・プリセット最適化</h4>
 
@@ -1854,14 +1889,14 @@
       class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
       <div class="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
         <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-          <span>🔗</span> アプリを共有・布教
+          <span>🔗</span> アプリを共有
         </h3>
         <button id="btnCloseShareModal" class="text-slate-400 hover:text-white transition p-1 text-lg">✕</button>
       </div>
 
       <div class="p-4 sm:p-5 space-y-4 text-xs">
         <p class="text-slate-300 leading-relaxed">
-          ホワサバの同盟メンバーや攻略Discordサーバーへ、本ツールを簡単に共有・布教できます。
+          ホワサバの同盟メンバーや攻略Discordサーバーへ、本ツールを簡単に共有できます。
         </p>
 
         <!-- Option 1: URL直接コピー -->
@@ -1883,7 +1918,7 @@
         <!-- Option 2: Discord/SNS用 紹介テキストコピー -->
         <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
           <div class="flex items-center justify-between text-slate-400 text-[11px] font-semibold">
-            <span>💬 Discord・SNS布教用テキスト</span>
+            <span>💬 Discord・SNS用 紹介テキスト</span>
           </div>
           <textarea id="shareDiscordTextarea" readonly rows="3"
             class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-300 text-xs leading-relaxed resize-none focus:outline-none">【ホワサバ】ゲーム内チャット用日程表ジェネレーター
@@ -1922,7 +1957,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
   <!-- Application Logic -->
   <script>
     // App Version Definition (Single Source of Truth)
-    const APP_VERSION = '1.1.1';
+    const APP_VERSION = '1.2.0';
     function updateVersionDisplays() {
       document.querySelectorAll('.app-version-val').forEach(el => el.textContent = `v${APP_VERSION}`);
       document.querySelectorAll('.app-version-full').forEach(el => el.textContent = `ver ${APP_VERSION}`);
@@ -2603,10 +2638,11 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
     let rangeDragMoved = false;
 
     // Alliance Account & Cloud Sync State
-    // Firebase (Cloud Firestore) 接続設定
+    // Firebase (Cloud Firestore & Realtime Database) 接続設定
     const FIREBASE_CONFIG = {
       apiKey: "AIzaSyAIdCo_beCW87AU-ry-ae5cBnygj8pvF40",
       authDomain: "howasaba-schedule.firebaseapp.com",
+      databaseURL: "https://howasaba-schedule-default-rtdb.firebaseio.com",
       projectId: "howasaba-schedule",
       storageBucket: "howasaba-schedule.firebasestorage.app",
       messagingSenderId: "460119498921",
@@ -2619,18 +2655,32 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
 
     let currentAlliance = null; // { accountId, passwordHash, rememberLogin }
     let firestoreDb = null;
+    let firebaseRtdb = null;
+    let currentPresenceCount = 1;
+    let presenceRef = null;
+    let presenceConnectionsRef = null;
+    let presenceConnectedRef = null;
+    const deviceSessionId = 'dev_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now().toString(36);
     let supabaseClient = null;
     let supabaseConfig = { url: DEFAULT_SUPABASE_URL, anonKey: DEFAULT_SUPABASE_ANON_KEY };
 
-    // Initialize Cloud DB (Firebase Firestore or Supabase)
+    // Initialize Cloud DB (Firebase Firestore & RTDB, or Supabase)
     function initCloudDb() {
-      // 1. Firebase Firestore
+      // 1. Firebase (Firestore & Realtime Database)
       if (window.firebase && FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId) {
         try {
           if (!firebase.apps.length) {
             firebase.initializeApp(FIREBASE_CONFIG);
           }
           firestoreDb = firebase.firestore();
+          try {
+            if (typeof firebase.database === 'function') {
+              firebaseRtdb = firebase.database();
+            }
+          } catch (rtdbErr) {
+            console.warn('Realtime Database init failed:', rtdbErr);
+            firebaseRtdb = null;
+          }
         } catch (e) {
           console.error('Failed to initialize Firebase Firestore:', e);
           firestoreDb = null;
@@ -2799,14 +2849,86 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
       });
     }
 
+    function updatePresenceUI(count, isError = false) {
+      const statusEl = document.getElementById('statusBarSyncStatus');
+      if (!statusEl) return;
+      if (!currentAlliance) {
+        statusEl.textContent = '未ログイン';
+        statusEl.className = 'text-[10px] sm:text-[11px] font-semibold text-slate-500 whitespace-nowrap';
+        return;
+      }
+      if (isError) {
+        statusEl.textContent = '🔴 接続エラー';
+        statusEl.className = 'text-[10px] sm:text-[11px] font-semibold text-rose-400 whitespace-nowrap';
+        return;
+      }
+      if (typeof count === 'number') {
+        currentPresenceCount = Math.max(1, count);
+      }
+      statusEl.textContent = `🟢 接続数: ${currentPresenceCount}`;
+      statusEl.className = 'text-[10px] sm:text-[11px] font-semibold text-emerald-400 whitespace-nowrap';
+    }
+
+    function setupPresence(accountId) {
+      teardownPresence();
+      if (!firebaseRtdb || !accountId) return;
+
+      const safeId = encodeURIComponent(accountId).replace(/\./g, '%2E');
+      const myConnRef = firebaseRtdb.ref(`presence/${safeId}/${deviceSessionId}`);
+      const allianceConnsRef = firebaseRtdb.ref(`presence/${safeId}`);
+      const connectedRef = firebaseRtdb.ref('.info/connected');
+
+      presenceRef = myConnRef;
+      presenceConnectionsRef = allianceConnsRef;
+      presenceConnectedRef = connectedRef;
+
+      // 1. 切断予約と接続時オンライン登録
+      connectedRef.on('value', (snap) => {
+        if (snap.val() === true) {
+          myConnRef.onDisconnect().remove().catch(() => {});
+          myConnRef.set({
+            online: true,
+            ts: firebase.database.ServerValue.TIMESTAMP
+          }).catch(err => {
+            console.warn('Presence set error:', err);
+            updatePresenceUI(null, true);
+          });
+        } else {
+          updatePresenceUI(null, true);
+        }
+      });
+
+      // 2. 同盟アカウント内の端末数をリアルタイム購読
+      allianceConnsRef.on('value', (snap) => {
+        const count = snap.numChildren();
+        updatePresenceUI(count, false);
+      }, (err) => {
+        console.warn('Presence listen error:', err);
+        updatePresenceUI(null, true);
+      });
+    }
+
+    function teardownPresence() {
+      if (presenceRef) {
+        try { presenceRef.remove(); } catch (e) {}
+        presenceRef = null;
+      }
+      if (presenceConnectedRef) {
+        try { presenceConnectedRef.off(); } catch (e) {}
+        presenceConnectedRef = null;
+      }
+      if (presenceConnectionsRef) {
+        try { presenceConnectionsRef.off(); } catch (e) {}
+        presenceConnectionsRef = null;
+      }
+    }
+
     function applyPendingRemotePayloadIfIdle() {
       if (!pendingRemotePayload || isAnyEditModalOpen()) return;
       const payload = pendingRemotePayload;
       pendingRemotePayload = null;
       applySchedulePayload(payload, true);
-      const statusEl = document.getElementById('statusBarSyncStatus');
-      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      if (statusEl) statusEl.textContent = `🟢 自動同期(${timeStr})`;
+      updatePresenceUI();
       showToast('🔄 他の端末での変更を反映しました');
     }
 
@@ -2816,6 +2938,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
         realtimeUnsubscribe = null;
       }
       pendingRemotePayload = null;
+      teardownPresence();
     }
 
     // Start real-time Firestore listener (onSnapshot) for active alliance
@@ -2823,6 +2946,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
       stopRealtimeAllianceSync();
       if (!currentAlliance || !firestoreDb) return;
 
+      setupPresence(currentAlliance.accountId);
       const statusEl = document.getElementById('statusBarSyncStatus');
       const docId = encodeURIComponent(currentAlliance.accountId);
       let isInitialSnapshot = true;
@@ -2847,11 +2971,10 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
           return;
         }
 
-        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         if (isInitialSnapshot) {
           isInitialSnapshot = false;
           applySchedulePayload(data.schedule_data, true);
-          if (statusEl) statusEl.textContent = `🟢 自動同期(${timeStr})`;
+          updatePresenceUI();
           return;
         }
 
@@ -2861,12 +2984,12 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
           if (statusEl) statusEl.textContent = `🔄 更新待機中`;
         } else {
           applySchedulePayload(data.schedule_data, true);
-          if (statusEl) statusEl.textContent = `🟢 自動同期(${timeStr})`;
+          updatePresenceUI();
           showToast('🔄 他のメンバー/端末の変更を自動反映しました');
         }
       }, (err) => {
         console.warn('Realtime sync listener error:', err);
-        if (statusEl) statusEl.textContent = '⚠️ オフライン';
+        updatePresenceUI(null, true);
       });
     }
 
@@ -2919,8 +3042,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
           }
         }
 
-        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        if (statusEl) statusEl.textContent = `🟢 自動同期(${timeStr})`;
+        updatePresenceUI();
         if (!isSilent) showToast(`アカウント [${accountId}] のデータを保存しました`);
       } catch (err) {
         console.error('Save failed:', err);
@@ -3223,7 +3345,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
         if (mainScreen) mainScreen.classList.remove('hidden');
         if (statusBar) statusBar.classList.remove('hidden');
         if (statusTitle) statusTitle.textContent = `🏰 ${currentAlliance.accountId}`;
-        if (statusSync) statusSync.textContent = '🟢 自動同期中';
+        updatePresenceUI();
         if (menuAuthItems) menuAuthItems.classList.remove('hidden');
         if (menuLogoutSection) menuLogoutSection.classList.remove('hidden');
       } else {
@@ -6262,6 +6384,9 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
 
       // Logout
       document.getElementById('btnLogoutAlliance').addEventListener('click', logoutAlliance);
+
+      // Window unload presence cleanup
+      window.addEventListener('beforeunload', teardownPresence);
     }
 
     window.addEventListener('DOMContentLoaded', () => {
