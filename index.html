@@ -5,6 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ホワサバ スケジュール生成</title>
+  <meta name="description" content="ホワイトアウト・サバイバル（ホワサバ）のイベント日程表をゲーム内チャット専用の等幅マトリクス形式で簡単生成・同盟内リアルタイム同期できる便利ツール。">
+  <!-- OGP / Discord Embed -->
+  <meta property="og:title" content="ホワサバ スケジュール生成ツール">
+  <meta property="og:description" content="ゲームチャット専用の等幅マトリクス日程表をワンクリック生成！同盟メンバーとのクラウドリアルタイム同期対応。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://t-shim-as.github.io/howasaba_event/">
+  <meta name="twitter:card" content="summary">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="apple-touch-icon" href="favicon.svg">
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
@@ -269,8 +276,13 @@
               </button>
             </div>
 
-            <!-- Always accessible section (News, Help, Feedback) -->
+            <!-- Always accessible section (News, Help, Feedback, Share) -->
             <div class="py-1">
+              <button id="btnOpenShareModal" type="button"
+                class="w-full px-3.5 py-2.5 text-left text-slate-200 hover:bg-slate-800/90 flex items-center gap-2.5 font-semibold transition">
+                <span class="text-sm">🔗</span>
+                <span>アプリを共有 / 布教</span>
+              </button>
               <button id="btnOpenNewsModal" type="button"
                 class="w-full px-3.5 py-2.5 text-left text-slate-200 hover:bg-slate-800/90 flex items-center gap-2.5 font-semibold transition">
                 <span class="text-sm">📢</span>
@@ -857,6 +869,22 @@
     </section>
 
   </main>
+
+  <!-- App Global Footer -->
+  <footer class="py-8 text-center select-none text-slate-500 text-[11px] space-y-1.5 border-t border-slate-900/60 mt-auto">
+    <div class="flex items-center justify-center gap-3">
+      <span class="font-mono text-slate-400 app-version-full">ver 1.1.1</span>
+      <span>•</span>
+      <button type="button" id="btnFooterNews" class="hover:text-cyan-400 transition cursor-pointer text-slate-400">お知らせ</button>
+      <span>•</span>
+      <button type="button" id="btnFooterShare" class="hover:text-cyan-400 transition cursor-pointer text-slate-400">共有 / 布教</button>
+      <span>•</span>
+      <button type="button" id="btnFooterHelp" class="hover:text-cyan-400 transition cursor-pointer text-slate-400">使い方</button>
+    </div>
+    <div class="text-[10px] text-slate-600">
+      ホワサバ スケジュールジェネレーター
+    </div>
+  </footer>
 
   <!-- Modal 1: Event Create / Edit Modal (Kept Mon to Next Mon 8 days) -->
   <div id="modalEvent"
@@ -1604,7 +1632,7 @@
           <div class="flex items-center justify-between gap-2">
             <span
               class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 border border-slate-700">アップデート</span>
-            <span class="text-slate-400 font-mono text-[11px]">2026/11/03 v1.1.1</span>
+            <span class="text-slate-400 font-mono text-[11px]">2026/11/03 <span class="app-version-val">v1.1.1</span></span>
           </div>
           <h4 class="font-bold text-white text-sm">出力設定のスリム化 ＆ 項目名の文字仕様・プリセット最適化</h4>
 
@@ -1819,6 +1847,70 @@
     </div>
   </div>
 
+  <!-- Modal: Share / 布教 Modal -->
+  <div id="modalShare"
+    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4">
+    <div
+      class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div class="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
+        <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+          <span>🔗</span> アプリを共有・布教
+        </h3>
+        <button id="btnCloseShareModal" class="text-slate-400 hover:text-white transition p-1 text-lg">✕</button>
+      </div>
+
+      <div class="p-4 sm:p-5 space-y-4 text-xs">
+        <p class="text-slate-300 leading-relaxed">
+          ホワサバの同盟メンバーや攻略Discordサーバーへ、本ツールを簡単に共有・布教できます。
+        </p>
+
+        <!-- Option 1: URL直接コピー -->
+        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+          <div class="flex items-center justify-between text-slate-400 text-[11px] font-semibold">
+            <span>🌐 アプリURL</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="text" id="shareUrlInput" readonly
+              value="https://t-shim-as.github.io/howasaba_event/"
+              class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-300 text-xs font-mono select-all focus:outline-none">
+            <button id="btnCopyShareUrl" type="button"
+              class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold transition shrink-0 cursor-pointer">
+              コピー
+            </button>
+          </div>
+        </div>
+
+        <!-- Option 2: Discord/SNS用 紹介テキストコピー -->
+        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+          <div class="flex items-center justify-between text-slate-400 text-[11px] font-semibold">
+            <span>💬 Discord・SNS布教用テキスト</span>
+          </div>
+          <textarea id="shareDiscordTextarea" readonly rows="3"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-300 text-xs leading-relaxed resize-none focus:outline-none">【ホワサバ】ゲーム内チャット用日程表ジェネレーター
+等幅マトリクス表をワンクリック出力＆同盟内リアルタイム同期対応！
+https://t-shim-as.github.io/howasaba_event/</textarea>
+          <button id="btnCopyShareDiscordText" type="button"
+            class="w-full py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-bold transition flex items-center justify-center gap-1.5 shadow-md shadow-cyan-600/20 cursor-pointer">
+            <span>📋 紹介文ごとコピー</span>
+          </button>
+        </div>
+
+        <!-- Option 3: OS標準シェア（スマホ向け） -->
+        <button id="btnTriggerWebShare" type="button"
+          class="w-full py-2.5 rounded-lg bg-indigo-600/80 hover:bg-indigo-600 text-white font-bold transition flex items-center justify-center gap-2 cursor-pointer">
+          <span>📲 端末の共有メニューを開く</span>
+        </button>
+      </div>
+
+      <div class="p-3.5 border-t border-slate-800 bg-slate-900/80 flex justify-end">
+        <button id="btnCloseShareModalBtn"
+          class="px-4 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white transition cursor-pointer">
+          閉じる
+        </button>
+      </div>
+    </div>
+  </div>
+
 
   <!-- Toast Notification -->
   <div id="toast"
@@ -1829,6 +1921,13 @@
 
   <!-- Application Logic -->
   <script>
+    // App Version Definition (Single Source of Truth)
+    const APP_VERSION = '1.1.1';
+    function updateVersionDisplays() {
+      document.querySelectorAll('.app-version-val').forEach(el => el.textContent = `v${APP_VERSION}`);
+      document.querySelectorAll('.app-version-full').forEach(el => el.textContent = `ver ${APP_VERSION}`);
+    }
+
     // 8 Days Definition for Matrix Table & Modal (Mon to 8(Mon))
     const ALL_DAYS = [
       { id: 'mon', label: '1(月)', short: '月', numShort: '１', badge: 'Day 1' },
@@ -2693,7 +2792,7 @@
     let pendingRemotePayload = null;
 
     function isAnyEditModalOpen() {
-      const modalIds = ['modalEvent', 'modalActions', 'modalManageEvents', 'modalExport', 'modalBackup', 'modalChangePassword', 'modalOverlapSettings', 'modalNews'];
+      const modalIds = ['modalEvent', 'modalActions', 'modalManageEvents', 'modalExport', 'modalBackup', 'modalChangePassword', 'modalOverlapSettings', 'modalNews', 'modalShare', 'modalResetData'];
       return modalIds.some(id => {
         const el = document.getElementById(id);
         return el && !el.classList.contains('hidden');
@@ -4147,6 +4246,35 @@
 
     function closeHelpModal() {
       document.getElementById('modalHelp').classList.add('hidden');
+    }
+
+    // Modal: Share Modal
+    function openShareModal() {
+      document.getElementById('modalShare').classList.remove('hidden');
+    }
+
+    function closeShareModal() {
+      document.getElementById('modalShare').classList.add('hidden');
+    }
+
+    async function triggerWebShare() {
+      const shareUrl = 'https://t-shim-as.github.io/howasaba_event/';
+      const shareText = '【ホワサバ】ゲーム内チャット用日程表ジェネレーター\n等幅マトリクス表をワンクリック出力＆同盟内リアルタイム同期対応！';
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: 'ホワサバ スケジュール生成ツール',
+            text: shareText,
+            url: shareUrl
+          });
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            copyToClipboard(shareUrl, '🔗 URLをコピーしました！');
+          }
+        }
+      } else {
+        copyToClipboard(shareUrl, '🔗 URLをコピーしました！');
+      }
     }
 
     // Render Matrix Header
@@ -5917,6 +6045,56 @@
         });
       }
 
+      // Share Modal Listeners
+      const btnOpenShareModal = document.getElementById('btnOpenShareModal');
+      if (btnOpenShareModal) {
+        btnOpenShareModal.addEventListener('click', () => {
+          closeHeaderMenu();
+          openShareModal();
+        });
+      }
+      const btnCloseShareModal = document.getElementById('btnCloseShareModal');
+      if (btnCloseShareModal) btnCloseShareModal.addEventListener('click', closeShareModal);
+      const btnCloseShareModalBtn = document.getElementById('btnCloseShareModalBtn');
+      if (btnCloseShareModalBtn) btnCloseShareModalBtn.addEventListener('click', closeShareModal);
+
+      const btnCopyShareUrl = document.getElementById('btnCopyShareUrl');
+      if (btnCopyShareUrl) {
+        btnCopyShareUrl.addEventListener('click', () => {
+          const input = document.getElementById('shareUrlInput');
+          if (input) copyToClipboard(input.value, '🔗 URLをコピーしました！');
+        });
+      }
+
+      const btnCopyShareDiscordText = document.getElementById('btnCopyShareDiscordText');
+      if (btnCopyShareDiscordText) {
+        btnCopyShareDiscordText.addEventListener('click', () => {
+          const textarea = document.getElementById('shareDiscordTextarea');
+          if (textarea) copyToClipboard(textarea.value, '📋 Discord用紹介文をコピーしました！');
+        });
+      }
+
+      const btnTriggerWebShare = document.getElementById('btnTriggerWebShare');
+      if (btnTriggerWebShare) {
+        btnTriggerWebShare.addEventListener('click', triggerWebShare);
+      }
+
+      // Footer Links Listeners
+      const btnFooterNews = document.getElementById('btnFooterNews');
+      if (btnFooterNews) {
+        btnFooterNews.addEventListener('click', () => {
+          document.getElementById('modalNews').classList.remove('hidden');
+        });
+      }
+      const btnFooterShare = document.getElementById('btnFooterShare');
+      if (btnFooterShare) {
+        btnFooterShare.addEventListener('click', openShareModal);
+      }
+      const btnFooterHelp = document.getElementById('btnFooterHelp');
+      if (btnFooterHelp) {
+        btnFooterHelp.addEventListener('click', openHelpModal);
+      }
+
       // News Modal Listeners
       const btnOpenNewsModal = document.getElementById('btnOpenNewsModal');
       if (btnOpenNewsModal) {
@@ -6090,6 +6268,7 @@
       initCloudDb();
       loadInitialState();
       setupListeners();
+      updateVersionDisplays();
       updateAllianceUI();
       updateSpanButtons();
       updateTextTogglesUI();
