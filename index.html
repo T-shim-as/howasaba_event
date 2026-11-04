@@ -277,12 +277,18 @@
               </button>
             </div>
 
-            <!-- Always accessible section (News, Help, Feedback, Share) -->
+            <!-- Always accessible section (News, Help, Feedback, Share, Donate) -->
             <div class="py-1">
               <button id="btnOpenShareModal" type="button"
                 class="w-full px-3.5 py-2.5 text-left text-slate-200 hover:bg-slate-800/90 flex items-center gap-2.5 font-semibold transition">
                 <span class="text-sm">🔗</span>
                 <span>アプリを共有</span>
+              </button>
+              <button id="btnMenuDonate" type="button"
+                class="w-full px-3.5 py-2.5 text-left text-slate-200 hover:bg-slate-800/90 flex items-center gap-2.5 font-semibold transition">
+                <span class="text-sm">☕</span>
+                <span>開発者を支援する</span>
+                <span class="text-xs text-slate-500 ml-auto">↗</span>
               </button>
               <button id="btnOpenNewsModal" type="button"
                 class="w-full px-3.5 py-2.5 text-left text-slate-200 hover:bg-slate-800/90 flex items-center gap-2.5 font-semibold transition">
@@ -872,15 +878,22 @@
   </main>
 
   <!-- App Global Footer -->
-  <footer class="py-8 text-center select-none text-slate-500 text-[11px] space-y-1.5 border-t border-slate-900/60 mt-auto">
+  <footer
+    class="py-8 text-center select-none text-slate-500 text-[11px] space-y-1.5 border-t border-slate-900/60 mt-auto">
     <div class="flex items-center justify-center gap-3">
-      <span class="font-mono text-slate-400 app-version-full">ver 1.1.1</span>
-      <span>•</span>
-      <button type="button" id="btnFooterNews" class="hover:text-cyan-400 transition cursor-pointer text-slate-400">お知らせ</button>
-      <span>•</span>
-      <button type="button" id="btnFooterShare" class="hover:text-cyan-400 transition cursor-pointer text-slate-400">共有</button>
-      <span>•</span>
-      <button type="button" id="btnFooterHelp" class="hover:text-cyan-400 transition cursor-pointer text-slate-400">使い方</button>
+      <span class="font-mono text-slate-400 app-version-full">ver 1.2.0</span>
+      <span>/</span>
+      <button type="button" id="btnFooterNews"
+        class="hover:text-cyan-400 transition cursor-pointer text-slate-400">お知らせ</button>
+      <span>/</span>
+      <button type="button" id="btnFooterShare"
+        class="hover:text-cyan-400 transition cursor-pointer text-slate-400">共有</button>
+      <span>/</span>
+      <button type="button" id="btnFooterHelp"
+        class="hover:text-cyan-400 transition cursor-pointer text-slate-400">使い方</button>
+      <span>/</span>
+      <button type="button" id="btnFooterDonate"
+        class="hover:text-amber-400 transition cursor-pointer text-slate-400">☕ 支援</button>
     </div>
     <div class="text-[10px] text-slate-600">
       ホワサバ スケジュールジェネレーター
@@ -1633,7 +1646,8 @@
           <div class="flex items-center justify-between gap-2">
             <span
               class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 border border-slate-700">アップデート</span>
-            <span class="text-slate-400 font-mono text-[11px]">2026/11/05 <span class="app-version-val">v1.2.0</span></span>
+            <span class="text-slate-400 font-mono text-[11px]">2026/11/05 <span
+                class="app-version-val">v1.2.0</span></span>
           </div>
           <h4 class="font-bold text-white text-sm">リアルタイム接続端末数の監視 ＆ アプリ共有・フッター機能の追加</h4>
 
@@ -1645,6 +1659,7 @@
             <ul class="list-disc list-inside space-y-1 text-slate-300 pl-1 leading-relaxed">
               <li>同一アカウントでの同時接続端末数をヘッダーにリアルタイム表示（「🟢 接続数: 1」／「🔴 接続エラー」）</li>
               <li>アプリ共有モーダルを新設（URLコピー、Discord・SNS用紹介文コピー、スマホ標準共有シート連携）</li>
+              <li>開発者を支援（お布施）するStripe決済リンクの導線を追加</li>
               <li>画面最下部のフッターにアプリのバージョン番号表示を追加</li>
             </ul>
           </div>
@@ -1905,8 +1920,7 @@
             <span>🌐 アプリURL</span>
           </div>
           <div class="flex items-center gap-2">
-            <input type="text" id="shareUrlInput" readonly
-              value="https://t-shim-as.github.io/howasaba_event/"
+            <input type="text" id="shareUrlInput" readonly value="https://t-shim-as.github.io/howasaba_event/"
               class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-300 text-xs font-mono select-all focus:outline-none">
             <button id="btnCopyShareUrl" type="button"
               class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold transition shrink-0 cursor-pointer">
@@ -1961,6 +1975,17 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
     function updateVersionDisplays() {
       document.querySelectorAll('.app-version-val').forEach(el => el.textContent = `v${APP_VERSION}`);
       document.querySelectorAll('.app-version-full').forEach(el => el.textContent = `ver ${APP_VERSION}`);
+    }
+
+    // Developer Support (Stripe Payment Links URL)
+    const DONATION_PAYMENT_URL = ''; // Stripeで発行された https://buy.stripe.com/xxxx を設定
+
+    function openDonationPage() {
+      if (DONATION_PAYMENT_URL && DONATION_PAYMENT_URL.startsWith('http')) {
+        window.open(DONATION_PAYMENT_URL, '_blank', 'noopener,noreferrer');
+      } else {
+        showToast('☕ 開発者支援（Stripe）は準備中です');
+      }
     }
 
     // 8 Days Definition for Matrix Table & Modal (Mon to 8(Mon))
@@ -2885,7 +2910,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
       // 1. 切断予約と接続時オンライン登録
       connectedRef.on('value', (snap) => {
         if (snap.val() === true) {
-          myConnRef.onDisconnect().remove().catch(() => {});
+          myConnRef.onDisconnect().remove().catch(() => { });
           myConnRef.set({
             online: true,
             ts: firebase.database.ServerValue.TIMESTAMP
@@ -2910,15 +2935,15 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
 
     function teardownPresence() {
       if (presenceRef) {
-        try { presenceRef.remove(); } catch (e) {}
+        try { presenceRef.remove(); } catch (e) { }
         presenceRef = null;
       }
       if (presenceConnectedRef) {
-        try { presenceConnectedRef.off(); } catch (e) {}
+        try { presenceConnectedRef.off(); } catch (e) { }
         presenceConnectedRef = null;
       }
       if (presenceConnectionsRef) {
-        try { presenceConnectionsRef.off(); } catch (e) {}
+        try { presenceConnectionsRef.off(); } catch (e) { }
         presenceConnectionsRef = null;
       }
     }
@@ -6215,6 +6240,19 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
       const btnFooterHelp = document.getElementById('btnFooterHelp');
       if (btnFooterHelp) {
         btnFooterHelp.addEventListener('click', openHelpModal);
+      }
+      const btnFooterDonate = document.getElementById('btnFooterDonate');
+      if (btnFooterDonate) {
+        btnFooterDonate.addEventListener('click', openDonationPage);
+      }
+
+      // Menu Donation Listener
+      const btnMenuDonate = document.getElementById('btnMenuDonate');
+      if (btnMenuDonate) {
+        btnMenuDonate.addEventListener('click', () => {
+          closeHeaderMenu();
+          openDonationPage();
+        });
       }
 
       // News Modal Listeners
