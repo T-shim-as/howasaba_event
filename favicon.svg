@@ -1,79 +1,97 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
   <defs>
-    <!-- Bubble Gradient (Deep Frosty Ice Blue) -->
-    <linearGradient id="favBubbleGrad" x1="4" y1="4" x2="60" y2="60" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#0e2a4a"/>
-      <stop offset="60%" stop-color="#071b30"/>
-      <stop offset="100%" stop-color="#030d1a"/>
+    <!-- Calendar Body Gradient (Frosty Deep Ice) -->
+    <linearGradient id="calBgGrad" x1="7" y1="11" x2="57" y2="59" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0e2a47" />
+      <stop offset="60%" stop-color="#081b30" />
+      <stop offset="100%" stop-color="#020914" />
     </linearGradient>
+
+    <!-- Header Frost Banner Gradient -->
+    <linearGradient id="calHdrGrad" x1="7" y1="11" x2="57" y2="21" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#0369a1" />
+    </linearGradient>
+
+    <!-- Ring Metal Gradient -->
+    <linearGradient id="ringGrad" x1="0" y1="4" x2="0" y2="16" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="40%" stop-color="#e0f2fe" />
+      <stop offset="100%" stop-color="#7dd3fc" />
+    </linearGradient>
+
+    <!-- Ice Crystal Glow -->
+    <radialGradient id="iceGlow" cx="32" cy="38" r="12" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0" />
+    </radialGradient>
   </defs>
 
-  <!-- Large Chat Bubble Shape (Tail at Bottom-Right, 45-degree angle) -->
-  <path d="M 15 5
-           L 49 5
-           A 9 9 0 0 1 58 14
-           L 58 39
-           A 9 9 0 0 1 49 48
-           L 47 48
-           L 57 58
-           L 37 48
-           L 15 48
-           A 9 9 0 0 1 6 39
-           L 6 14
-           A 9 9 0 0 1 15 5
-           Z"
-        fill="url(#favBubbleGrad)"
-        stroke="#38bdf8"
-        stroke-width="2.4"
-        stroke-linejoin="round"/>
+  <!-- Calendar Base Plate -->
+  <rect x="7" y="11" width="50" height="48" rx="8" fill="url(#calBgGrad)" stroke="#38bdf8" stroke-width="2.2" />
 
-  <!-- Table Header -->
-  <!-- Left Item Column Header (Event label pill) -->
-  <rect x="11.5" y="13" width="9.5" height="3" rx="1.5" fill="#38bdf8" fill-opacity="0.9"/>
-  <!-- Date Column Indicators (Mon, Tue, Wed, Thu) -->
-  <rect x="26" y="13" width="4" height="3" rx="1.5" fill="#7dd3fc" fill-opacity="0.9"/>
-  <rect x="33" y="13" width="4" height="3" rx="1.5" fill="#7dd3fc" fill-opacity="0.9"/>
-  <rect x="40" y="13" width="4" height="3" rx="1.5" fill="#7dd3fc" fill-opacity="0.9"/>
-  <rect x="47" y="13" width="4" height="3" rx="1.5" fill="#7dd3fc" fill-opacity="0.9"/>
+  <!-- Top Header Banner (Month/Week bar) -->
+  <path d="M 7 21 L 7 19 A 8 8 0 0 1 15 11 L 49 11 A 8 8 0 0 1 57 19 L 57 21 Z" fill="url(#calHdrGrad)" />
+  <line x1="7" y1="21" x2="57" y2="21" stroke="#38bdf8" stroke-width="1.2" />
 
-  <!-- Horizontal Table Divider -->
-  <line x1="9.5" y1="19.5" x2="53.5" y2="19.5" stroke="#0284c7" stroke-width="1.2" stroke-dasharray="1.2 1.5"/>
+  <!-- Header Month Mini Pill (Text Indicator) -->
+  <rect x="27" y="14.5" width="10" height="2.8" rx="1.4" fill="#ffffff" fill-opacity="0.9" />
 
-  <!-- Vertical Divider (Item Column | Schedule Columns) -->
-  <line x1="23.5" y1="22" x2="23.5" y2="44.5" stroke="#0369a1" stroke-width="1.3"/>
+  <!-- Calendar Grid Lines (3x3 Matrix) -->
+  <!-- Horizontal Lines -->
+  <line x1="10" y1="32" x2="54" y2="32" stroke="#0284c7" stroke-width="1" stroke-dasharray="1.5 2" stroke-opacity="0.7" />
+  <line x1="10" y1="44" x2="54" y2="44" stroke="#0284c7" stroke-width="1" stroke-dasharray="1.5 2" stroke-opacity="0.7" />
+  <!-- Vertical Lines -->
+  <line x1="24.5" y1="23" x2="24.5" y2="54" stroke="#0284c7" stroke-width="1" stroke-dasharray="1.5 2" stroke-opacity="0.7" />
+  <line x1="39.5" y1="23" x2="39.5" y2="54" stroke="#0284c7" stroke-width="1" stroke-dasharray="1.5 2" stroke-opacity="0.7" />
 
-  <!-- Row 1: Event Label Tag + [- | O | 🔴 | O] -->
-  <rect x="11" y="25.5" width="10" height="5.5" rx="2" fill="#0369a1" stroke="#38bdf8" stroke-width="0.8"/>
-  <line x1="13" y1="28.2" x2="19" y2="28.2" stroke="#e0f2fe" stroke-width="1.3" stroke-linecap="round"/>
-  <!-- Col 1: Hyphen (-) -->
-  <line x1="26" y1="28.2" x2="30" y2="28.2" stroke="#64748b" stroke-width="2.2" stroke-linecap="round"/>
-  <!-- Col 2: Circle (O) -->
-  <circle cx="35" cy="28.2" r="2.6" stroke="#38bdf8" stroke-width="1.8" fill="none"/>
-  <!-- Col 3: Overlap Dot (🔴) -->
-  <circle cx="42" cy="28.2" r="3.0" fill="#ef4444" stroke="#fca5a5" stroke-width="1"/>
-  <!-- Col 4: Circle (O) -->
-  <circle cx="49" cy="28.2" r="2.6" stroke="#38bdf8" stroke-width="1.8" fill="none"/>
+  <!-- Grid Schedule Events (Dots & Markers) -->
+  <!-- Row 1, Col 1: Hyphen -->
+  <line x1="15" y1="26.5" x2="20" y2="26.5" stroke="#64748b" stroke-width="1.8" stroke-linecap="round" />
+  <!-- Row 1, Col 3: Available (Cyan Circle) -->
+  <circle cx="46.5" cy="26.5" r="2.4" stroke="#38bdf8" stroke-width="1.6" fill="none" />
+  <!-- Row 2, Col 3: Conflict/Event Target (Red Marker) -->
+  <circle cx="46.5" cy="38" r="3.0" fill="#ef4444" stroke="#fca5a5" stroke-width="0.8" />
+  <!-- Row 3, Col 1: Available (Cyan Circle) -->
+  <circle cx="17.5" cy="49" r="2.4" stroke="#38bdf8" stroke-width="1.6" fill="none" />
+  <!-- Row 3, Col 3: Hyphen -->
+  <line x1="44" y1="49" x2="49" y2="49" stroke="#64748b" stroke-width="1.8" stroke-linecap="round" />
 
-  <!-- Row 2: Event Label Tag + [O | - | O | -] -->
-  <rect x="11" y="36.5" width="10" height="5.5" rx="2" fill="#0369a1" stroke="#38bdf8" stroke-width="0.8"/>
-  <line x1="13" y1="39.2" x2="18" y2="39.2" stroke="#e0f2fe" stroke-width="1.3" stroke-linecap="round"/>
-  <!-- Col 1: Circle (O) -->
-  <circle cx="28" cy="39.2" r="2.6" stroke="#38bdf8" stroke-width="1.8" fill="none"/>
-  <!-- Col 2: Hyphen (-) -->
-  <line x1="33" y1="39.2" x2="37" y2="39.2" stroke="#64748b" stroke-width="2.2" stroke-linecap="round"/>
-  <!-- Col 3: Circle (O) -->
-  <circle cx="42" cy="39.2" r="2.6" stroke="#38bdf8" stroke-width="1.8" fill="none"/>
-  <!-- Col 4: Hyphen (-) -->
-  <line x1="47" y1="39.2" x2="51" y2="39.2" stroke="#64748b" stroke-width="2.2" stroke-linecap="round"/>
+  <!-- Ice Glow Halo in Center -->
+  <circle cx="32" cy="38" r="12" fill="url(#iceGlow)" />
 
-  <!-- Snowflake Emblem on Top-Left Corner -->
-  <g transform="translate(2, 2)">
-    <circle cx="8" cy="8" r="7.5" fill="#082f49" stroke="#38bdf8" stroke-width="1.8"/>
-    <!-- Snowflake Lines -->
-    <line x1="8" y1="2.5" x2="8" y2="13.5" stroke="#e0f2fe" stroke-width="1.6" stroke-linecap="round"/>
-    <line x1="2.5" y1="8" x2="13.5" y2="8" stroke="#e0f2fe" stroke-width="1.6" stroke-linecap="round"/>
-    <line x1="4" y1="4" x2="12" y2="12" stroke="#7dd3fc" stroke-width="1.3" stroke-linecap="round"/>
-    <line x1="12" y1="4" x2="4" y2="12" stroke="#7dd3fc" stroke-width="1.3" stroke-linecap="round"/>
-    <circle cx="8" cy="8" r="1.4" fill="#ffffff"/>
+  <!-- Whiteout Survival Snowflake / Ice Crystal (Centerpiece) -->
+  <g>
+    <!-- 6-Axis Main Crystal Lines -->
+    <!-- Vertical: 90 deg -->
+    <line x1="32" y1="29.5" x2="32" y2="46.5" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" />
+    <!-- Diagonal 1: 30 deg -->
+    <line x1="24.5" y1="33.8" x2="39.5" y2="42.2" stroke="#e0f2fe" stroke-width="1.8" stroke-linecap="round" />
+    <!-- Diagonal 2: 150 deg -->
+    <line x1="24.5" y1="42.2" x2="39.5" y2="33.8" stroke="#e0f2fe" stroke-width="1.8" stroke-linecap="round" />
+
+    <!-- Crystal Branch V-Tips (Top & Bottom) -->
+    <!-- Top Tip V -->
+    <line x1="29.5" y1="32" x2="32" y2="33.5" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round" />
+    <line x1="34.5" y1="32" x2="32" y2="33.5" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round" />
+    <!-- Bottom Tip V -->
+    <line x1="29.5" y1="44" x2="32" y2="42.5" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round" />
+    <line x1="34.5" y1="44" x2="32" y2="42.5" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round" />
+
+    <!-- Center Diamond Core -->
+    <polygon points="32,35.2 34.5,38 32,40.8 29.5,38" fill="#38bdf8" stroke="#e0f2fe" stroke-width="0.8" />
+    <!-- Bright White Core Pip -->
+    <circle cx="32" cy="38" r="1.3" fill="#ffffff" />
   </g>
+
+  <!-- Top Binder Rings (Overlap over calendar plate) -->
+  <!-- Left Ring -->
+  <rect x="17" y="4" width="7" height="13" rx="3.5" fill="url(#ringGrad)" stroke="#0284c7" stroke-width="1" />
+  <rect x="19" y="6.5" width="3" height="8" rx="1.5" fill="#040d1a" />
+  <ellipse cx="20.5" cy="18" rx="2.5" ry="1.6" fill="#040d1a" />
+
+  <!-- Right Ring -->
+  <rect x="40" y="4" width="7" height="13" rx="3.5" fill="url(#ringGrad)" stroke="#0284c7" stroke-width="1" />
+  <rect x="42" y="6.5" width="3" height="8" rx="1.5" fill="#040d1a" />
+  <ellipse cx="43.5" cy="18" rx="2.5" ry="1.6" fill="#040d1a" />
 </svg>
