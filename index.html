@@ -186,53 +186,50 @@
         <svg class="w-8 h-8 sm:w-9 sm:h-9 shrink-0 drop-shadow" viewBox="0 0 64 64" fill="none"
           xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <defs>
-            <linearGradient id="hdrBgGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#090d16" />
-              <stop offset="60%" stop-color="#0c1e33" />
-              <stop offset="100%" stop-color="#024e76" />
-            </linearGradient>
-            <linearGradient id="hdrBubbleGrad" x1="8" y1="8" x2="56" y2="54" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#0d2847" />
-              <stop offset="100%" stop-color="#071b30" />
+            <linearGradient id="hdrBubbleGrad" x1="4" y1="4" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#0e2a4a" />
+              <stop offset="60%" stop-color="#071b30" />
+              <stop offset="100%" stop-color="#030d1a" />
             </linearGradient>
           </defs>
-          <!-- Base App Tile -->
-          <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#hdrBgGrad)" stroke="#38bdf8" stroke-width="2" stroke-opacity="0.6" />
-          <!-- Chat Bubble Tail -->
-          <path d="M 14 47 L 6 56 L 22 50 Z" fill="#071b30" stroke="#38bdf8" stroke-width="2" stroke-linejoin="round" />
-          <!-- Chat Bubble Body -->
-          <rect x="7" y="9" width="50" height="42" rx="9" fill="url(#hdrBubbleGrad)" stroke="#38bdf8" stroke-width="2" />
-          <!-- Header Dots / Columns -->
-          <rect x="13" y="14" width="6" height="3" rx="1.5" fill="#7dd3fc" fill-opacity="0.9" />
-          <rect x="22" y="14" width="6" height="3" rx="1.5" fill="#7dd3fc" fill-opacity="0.9" />
-          <rect x="31" y="14" width="6" height="3" rx="1.5" fill="#7dd3fc" fill-opacity="0.9" />
-          <rect x="40" y="14" width="6" height="3" rx="1.5" fill="#7dd3fc" fill-opacity="0.9" />
+          <!-- Large Chat Bubble Shape (Tail at Bottom-Right) -->
+          <path d="M 14 5 L 50 5 A 9 9 0 0 1 59 14 L 59 42 A 9 9 0 0 1 50 51 L 44 51 L 58 60 L 39 51 L 14 51 A 9 9 0 0 1 5 42 L 5 14 A 9 9 0 0 1 14 5 Z"
+            fill="url(#hdrBubbleGrad)" stroke="#38bdf8" stroke-width="2.4" stroke-linejoin="round" />
+          <!-- Matrix Header Dots / Columns -->
+          <rect x="23" y="13" width="5" height="2.5" rx="1.2" fill="#7dd3fc" fill-opacity="0.9" />
+          <rect x="31" y="13" width="5" height="2.5" rx="1.2" fill="#7dd3fc" fill-opacity="0.9" />
+          <rect x="39" y="13" width="5" height="2.5" rx="1.2" fill="#7dd3fc" fill-opacity="0.9" />
+          <rect x="47" y="13" width="5" height="2.5" rx="1.2" fill="#7dd3fc" fill-opacity="0.9" />
           <!-- Divider Line -->
-          <line x1="11" y1="21" x2="53" y2="21" stroke="#0284c7" stroke-width="1.2" stroke-dasharray="1 1.5" />
-          <!-- Row 1: [- | O | - | 🔴] -->
-          <line x1="13" y1="28" x2="19" y2="28" stroke="#64748b" stroke-width="2" stroke-linecap="round" />
-          <line x1="21.5" y1="24" x2="21.5" y2="32" stroke="#0369a1" stroke-width="1.2" />
-          <circle cx="26" cy="28" r="3" stroke="#38bdf8" stroke-width="1.8" fill="none" />
-          <line x1="30.5" y1="24" x2="30.5" y2="32" stroke="#0369a1" stroke-width="1.2" />
-          <line x1="33" y1="28" x2="39" y2="28" stroke="#64748b" stroke-width="2" stroke-linecap="round" />
-          <line x1="41.5" y1="24" x2="41.5" y2="32" stroke="#0369a1" stroke-width="1.2" />
-          <circle cx="47" cy="28" r="3.2" fill="#ef4444" stroke="#fca5a5" stroke-width="1" />
-          <!-- Row 2: [O | - | O | O] -->
-          <circle cx="16" cy="39" r="3" stroke="#38bdf8" stroke-width="1.8" fill="none" />
-          <line x1="21.5" y1="35" x2="21.5" y2="43" stroke="#0369a1" stroke-width="1.2" />
-          <line x1="23" y1="39" x2="29" y2="39" stroke="#64748b" stroke-width="2" stroke-linecap="round" />
-          <line x1="30.5" y1="35" x2="30.5" y2="43" stroke="#0369a1" stroke-width="1.2" />
-          <circle cx="36" cy="39" r="3" stroke="#38bdf8" stroke-width="1.8" fill="none" />
-          <line x1="41.5" y1="35" x2="41.5" y2="43" stroke="#0369a1" stroke-width="1.2" />
-          <circle cx="47" cy="39" r="3" stroke="#38bdf8" stroke-width="1.8" fill="none" />
-          <!-- Snowflake Emblem on Top-Right Corner -->
-          <g transform="translate(47, 8) scale(0.68)">
-            <circle cx="10" cy="10" r="10" fill="#082f49" stroke="#38bdf8" stroke-width="1.8" />
-            <line x1="10" y1="3" x2="10" y2="17" stroke="#e0f2fe" stroke-width="1.8" stroke-linecap="round" />
-            <line x1="3" y1="10" x2="17" y2="10" stroke="#e0f2fe" stroke-width="1.8" stroke-linecap="round" />
-            <line x1="5" y1="5" x2="15" y2="15" stroke="#7dd3fc" stroke-width="1.5" stroke-linecap="round" />
-            <line x1="15" y1="5" x2="5" y2="15" stroke="#7dd3fc" stroke-width="1.5" stroke-linecap="round" />
-            <circle cx="10" cy="10" r="2" fill="#ffffff" />
+          <line x1="10" y1="20" x2="54" y2="20" stroke="#0284c7" stroke-width="1.2" stroke-dasharray="1.2 1.5" />
+          <!-- Row 1: [- | O | - | 🔴 | O] -->
+          <line x1="12" y1="28" x2="18" y2="28" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" />
+          <line x1="20.5" y1="23" x2="20.5" y2="33" stroke="#0369a1" stroke-width="1.2" />
+          <circle cx="25.5" cy="28" r="3" stroke="#38bdf8" stroke-width="1.8" fill="none" />
+          <line x1="29.5" y1="23" x2="29.5" y2="33" stroke="#0369a1" stroke-width="1.2" />
+          <line x1="32" y1="28" x2="38" y2="28" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" />
+          <line x1="40.5" y1="23" x2="40.5" y2="33" stroke="#0369a1" stroke-width="1.2" />
+          <circle cx="46.5" cy="28" r="3.2" fill="#ef4444" stroke="#fca5a5" stroke-width="1" />
+          <line x1="51.5" y1="23" x2="51.5" y2="33" stroke="#0369a1" stroke-width="1.2" />
+          <circle cx="55" cy="28" r="2.2" stroke="#38bdf8" stroke-width="1.5" fill="none" />
+          <!-- Row 2: [O | - | O | O | -] -->
+          <circle cx="15" cy="40" r="3" stroke="#38bdf8" stroke-width="1.8" fill="none" />
+          <line x1="20.5" y1="35" x2="20.5" y2="45" stroke="#0369a1" stroke-width="1.2" />
+          <line x1="23" y1="40" x2="29" y2="40" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" />
+          <line x1="29.5" y1="35" x2="29.5" y2="45" stroke="#0369a1" stroke-width="1.2" />
+          <circle cx="35" cy="40" r="3" stroke="#38bdf8" stroke-width="1.8" fill="none" />
+          <line x1="40.5" y1="35" x2="40.5" y2="45" stroke="#0369a1" stroke-width="1.2" />
+          <circle cx="46.5" cy="40" r="3" stroke="#38bdf8" stroke-width="1.8" fill="none" />
+          <line x1="51.5" y1="35" x2="51.5" y2="45" stroke="#0369a1" stroke-width="1.2" />
+          <line x1="53" y1="40" x2="57" y2="40" stroke="#64748b" stroke-width="2" stroke-linecap="round" />
+          <!-- Snowflake Emblem on Top-Left Corner -->
+          <g transform="translate(3, 3)">
+            <circle cx="8" cy="8" r="8" fill="#082f49" stroke="#38bdf8" stroke-width="1.8" />
+            <line x1="8" y1="2.5" x2="8" y2="13.5" stroke="#e0f2fe" stroke-width="1.6" stroke-linecap="round" />
+            <line x1="2.5" y1="8" x2="13.5" y2="8" stroke="#e0f2fe" stroke-width="1.6" stroke-linecap="round" />
+            <line x1="4" y1="4" x2="12" y2="12" stroke="#7dd3fc" stroke-width="1.3" stroke-linecap="round" />
+            <line x1="12" y1="4" x2="4" y2="12" stroke="#7dd3fc" stroke-width="1.3" stroke-linecap="round" />
+            <circle cx="8" cy="8" r="1.6" fill="#ffffff" />
           </g>
         </svg>
         <div class="min-w-0 leading-tight">
