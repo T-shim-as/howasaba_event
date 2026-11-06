@@ -281,9 +281,12 @@
             <!-- Logout & Account Action section -->
             <div id="headerMenuLogoutSection" class="hidden py-1">
               <button id="btnMenuUpgradeToAccount" type="button"
-                class="hidden w-full px-3.5 py-2.5 text-left text-cyan-300 hover:bg-cyan-950/40 flex items-center gap-2.5 font-semibold transition">
-                <span class="text-sm">✨</span>
-                <span>新規アカウント作成（データ引き継ぎ）</span>
+                class="hidden w-full px-3.5 py-2.5 text-left text-cyan-300 hover:bg-cyan-950/40 flex items-center gap-2.5 font-semibold transition leading-tight">
+                <span class="text-sm shrink-0">✨</span>
+                <span class="flex flex-col">
+                  <span class="text-xs font-bold text-cyan-300">新規アカウント作成</span>
+                  <span class="text-[10px] text-cyan-400/80 font-normal">（データ引き継ぎ）</span>
+                </span>
               </button>
               <button id="btnLogoutAlliance" type="button"
                 class="w-full px-3.5 py-2.5 text-left text-rose-400 hover:bg-rose-950/40 flex items-center gap-2.5 font-semibold transition">
@@ -402,8 +405,9 @@
       <!-- Card Footer: Guest Mode entry (Zero registration) -->
       <div class="p-5 sm:p-6 border-t border-slate-800 bg-slate-950/40 text-center space-y-2">
         <button id="btnStartGuestMode" type="button"
-          class="w-full py-3 px-4 rounded-xl font-bold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 hover:border-cyan-500/50 shadow transition flex items-center justify-center gap-2">
-          <span>🚀 ローカルモード（アカウントなしで利用する）</span>
+          class="w-full py-3 px-4 rounded-xl font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg shadow-cyan-600/20 transition flex items-center justify-center gap-2">
+          <span>🚀</span>
+          <span>ローカルモード（アカウントなしで利用する）</span>
         </button>
         <p class="text-[10px] sm:text-[11px] text-slate-400 leading-relaxed">
           ※データはお手元の端末（ブラウザ）にのみ保存されます。後からいつでも同盟アカウントを作成して幹部と共有できます。
@@ -422,13 +426,10 @@
         <span class="text-base shrink-0 mt-0.5">💡</span>
         <div class="space-y-0.5 text-slate-300 leading-relaxed text-[11px] sm:text-xs">
           <p class="font-bold text-cyan-300">
-            ローカルモード利用中
+            ローカルモード利用中（端末保存）
           </p>
           <p class="text-slate-300">
-            データはお使いの端末（ブラウザ）にのみ保存されています。ブラウザ履歴の消去や機種変更で消失する恐れがあります。
-          </p>
-          <p class="text-slate-400 text-[10px] sm:text-[11px]">
-            アカウントを作成すればクラウドに保存できます。
+            データはお使いの端末（ブラウザ）にのみ保存されています。ブラウザ履歴の消去や機種変更によるデータ消失を防ぎたい場合は、アカウントを作成してクラウド保存をご利用ください。
           </p>
         </div>
       </div>
@@ -3013,8 +3014,12 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
       if (isGuestMode()) {
         statusEl.textContent = '💾 ローカルモード';
         statusEl.className = 'text-[10px] sm:text-[11px] font-semibold text-cyan-400 whitespace-nowrap cursor-pointer hover:underline';
-        statusEl.title = 'データはお手元のブラウザ内にのみ安全に保存されています';
-        statusEl.onclick = () => showToast('データはお手元のブラウザ内にのみ安全に保存されています');
+        statusEl.title = 'データはお手元のブラウザ内にのみ安全に保存されています（タップで案内を再表示）';
+        statusEl.onclick = () => {
+          const banner = document.getElementById('bannerGuestWarning');
+          if (banner) banner.classList.remove('hidden');
+          showToast('データはお手元のブラウザ内にのみ安全に保存されています');
+        };
         return;
       }
       statusEl.onclick = null;
@@ -3547,17 +3552,18 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
           if (statusSync) {
             statusSync.textContent = '💾 ローカルモード';
             statusSync.className = 'text-[10px] sm:text-[11px] font-semibold text-cyan-400 whitespace-nowrap cursor-pointer hover:underline';
-            statusSync.title = 'データはお手元のブラウザ内にのみ安全に保存されています';
-            statusSync.onclick = () => showToast('データはお手元のブラウザ内にのみ安全に保存されています');
+            statusSync.title = 'データはお手元のブラウザ内にのみ安全に保存されています（タップで案内を再表示）';
+            statusSync.onclick = () => {
+              const banner = document.getElementById('bannerGuestWarning');
+              if (banner) banner.classList.remove('hidden');
+              showToast('データはお手元のブラウザ内にのみ安全に保存されています');
+            };
           }
           if (menuAuthItems) menuAuthItems.classList.remove('hidden');
           if (btnChangePw) btnChangePw.classList.add('hidden');
           if (menuLogoutSection) menuLogoutSection.classList.remove('hidden');
           if (btnUpgrade) btnUpgrade.classList.remove('hidden');
-          if (guestBanner) {
-            const isDismissed = sessionStorage.getItem('wos_dismiss_guest_banner') === 'true';
-            guestBanner.classList.toggle('hidden', isDismissed);
-          }
+          if (guestBanner) guestBanner.classList.remove('hidden');
           if (btnLogout) {
             btnLogout.innerHTML = '<span class="text-sm">🔑</span><span>ログイン画面へ</span>';
             btnLogout.className = 'w-full px-3.5 py-2.5 text-left text-cyan-400 hover:bg-slate-800/90 flex items-center gap-2.5 font-semibold transition';
@@ -6676,7 +6682,6 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
       const btnDismissBanner = document.getElementById('btnDismissGuestBanner');
       if (btnDismissBanner) {
         btnDismissBanner.addEventListener('click', () => {
-          sessionStorage.setItem('wos_dismiss_guest_banner', 'true');
           const banner = document.getElementById('bannerGuestWarning');
           if (banner) banner.classList.add('hidden');
         });
