@@ -283,7 +283,7 @@
               <button id="btnMenuUpgradeToAccount" type="button"
                 class="hidden w-full px-3.5 py-2.5 text-left text-cyan-300 hover:bg-cyan-950/40 flex items-center gap-2.5 font-semibold transition">
                 <span class="text-sm">✨</span>
-                <span>クラウド共有（アカウント作成）</span>
+                <span>新規アカウント作成（データ引き継ぎ）</span>
               </button>
               <button id="btnLogoutAlliance" type="button"
                 class="w-full px-3.5 py-2.5 text-left text-rose-400 hover:bg-rose-950/40 flex items-center gap-2.5 font-semibold transition">
@@ -400,9 +400,9 @@
       </div>
 
       <!-- Card Footer: Guest Mode entry (Zero registration) -->
-      <div class="p-4 sm:p-5 border-t border-slate-800 bg-slate-950/40 text-center space-y-2">
+      <div class="p-5 sm:p-6 border-t border-slate-800 bg-slate-950/40 text-center space-y-2">
         <button id="btnStartGuestMode" type="button"
-          class="w-full py-2.5 px-4 rounded-xl font-bold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 hover:border-cyan-500/50 shadow transition flex items-center justify-center gap-2">
+          class="w-full py-3 px-4 rounded-xl font-bold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 hover:border-cyan-500/50 shadow transition flex items-center justify-center gap-2">
           <span>🚀 ローカルモード（アカウントなしで利用する）</span>
         </button>
         <p class="text-[10px] sm:text-[11px] text-slate-400 leading-relaxed">
@@ -414,6 +414,37 @@
 
   <!-- Main Content (Shown only after login) -->
   <main id="mainAppScreen" class="hidden max-w-7xl mx-auto w-full p-2.5 sm:p-6 flex-1 flex flex-col gap-4 sm:gap-6">
+
+    <!-- Local Mode Warning & Account Migration Banner -->
+    <aside id="bannerGuestWarning"
+      class="hidden bg-slate-900/95 border border-cyan-800/60 rounded-2xl p-3.5 sm:p-4 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+      <div class="flex items-start gap-2.5 min-w-0">
+        <span class="text-base shrink-0 mt-0.5">💡</span>
+        <div class="space-y-0.5 text-slate-300 leading-relaxed text-[11px] sm:text-xs">
+          <p class="font-bold text-cyan-300">
+            ローカルモード利用中
+          </p>
+          <p class="text-slate-300">
+            データはお使いの端末（ブラウザ）にのみ保存されています。ブラウザ履歴の消去や機種変更で消失する恐れがあります。
+          </p>
+          <p class="text-slate-400 text-[10px] sm:text-[11px]">
+            アカウントを作成すればクラウドに保存できます。
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+        <button id="btnBannerUpgradeToAccount" type="button"
+          class="px-3.5 py-2 rounded-xl font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow-md shadow-cyan-600/20 transition flex items-center gap-1.5 text-xs whitespace-nowrap">
+          <span>✨</span>
+          <span>新規アカウント作成（データ引き継ぎ）</span>
+        </button>
+        <button id="btnDismissGuestBanner" type="button" aria-label="案内を閉じる"
+          class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition text-sm leading-none"
+          title="閉じる">
+          ✕
+        </button>
+      </div>
+    </aside>
 
     <!-- Section 1: Event Selection Bar (Simple click-to-toggle) -->
     <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 sm:p-5 shadow-lg">
@@ -1641,20 +1672,9 @@
               <span>🚀</span> 機能追加
             </div>
             <ul class="list-disc list-inside space-y-1 text-slate-300 pl-1 leading-relaxed">
-              <li>アカウント登録なしで即座にスケジュール管理を試せる「ローカルモード」を新設（Firebase通信を完全遮断し端末内のみで安全・軽量に動作）</li>
-              <li>ローカルモードで編集したスケジュールデータをそのまま新規同盟アカウントへ初回アップロード＆クラウド引き継ぎができる導線を整備</li>
-              <li>メニュー内にワンタップで新規登録フォームを開ける「✨ クラウド共有（アカウント作成）」ボタンを追加</li>
-            </ul>
-          </div>
-
-          <!-- Category: UI/UX -->
-          <div class="space-y-1">
-            <div class="font-bold text-white text-[11px] flex items-center gap-1.5">
-              <span>🎨</span> デザイン・UI改善
-            </div>
-            <ul class="list-disc list-inside space-y-1 text-slate-300 pl-1 leading-relaxed">
-              <li>ローカルモード利用時のヘッダー表示を「🏰 ゲスト ｜ 💾 ローカル保存」にスマート切り替え</li>
-              <li>「💾 ローカル保存」をタップまたはホバーすると、データがお手元の端末のみに安全に保存されている旨を通知する案内機能を追加</li>
+              <li>アカウント登録なしで即座にスケジュール管理を試せる「ローカルモード」を新設</li>
+              <li>ローカルモードで編集したデータをそのまま新規アカウント作成時に引き継げる機能を実装</li>
+              <li>キャッシュ消去時の注意喚起やログインなどの導線の差分を実装</li>
             </ul>
           </div>
         </div>
@@ -2991,7 +3011,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
       const statusEl = document.getElementById('statusBarSyncStatus');
       if (!statusEl) return;
       if (isGuestMode()) {
-        statusEl.textContent = '💾 ローカル保存';
+        statusEl.textContent = '💾 ローカルモード';
         statusEl.className = 'text-[10px] sm:text-[11px] font-semibold text-cyan-400 whitespace-nowrap cursor-pointer hover:underline';
         statusEl.title = 'データはお手元のブラウザ内にのみ安全に保存されています';
         statusEl.onclick = () => showToast('データはお手元のブラウザ内にのみ安全に保存されています');
@@ -3515,6 +3535,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
       const btnLogout = document.getElementById('btnLogoutAlliance');
       const btnUpgrade = document.getElementById('btnMenuUpgradeToAccount');
       const btnChangePw = document.getElementById('btnOpenChangePwModal');
+      const guestBanner = document.getElementById('bannerGuestWarning');
 
       if (currentAlliance) {
         if (loginScreen) loginScreen.classList.add('hidden');
@@ -3524,7 +3545,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
         if (isGuestMode()) {
           if (statusTitle) statusTitle.textContent = '🏰 ゲスト';
           if (statusSync) {
-            statusSync.textContent = '💾 ローカル保存';
+            statusSync.textContent = '💾 ローカルモード';
             statusSync.className = 'text-[10px] sm:text-[11px] font-semibold text-cyan-400 whitespace-nowrap cursor-pointer hover:underline';
             statusSync.title = 'データはお手元のブラウザ内にのみ安全に保存されています';
             statusSync.onclick = () => showToast('データはお手元のブラウザ内にのみ安全に保存されています');
@@ -3533,6 +3554,10 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
           if (btnChangePw) btnChangePw.classList.add('hidden');
           if (menuLogoutSection) menuLogoutSection.classList.remove('hidden');
           if (btnUpgrade) btnUpgrade.classList.remove('hidden');
+          if (guestBanner) {
+            const isDismissed = sessionStorage.getItem('wos_dismiss_guest_banner') === 'true';
+            guestBanner.classList.toggle('hidden', isDismissed);
+          }
           if (btnLogout) {
             btnLogout.innerHTML = '<span class="text-sm">🔑</span><span>ログイン画面へ</span>';
             btnLogout.className = 'w-full px-3.5 py-2.5 text-left text-cyan-400 hover:bg-slate-800/90 flex items-center gap-2.5 font-semibold transition';
@@ -3548,6 +3573,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
           if (btnChangePw) btnChangePw.classList.remove('hidden');
           if (menuLogoutSection) menuLogoutSection.classList.remove('hidden');
           if (btnUpgrade) btnUpgrade.classList.add('hidden');
+          if (guestBanner) guestBanner.classList.add('hidden');
           if (btnLogout) {
             btnLogout.innerHTML = '<span class="text-sm">🚪</span><span>ログアウト</span>';
             btnLogout.className = 'w-full px-3.5 py-2.5 text-left text-rose-400 hover:bg-rose-950/40 flex items-center gap-2.5 font-semibold transition';
@@ -3560,6 +3586,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
         if (menuAuthItems) menuAuthItems.classList.add('hidden');
         if (menuLogoutSection) menuLogoutSection.classList.add('hidden');
         if (btnUpgrade) btnUpgrade.classList.add('hidden');
+        if (guestBanner) guestBanner.classList.add('hidden');
         updateRegisterKeepDataLabel();
       }
     }
@@ -6639,6 +6666,20 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
       const btnMenuUpgrade = document.getElementById('btnMenuUpgradeToAccount');
       if (btnMenuUpgrade) {
         btnMenuUpgrade.addEventListener('click', openRegisterFromGuest);
+      }
+
+      // Guest Mode Banner Action & Dismiss
+      const btnBannerUpgrade = document.getElementById('btnBannerUpgradeToAccount');
+      if (btnBannerUpgrade) {
+        btnBannerUpgrade.addEventListener('click', openRegisterFromGuest);
+      }
+      const btnDismissBanner = document.getElementById('btnDismissGuestBanner');
+      if (btnDismissBanner) {
+        btnDismissBanner.addEventListener('click', () => {
+          sessionStorage.setItem('wos_dismiss_guest_banner', 'true');
+          const banner = document.getElementById('bannerGuestWarning');
+          if (banner) banner.classList.add('hidden');
+        });
       }
 
       // Guest / Local Mode Start
