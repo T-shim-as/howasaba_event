@@ -278,8 +278,13 @@
               </button>
             </div>
 
-            <!-- Logout section (Auth-only) -->
+            <!-- Logout & Account Action section -->
             <div id="headerMenuLogoutSection" class="hidden py-1">
+              <button id="btnMenuUpgradeToAccount" type="button"
+                class="hidden w-full px-3.5 py-2.5 text-left text-cyan-300 hover:bg-cyan-950/40 flex items-center gap-2.5 font-semibold transition">
+                <span class="text-sm">✨</span>
+                <span>クラウド共有（アカウント作成）</span>
+              </button>
               <button id="btnLogoutAlliance" type="button"
                 class="w-full px-3.5 py-2.5 text-left text-rose-400 hover:bg-rose-950/40 flex items-center gap-2.5 font-semibold transition">
                 <span class="text-sm">🚪</span>
@@ -860,7 +865,7 @@
   <footer
     class="py-8 text-center select-none text-slate-500 text-[11px] space-y-1.5 border-t border-slate-900/60 mt-auto">
     <div class="flex items-center justify-center gap-3">
-      <span class="font-mono text-slate-400 app-version-full">ver 1.2.0</span>
+      <span class="font-mono text-slate-400 app-version-full">ver 1.3.0</span>
       <span>/</span>
       <button type="button" id="btnFooterNews"
         class="hover:text-cyan-400 transition cursor-pointer text-slate-400">お知らせ</button>
@@ -1620,13 +1625,46 @@
 
       <div class="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1 custom-scrollbar text-xs">
 
+        <!-- Update Article 5 (v1.3.0) -->
+        <div class="p-3.5 rounded-xl bg-slate-950 border border-cyan-800/60 space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <span
+              class="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-950 text-cyan-300 border border-cyan-700/60">最新アップデート</span>
+            <span class="text-slate-400 font-mono text-[11px]">2026/11/07 <span
+                class="app-version-val">v1.3.0</span></span>
+          </div>
+          <h4 class="font-bold text-white text-sm">ローカルモード（登録なしお試し利用）＆アカウント引き継ぎ機能</h4>
+
+          <!-- Category: Feature -->
+          <div class="space-y-1">
+            <div class="font-bold text-white text-[11px] flex items-center gap-1.5">
+              <span>🚀</span> 機能追加
+            </div>
+            <ul class="list-disc list-inside space-y-1 text-slate-300 pl-1 leading-relaxed">
+              <li>アカウント登録なしで即座にスケジュール管理を試せる「ローカルモード」を新設（Firebase通信を完全遮断し端末内のみで安全・軽量に動作）</li>
+              <li>ローカルモードで編集したスケジュールデータをそのまま新規同盟アカウントへ初回アップロード＆クラウド引き継ぎができる導線を整備</li>
+              <li>メニュー内にワンタップで新規登録フォームを開ける「✨ クラウド共有（アカウント作成）」ボタンを追加</li>
+            </ul>
+          </div>
+
+          <!-- Category: UI/UX -->
+          <div class="space-y-1">
+            <div class="font-bold text-white text-[11px] flex items-center gap-1.5">
+              <span>🎨</span> デザイン・UI改善
+            </div>
+            <ul class="list-disc list-inside space-y-1 text-slate-300 pl-1 leading-relaxed">
+              <li>ローカルモード利用時のヘッダー表示を「🏰 ゲスト ｜ 💾 ローカル保存」にスマート切り替え</li>
+              <li>「💾 ローカル保存」をタップまたはホバーすると、データがお手元の端末のみに安全に保存されている旨を通知する案内機能を追加</li>
+            </ul>
+          </div>
+        </div>
+
         <!-- Update Article 4 (v1.2.0) -->
         <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
           <div class="flex items-center justify-between gap-2">
             <span
               class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300 border border-slate-700">アップデート</span>
-            <span class="text-slate-400 font-mono text-[11px]">2026/11/05 <span
-                class="app-version-val">v1.2.0</span></span>
+            <span class="text-slate-400 font-mono text-[11px]">2026/11/05 <span>v1.2.0</span></span>
           </div>
           <h4 class="font-bold text-white text-sm">同時接続の監視、共有機能追加、フッター追加</h4>
 
@@ -1949,7 +1987,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
   <!-- Application Logic -->
   <script>
     // App Version Definition (Single Source of Truth)
-    const APP_VERSION = '1.2.0';
+    const APP_VERSION = '1.3.0';
     function updateVersionDisplays() {
       document.querySelectorAll('.app-version-val').forEach(el => el.textContent = `v${APP_VERSION}`);
       document.querySelectorAll('.app-version-full').forEach(el => el.textContent = `ver ${APP_VERSION}`);
@@ -2911,6 +2949,16 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
       showToast('ログイン画面に戻りました');
     }
 
+    function openRegisterFromGuest() {
+      closeHeaderMenu();
+      localStorage.removeItem('wos_guest_active');
+      currentAlliance = null;
+      updateAllianceUI();
+      switchAuthTab('register');
+      restoreSavedLoginInputs();
+      showToast('アカウント作成画面を開きました（ローカルデータを引き継げます）');
+    }
+
     function updateRegisterKeepDataLabel() {
       const labelText = document.getElementById('labelRegKeepDataText');
       const checkKeep = document.getElementById('checkRegKeepCurrentData');
@@ -2943,7 +2991,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
       const statusEl = document.getElementById('statusBarSyncStatus');
       if (!statusEl) return;
       if (isGuestMode()) {
-        statusEl.textContent = '💾 端末保存中';
+        statusEl.textContent = '💾 ローカル保存';
         statusEl.className = 'text-[10px] sm:text-[11px] font-semibold text-cyan-400 whitespace-nowrap cursor-pointer hover:underline';
         statusEl.title = 'データはお手元のブラウザ内にのみ安全に保存されています';
         statusEl.onclick = () => showToast('データはお手元のブラウザ内にのみ安全に保存されています');
@@ -3465,6 +3513,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
       const menuAuthItems = document.getElementById('headerMenuAuthItems');
       const menuLogoutSection = document.getElementById('headerMenuLogoutSection');
       const btnLogout = document.getElementById('btnLogoutAlliance');
+      const btnUpgrade = document.getElementById('btnMenuUpgradeToAccount');
       const btnChangePw = document.getElementById('btnOpenChangePwModal');
 
       if (currentAlliance) {
@@ -3475,7 +3524,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
         if (isGuestMode()) {
           if (statusTitle) statusTitle.textContent = '🏰 ゲスト';
           if (statusSync) {
-            statusSync.textContent = '💾 端末保存中';
+            statusSync.textContent = '💾 ローカル保存';
             statusSync.className = 'text-[10px] sm:text-[11px] font-semibold text-cyan-400 whitespace-nowrap cursor-pointer hover:underline';
             statusSync.title = 'データはお手元のブラウザ内にのみ安全に保存されています';
             statusSync.onclick = () => showToast('データはお手元のブラウザ内にのみ安全に保存されています');
@@ -3483,6 +3532,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
           if (menuAuthItems) menuAuthItems.classList.remove('hidden');
           if (btnChangePw) btnChangePw.classList.add('hidden');
           if (menuLogoutSection) menuLogoutSection.classList.remove('hidden');
+          if (btnUpgrade) btnUpgrade.classList.remove('hidden');
           if (btnLogout) {
             btnLogout.innerHTML = '<span class="text-sm">🔑</span><span>ログイン画面へ</span>';
             btnLogout.className = 'w-full px-3.5 py-2.5 text-left text-cyan-400 hover:bg-slate-800/90 flex items-center gap-2.5 font-semibold transition';
@@ -3497,6 +3547,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
           if (menuAuthItems) menuAuthItems.classList.remove('hidden');
           if (btnChangePw) btnChangePw.classList.remove('hidden');
           if (menuLogoutSection) menuLogoutSection.classList.remove('hidden');
+          if (btnUpgrade) btnUpgrade.classList.add('hidden');
           if (btnLogout) {
             btnLogout.innerHTML = '<span class="text-sm">🚪</span><span>ログアウト</span>';
             btnLogout.className = 'w-full px-3.5 py-2.5 text-left text-rose-400 hover:bg-rose-950/40 flex items-center gap-2.5 font-semibold transition';
@@ -3508,6 +3559,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
         if (statusBar) statusBar.classList.add('hidden');
         if (menuAuthItems) menuAuthItems.classList.add('hidden');
         if (menuLogoutSection) menuLogoutSection.classList.add('hidden');
+        if (btnUpgrade) btnUpgrade.classList.add('hidden');
         updateRegisterKeepDataLabel();
       }
     }
@@ -6582,6 +6634,12 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
           logoutAlliance();
         }
       });
+
+      // Upgrade to Account from Menu
+      const btnMenuUpgrade = document.getElementById('btnMenuUpgradeToAccount');
+      if (btnMenuUpgrade) {
+        btnMenuUpgrade.addEventListener('click', openRegisterFromGuest);
+      }
 
       // Guest / Local Mode Start
       const btnStartGuest = document.getElementById('btnStartGuestMode');
