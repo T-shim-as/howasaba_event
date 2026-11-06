@@ -377,7 +377,7 @@
             <label class="flex items-center gap-2 cursor-pointer text-slate-300 select-none">
               <input type="checkbox" id="checkRegKeepCurrentData" checked
                 class="rounded bg-slate-900 border-slate-700 text-cyan-500 focus:ring-0 h-4 w-4 cursor-pointer">
-              <span>初期テンプレート（20項目・11イベント）を展開して開始する</span>
+              <span id="labelRegKeepDataText">初期テンプレート（20項目・11イベント）を展開して開始する</span>
             </label>
             <label class="flex items-center gap-2 cursor-pointer text-slate-300 select-none">
               <input type="checkbox" id="checkRegRememberLogin" checked
@@ -392,6 +392,17 @@
             </button>
           </div>
         </div>
+      </div>
+
+      <!-- Card Footer: Guest Mode entry (Zero registration) -->
+      <div class="p-4 sm:p-5 border-t border-slate-800 bg-slate-950/40 text-center space-y-2">
+        <button id="btnStartGuestMode" type="button"
+          class="w-full py-2.5 px-4 rounded-xl font-bold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 hover:border-cyan-500/50 shadow transition flex items-center justify-center gap-2">
+          <span>🚀 ローカルモード（アカウントなしで利用する）</span>
+        </button>
+        <p class="text-[10px] sm:text-[11px] text-slate-400 leading-relaxed">
+          ※データはお手元の端末（ブラウザ）にのみ保存されます。後からいつでも同盟アカウントを作成して幹部と共有できます。
+        </p>
       </div>
     </div>
   </div>
@@ -2829,6 +2840,93 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
       renderMonospaceText();
     }
 
+    // Guest / Local Mode Helpers
+    function isGuestMode() {
+      return !!(currentAlliance && currentAlliance.isGuest);
+    }
+
+    function applyInitialGuestTemplate() {
+      const initialPreset = {
+        actions: JSON.parse(JSON.stringify(STANDARD_PRESET_DATA.actions)),
+        events: JSON.parse(JSON.stringify(STANDARD_PRESET_DATA.events)),
+        spanMode: '8days',
+        textSelectedDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+        textOutputPeriod: 'mon_sun',
+        textStartDay: 'mon',
+        textOverlapMode: 'merge',
+        textNameMode: 'short',
+        textSeparator: '｜',
+        textTitle: '【スケジュール】',
+        textEmptyChar: 'ー',
+        textDayFormat: 'day',
+        textLeadingPipe: 'pipe',
+        textHeaderSep: true,
+        textShowLegend: true,
+        savedAt: new Date().toISOString()
+      };
+      applySchedulePayload(initialPreset, true);
+      try {
+        localStorage.setItem('wos_guest_schedule_data', JSON.stringify(getCurrentSchedulePayload()));
+      } catch (e) {
+        console.warn('Failed to save initial guest schedule:', e);
+      }
+    }
+
+    function startGuestMode() {
+      closeHeaderMenu();
+      stopRealtimeAllianceSync();
+      teardownPresence();
+
+      currentAlliance = { isGuest: true, accountId: 'ゲスト' };
+      localStorage.setItem('wos_guest_active', 'true');
+
+      // Check if guest already has saved schedule data
+      const savedGuestRaw = localStorage.getItem('wos_guest_schedule_data');
+      if (savedGuestRaw) {
+        try {
+          const guestPayload = JSON.parse(savedGuestRaw);
+          applySchedulePayload(guestPayload, true);
+        } catch (e) {
+          console.warn('Failed to parse saved guest schedule:', e);
+          applyInitialGuestTemplate();
+        }
+      } else {
+        applyInitialGuestTemplate();
+      }
+
+      updateAllianceUI();
+      renderMatrix();
+      renderMonospaceText();
+      renderEventCheckboxes();
+      showToast('🚀 ローカルモードで開始しました（端末内にのみ保存）');
+    }
+
+    function exitGuestModeToLogin() {
+      closeHeaderMenu();
+      localStorage.removeItem('wos_guest_active');
+      currentAlliance = null;
+      updateAllianceUI();
+      switchAuthTab('login');
+      restoreSavedLoginInputs();
+      showToast('ログイン画面に戻りました');
+    }
+
+    function updateRegisterKeepDataLabel() {
+      const labelText = document.getElementById('labelRegKeepDataText');
+      const checkKeep = document.getElementById('checkRegKeepCurrentData');
+      const hasGuestData = !!localStorage.getItem('wos_guest_schedule_data');
+      if (labelText) {
+        if (hasGuestData) {
+          labelText.textContent = 'ローカルモードで編集したスケジュールを引き継ぐ';
+        } else {
+          labelText.textContent = '初期テンプレート（20項目・11イベント）を展開して開始する';
+        }
+      }
+      if (checkKeep && hasGuestData) {
+        checkKeep.checked = true;
+      }
+    }
+
     let realtimeUnsubscribe = null;
     let lastClientSaveId = null;
     let pendingRemotePayload = null;
@@ -2844,6 +2942,15 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
     function updatePresenceUI(count, isError = false) {
       const statusEl = document.getElementById('statusBarSyncStatus');
       if (!statusEl) return;
+      if (isGuestMode()) {
+        statusEl.textContent = '💾 端末保存中';
+        statusEl.className = 'text-[10px] sm:text-[11px] font-semibold text-cyan-400 whitespace-nowrap cursor-pointer hover:underline';
+        statusEl.title = 'データはお手元のブラウザ内にのみ安全に保存されています';
+        statusEl.onclick = () => showToast('データはお手元のブラウザ内にのみ安全に保存されています');
+        return;
+      }
+      statusEl.onclick = null;
+      statusEl.title = '';
       if (!currentAlliance) {
         statusEl.textContent = '未ログイン';
         statusEl.className = 'text-[10px] sm:text-[11px] font-semibold text-slate-500 whitespace-nowrap';
@@ -2863,7 +2970,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
 
     function setupPresence(accountId) {
       teardownPresence();
-      if (!firebaseRtdb || !accountId) return;
+      if (!firebaseRtdb || !accountId || isGuestMode()) return;
 
       const safeId = encodeURIComponent(accountId).replace(/\./g, '%2E');
       const myConnRef = firebaseRtdb.ref(`presence/${safeId}/${deviceSessionId}`);
@@ -2936,7 +3043,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
     // Start real-time Firestore listener (onSnapshot) for active alliance
     function startRealtimeAllianceSync() {
       stopRealtimeAllianceSync();
-      if (!currentAlliance || !firestoreDb) return;
+      if (!currentAlliance || isGuestMode() || !firestoreDb) return;
 
       setupPresence(currentAlliance.accountId);
       const statusEl = document.getElementById('statusBarSyncStatus');
@@ -2987,13 +3094,13 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
 
     // Pull latest schedule & start real-time listener on startup if session is active
     async function syncFromCloudOnStartup() {
-      if (!currentAlliance || !firestoreDb) return;
+      if (!currentAlliance || isGuestMode() || !firestoreDb) return;
       startRealtimeAllianceSync();
     }
 
     // Cloud / DB Save for current alliance
     async function saveCurrentAllianceData(isSilent = false) {
-      if (!currentAlliance) return;
+      if (!currentAlliance || isGuestMode()) return;
 
       const payload = getCurrentSchedulePayload();
       const clientSaveId = Date.now() + '_' + Math.random().toString(36).slice(2, 7);
@@ -3047,41 +3154,59 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
     async function registerAlliance(accountId, password, usePresetData, rememberLogin = true) {
       const docId = encodeURIComponent(accountId);
       const pwHash = await hashPassword(password);
-      const initialSchedule = usePresetData ? {
-        actions: JSON.parse(JSON.stringify(STANDARD_PRESET_DATA.actions)),
-        events: JSON.parse(JSON.stringify(STANDARD_PRESET_DATA.events)),
-        spanMode: '8days',
-        textSelectedDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-        textOutputPeriod: 'mon_sun',
-        textStartDay: 'mon',
-        textOverlapMode: 'merge',
-        textNameMode: 'short',
-        textSeparator: '｜',
-        textTitle: '【スケジュール】',
-        textEmptyChar: 'ー',
-        textDayFormat: 'day',
-        textLeadingPipe: 'pipe',
-        textHeaderSep: true,
-        textShowLegend: true,
-        savedAt: new Date().toISOString()
-      } : {
-        actions: [],
-        events: [],
-        spanMode: '8days',
-        textSelectedDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-        textOutputPeriod: 'mon_sun',
-        textStartDay: 'mon',
-        textOverlapMode: 'merge',
-        textNameMode: 'short',
-        textSeparator: '｜',
-        textTitle: '【スケジュール】',
-        textEmptyChar: 'ー',
-        textDayFormat: 'day',
-        textLeadingPipe: 'pipe',
-        textHeaderSep: true,
-        textShowLegend: true,
-        savedAt: new Date().toISOString()
-      };
+
+      // Check if guest has edited schedule data to migrate
+      const guestRaw = localStorage.getItem('wos_guest_schedule_data');
+      let initialSchedule;
+      if (usePresetData) {
+        if (guestRaw) {
+          try {
+            initialSchedule = JSON.parse(guestRaw);
+            initialSchedule.savedAt = new Date().toISOString();
+          } catch (e) {
+            initialSchedule = null;
+          }
+        }
+        if (!initialSchedule) {
+          initialSchedule = {
+            actions: JSON.parse(JSON.stringify(STANDARD_PRESET_DATA.actions)),
+            events: JSON.parse(JSON.stringify(STANDARD_PRESET_DATA.events)),
+            spanMode: '8days',
+            textSelectedDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+            textOutputPeriod: 'mon_sun',
+            textStartDay: 'mon',
+            textOverlapMode: 'merge',
+            textNameMode: 'short',
+            textSeparator: '｜',
+            textTitle: '【スケジュール】',
+            textEmptyChar: 'ー',
+            textDayFormat: 'day',
+            textLeadingPipe: 'pipe',
+            textHeaderSep: true,
+            textShowLegend: true,
+            savedAt: new Date().toISOString()
+          };
+        }
+      } else {
+        initialSchedule = {
+          actions: [],
+          events: [],
+          spanMode: '8days',
+          textSelectedDays: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+          textOutputPeriod: 'mon_sun',
+          textStartDay: 'mon',
+          textOverlapMode: 'merge',
+          textNameMode: 'short',
+          textSeparator: '｜',
+          textTitle: '【スケジュール】',
+          textEmptyChar: 'ー',
+          textDayFormat: 'day',
+          textLeadingPipe: 'pipe',
+          textHeaderSep: true,
+          textShowLegend: true,
+          savedAt: new Date().toISOString()
+        };
+      }
 
       if (firestoreDb) {
         // Check duplicate in Firestore
@@ -3136,6 +3261,10 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
         };
         saveMockDb(db);
       }
+
+      // Clear guest session flag and data since it's now migrated to cloud
+      localStorage.removeItem('wos_guest_active');
+      localStorage.removeItem('wos_guest_schedule_data');
 
       // Set session & apply
       persistLoginSessionAndCredentials(accountId, password, pwHash, rememberLogin);
@@ -3204,6 +3333,9 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
         };
       }
 
+      // Clear guest flag if regular login succeeds
+      localStorage.removeItem('wos_guest_active');
+
       persistLoginSessionAndCredentials(accountId, password, pwHash, rememberLogin);
       applySchedulePayload(record.schedule_data, true);
       updateAllianceUI();
@@ -3215,6 +3347,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
       closeHeaderMenu();
       stopRealtimeAllianceSync();
       currentAlliance = null;
+      localStorage.removeItem('wos_guest_active');
       localStorage.removeItem('wos_current_alliance');
       sessionStorage.removeItem('wos_current_alliance_session');
       restoreSavedLoginInputs();
@@ -3331,21 +3464,51 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
       const statusSync = document.getElementById('statusBarSyncStatus');
       const menuAuthItems = document.getElementById('headerMenuAuthItems');
       const menuLogoutSection = document.getElementById('headerMenuLogoutSection');
+      const btnLogout = document.getElementById('btnLogoutAlliance');
+      const btnChangePw = document.getElementById('btnOpenChangePwModal');
 
       if (currentAlliance) {
         if (loginScreen) loginScreen.classList.add('hidden');
         if (mainScreen) mainScreen.classList.remove('hidden');
         if (statusBar) statusBar.classList.remove('hidden');
-        if (statusTitle) statusTitle.textContent = `🏰 ${currentAlliance.accountId}`;
-        updatePresenceUI();
-        if (menuAuthItems) menuAuthItems.classList.remove('hidden');
-        if (menuLogoutSection) menuLogoutSection.classList.remove('hidden');
+
+        if (isGuestMode()) {
+          if (statusTitle) statusTitle.textContent = '🏰 ゲスト';
+          if (statusSync) {
+            statusSync.textContent = '💾 端末保存中';
+            statusSync.className = 'text-[10px] sm:text-[11px] font-semibold text-cyan-400 whitespace-nowrap cursor-pointer hover:underline';
+            statusSync.title = 'データはお手元のブラウザ内にのみ安全に保存されています';
+            statusSync.onclick = () => showToast('データはお手元のブラウザ内にのみ安全に保存されています');
+          }
+          if (menuAuthItems) menuAuthItems.classList.remove('hidden');
+          if (btnChangePw) btnChangePw.classList.add('hidden');
+          if (menuLogoutSection) menuLogoutSection.classList.remove('hidden');
+          if (btnLogout) {
+            btnLogout.innerHTML = '<span class="text-sm">🔑</span><span>ログイン画面へ</span>';
+            btnLogout.className = 'w-full px-3.5 py-2.5 text-left text-cyan-400 hover:bg-slate-800/90 flex items-center gap-2.5 font-semibold transition';
+          }
+        } else {
+          if (statusTitle) statusTitle.textContent = `🏰 ${currentAlliance.accountId}`;
+          if (statusSync) {
+            statusSync.onclick = null;
+            statusSync.title = '';
+          }
+          updatePresenceUI();
+          if (menuAuthItems) menuAuthItems.classList.remove('hidden');
+          if (btnChangePw) btnChangePw.classList.remove('hidden');
+          if (menuLogoutSection) menuLogoutSection.classList.remove('hidden');
+          if (btnLogout) {
+            btnLogout.innerHTML = '<span class="text-sm">🚪</span><span>ログアウト</span>';
+            btnLogout.className = 'w-full px-3.5 py-2.5 text-left text-rose-400 hover:bg-rose-950/40 flex items-center gap-2.5 font-semibold transition';
+          }
+        }
       } else {
         if (loginScreen) loginScreen.classList.remove('hidden');
         if (mainScreen) mainScreen.classList.add('hidden');
         if (statusBar) statusBar.classList.add('hidden');
         if (menuAuthItems) menuAuthItems.classList.add('hidden');
         if (menuLogoutSection) menuLogoutSection.classList.add('hidden');
+        updateRegisterKeepDataLabel();
       }
     }
 
@@ -3371,6 +3534,10 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
 
       pLogin.classList.toggle('hidden', tab !== 'login');
       pReg.classList.toggle('hidden', tab !== 'register');
+
+      if (tab === 'register') {
+        updateRegisterKeepDataLabel();
+      }
     }
 
     // Day offset map from Monday (mon = 0, ..., next_mon = 7)
@@ -4093,6 +4260,16 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
           if (parsed.accountId) {
             currentAlliance = parsed;
           }
+        } else if (localStorage.getItem('wos_guest_active') === 'true') {
+          currentAlliance = { isGuest: true, accountId: 'ゲスト' };
+          const guestRaw = localStorage.getItem('wos_guest_schedule_data');
+          if (guestRaw) {
+            try {
+              applySchedulePayload(JSON.parse(guestRaw), true);
+            } catch (e) {
+              console.warn('Failed to parse guest schedule on startup:', e);
+            }
+          }
         }
         restoreSavedLoginInputs();
       } catch (e) {
@@ -4101,6 +4278,16 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
     }
 
     function saveToLocalStorage(skipCloudSync = false) {
+      if (isGuestMode()) {
+        try {
+          const payload = getCurrentSchedulePayload();
+          localStorage.setItem('wos_guest_schedule_data', JSON.stringify(payload));
+        } catch (e) {
+          console.warn('Failed to save guest schedule:', e);
+        }
+        return;
+      }
+
       try {
         localStorage.setItem('wos_custom_actions_v3', JSON.stringify(actions));
         localStorage.setItem('wos_custom_events', JSON.stringify(events));
@@ -6387,8 +6574,20 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
         }
       });
 
-      // Logout
-      document.getElementById('btnLogoutAlliance').addEventListener('click', logoutAlliance);
+      // Logout or Return to Login
+      document.getElementById('btnLogoutAlliance').addEventListener('click', () => {
+        if (isGuestMode()) {
+          exitGuestModeToLogin();
+        } else {
+          logoutAlliance();
+        }
+      });
+
+      // Guest / Local Mode Start
+      const btnStartGuest = document.getElementById('btnStartGuestMode');
+      if (btnStartGuest) {
+        btnStartGuest.addEventListener('click', startGuestMode);
+      }
 
       // Window unload presence cleanup
       window.addEventListener('beforeunload', teardownPresence);
@@ -6400,6 +6599,7 @@ https://t-shim-as.github.io/howasaba_event/</textarea>
       setupListeners();
       updateVersionDisplays();
       updateAllianceUI();
+      updateRegisterKeepDataLabel();
       updateSpanButtons();
       updateTextTogglesUI();
       renderTextDaysCheckboxes();
